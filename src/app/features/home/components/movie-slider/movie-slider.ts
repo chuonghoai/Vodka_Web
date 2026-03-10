@@ -14,5 +14,6 @@ import { MovieCardComponent } from '../movie-card/movie-card';
 })
 export class MovieSliderComponent {
   title = input.required<string>();
+  icon = input<string>('film');
   movies = input.required<Movie[]>();
 }

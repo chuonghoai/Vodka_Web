@@ -1,9 +1,17 @@
 <div class="relative group cursor-pointer rounded-lg overflow-hidden bg-zinc-900 shadow-lg hover:scale-105 transition-transform duration-300">
-  <img [src]="movie().posterUrl" [alt]="movie().title" class="w-full h-64 object-cover opacity-80 group-hover:opacity-100 transition-opacity">
 
-  <div class="absolute top-2 left-2 flex gap-1">
+  <div class="relative w-full h-64 overflow-hidden">
+    <img [src]="movie().posterUrl" [alt]="movie().title" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-14 h-14 text-white drop-shadow-xl scale-90 group-hover:scale-100 transition-transform duration-300">
+        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clip-rule="evenodd" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="absolute top-2 left-2 flex gap-1 z-10">
     @for (tag of movie().tags; track tag) {
-      <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">{{ tag }}</span>
+      <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">{{ tag }}</span>
     }
   </div>
 

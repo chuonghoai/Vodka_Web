@@ -40,7 +40,7 @@
         ❯
       </button>
 
-      <div class="absolute bottom-6 left-8 z-30 flex gap-2">
+      <div class="absolute bottom-6 left-12 z-30 flex gap-2">
         @for (m of featuredMovies(); track m.id; let idx = $index) {
           <div class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
               [class]="idx === bannerIndex() ? 'w-8 bg-red-600' : 'w-4 bg-zinc-600 hover:bg-zinc-400'"
@@ -48,17 +48,16 @@
           </div>
         }
       </div>
-
     </div>
   }
 
   <div class="mt-[-40px] relative z-20 max-w-[1800px] mx-auto px-4 md:px-8 flex flex-col lg:flex-row gap-8">
     <div class="flex-1 space-y-10 overflow-hidden">
       <div class="space-y-2">
-        <app-movie-slider title="🌟 Phim Đang Thịnh Hành" [movies]="trendingMovies()"></app-movie-slider>
-        <app-movie-slider title="⭐ Được Đánh Giá Cao" [movies]="highlyRated()"></app-movie-slider>
-        <app-movie-slider title="💥 Phim Hành Động" [movies]="actionMovies()"></app-movie-slider>
-        <app-movie-slider title="🔥 Đề Xuất Cho Bạn" [movies]="newReleases()"></app-movie-slider>
+        <app-movie-slider title="Phim Đang Thịnh Hành" [movies]="trendingMovies()" icon="sparkles"></app-movie-slider>
+        <app-movie-slider title="Được Đánh Giá Cao" [movies]="highlyRated()" icon="star"></app-movie-slider>
+        <app-movie-slider title="Phim Hành Động" [movies]="actionMovies()" icon="fire"></app-movie-slider>
+        <app-movie-slider title="Đề Xuất Cho Bạn" [movies]="newReleases()"></app-movie-slider>
       </div>
     </div>
 
