@@ -4,27 +4,9 @@ import { Movie } from '../../../../models/movie.model';
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  template: `
-    <div class="relative group cursor-pointer rounded-lg overflow-hidden bg-zinc-900 shadow-lg hover:scale-105 transition-transform duration-300">
-      <img [src]="movie().posterUrl" [alt]="movie().title" class="w-full h-64 object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-
-      <div class="absolute top-2 left-2 flex gap-1">
-        @for (tag of movie().tags; track tag) {
-          <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">{{ tag }}</span>
-        }
-      </div>
-
-      <div class="p-3">
-        <h3 class="text-white font-bold truncate text-sm">{{ movie().title }}</h3>
-        <div class="flex justify-between items-center mt-1 text-xs text-zinc-400">
-          <span>{{ movie().releaseYear }}</span>
-          <span class="flex items-center gap-1">⭐ {{ movie().rating }}</span>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './movie-card.html'
 })
 export class MovieCardComponent {
-  // Angular 21: Sử dụng Signal Input thay cho @Input()
+  // Angular 21: Sử dụng Signal Input
   movie = input.required<Movie>();
 }

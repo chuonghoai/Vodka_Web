@@ -4,27 +4,7 @@ import { Movie } from '../../../../models/movie.model';
 @Component({
   selector: 'app-watched-history',
   standalone: true,
-  template: `
-    <div class="bg-zinc-900/60 backdrop-blur rounded-xl p-5 border border-zinc-800">
-      <h3 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
-        <span class="w-1 h-5 bg-red-600 rounded"></span>
-        Đã xem
-      </h3>
-
-      <div class="flex flex-col gap-4">
-        @for (m of movies(); track m.id) {
-          <div class="flex gap-4 items-center group cursor-pointer hover:bg-zinc-800 p-2 -mx-2 rounded-lg transition-colors duration-300">
-            <img [src]="m.posterUrl" [alt]="m.title" class="w-16 h-24 object-cover rounded shadow-md group-hover:scale-105 transition-transform duration-300">
-
-            <div class="flex-1">
-              <h4 class="text-sm font-bold text-white group-hover:text-red-500 transition-colors line-clamp-2">{{ m.title }}</h4>
-              <p class="text-xs text-zinc-400 mt-1">{{ m.releaseYear }} • ⭐ {{ m.rating }}</p>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  `
+  templateUrl: './watched-history.html'
 })
 export class WatchedHistoryComponent {
   movies = input.required<Movie[]>();
