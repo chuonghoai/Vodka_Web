@@ -1,9 +1,15 @@
-<nav class="p-5 border-b border-zinc-800 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-50">
+<nav class="p-5 border-b border-zinc-800 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-50 relative">
 
-  <div class="flex items-center gap-10">
-    <h1 class="text-3xl font-black text-red-600 italic tracking-wider cursor-pointer">VODKA WEB</h1>
+  <div class="flex items-center gap-4 md:gap-10">
+    <button class="md:hidden text-zinc-300 hover:text-white transition-colors" (click)="toggleMobileMenu()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
 
-    <ul class="flex gap-6 items-center font-medium text-sm text-zinc-300">
+    <h1 class="text-2xl md:text-3xl font-black text-red-600 italic tracking-wider cursor-pointer">VODKA WEB</h1>
+
+    <ul class="hidden md:flex gap-6 items-center font-medium text-sm text-zinc-300">
       <li class="text-white hover:text-red-500 cursor-pointer transition-colors">Trang chủ</li>
       <li class="hover:text-red-500 cursor-pointer transition-colors">Phim bộ</li>
       <li class="hover:text-red-500 cursor-pointer transition-colors">Phim lẻ</li>
@@ -41,13 +47,44 @@
     </ul>
   </div>
 
-  <div class="flex gap-4">
+  <div class="flex gap-2 md:gap-4">
     <div class="relative">
-      <input type="text" placeholder="Tìm kiếm phim..." class="bg-zinc-900 border border-zinc-700 pl-4 pr-10 py-1.5 rounded-full text-sm focus:outline-none focus:border-red-600 text-white w-64 transition-all focus:w-72">
+      <input type="text" placeholder="Tìm kiếm..." class="bg-zinc-900 border border-zinc-700 pl-4 pr-8 md:pr-10 py-1.5 rounded-full text-sm focus:outline-none focus:border-red-600 text-white w-32 md:w-64 transition-all focus:w-40 md:focus:w-72">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer hover:text-red-500">
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
     </div>
-    <button class="bg-red-600 px-5 py-1.5 rounded-full font-bold text-sm hover:bg-red-700 transition-colors text-white">Đăng nhập</button>
+    <button class="bg-red-600 px-3 md:px-5 py-1.5 rounded-full font-bold text-xs md:text-sm hover:bg-red-700 transition-colors text-white whitespace-nowrap">Đăng nhập</button>
   </div>
+
+  @if (isMobileMenuOpen()) {
+    <div class="absolute top-full left-0 w-full bg-zinc-950 border-b border-zinc-800 shadow-2xl md:hidden z-50 flex flex-col p-5">
+      <ul class="flex flex-col gap-5 font-medium text-base text-zinc-300">
+        <li class="text-white hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Trang chủ</li>
+        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Phim bộ</li>
+        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Phim lẻ</li>
+        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Phim chiếu rạp</li>
+        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Anime</li>
+
+        <li class="flex flex-col gap-3">
+          <span class="text-white font-bold border-b border-zinc-800 pb-2">Thể loại</span>
+          <div class="grid grid-cols-2 gap-y-3 gap-x-4">
+            @for (genre of genres(); track genre.id) {
+              <label class="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
+                <input type="checkbox"
+                       class="accent-red-600 w-4 h-4 cursor-pointer"
+                       [checked]="selectedGenres().includes(genre.name)"
+                       (change)="toggleGenreSelection(genre.name)">
+                <span>{{ genre.name }}</span>
+              </label>
+            }
+          </div>
+          <button (click)="applyFilter(); toggleMobileMenu()" class="mt-4 bg-red-600 text-white text-sm px-4 py-2 rounded font-bold hover:bg-red-700 transition w-full">
+            Lọc Phim
+          </button>
+        </li>
+      </ul>
+    </div>
+  }
+
 </nav>

@@ -13,10 +13,18 @@ export class Header implements OnInit {
   genres = signal<Genre[]>([]);
   selectedGenres = signal<string[]>([]);
 
+  // Trạng thái menu trên giao diện mobile
+  isMobileMenuOpen = signal<boolean>(false);
+
   ngOnInit(): void {
     this.headerService.getGenres().subscribe(res => {
       if (res.success) this.genres.set(res.data);
     });
+  }
+
+  // Hàm mở/đóng menu mobile
+  toggleMobileMenu() {
+    this.isMobileMenuOpen.update(v => !v);
   }
 
   toggleGenreSelection(genreName: string) {
