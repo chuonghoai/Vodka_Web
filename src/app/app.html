@@ -1,18 +1,11 @@
-<div class="min-h-screen bg-zinc-950 text-white font-sans">
+<div class="min-h-screen flex flex-col bg-zinc-950 text-white font-sans">
 
-  <nav class="p-5 border-b border-zinc-800 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-50">
-    <h1 class="text-3xl font-black text-red-600 italic tracking-wider">VODKA WEB</h1>
-    <ul class="flex gap-8 font-medium">
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Trang chủ</li>
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim bộ</li>
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim lẻ</li>
-    </ul>
-    <div class="flex gap-4">
-      <input type="text" placeholder="Tìm phim..." class="bg-zinc-900 border border-zinc-700 px-4 py-1 rounded-full text-sm focus:outline-none focus:border-red-600">
-      <button class="bg-red-600 px-5 py-1.5 rounded-md font-bold text-sm hover:bg-red-700 transition-colors">Đăng nhập</button>
-    </div>
-  </nav>
+  <app-header></app-header>
 
-  <router-outlet></router-outlet>
+  <main class="flex-grow">
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-footer></app-footer>
 
 </div>
