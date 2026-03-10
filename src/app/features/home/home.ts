@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (res.success) this.featuredMovies.set(res.data);
     });
 
-    this.movieService.getNewReleases(15).subscribe(res => {
+    this.movieService.getNewReleases(1, 15).subscribe(res => {
       if (res.success) this.newReleases.set(res.data);
     });
 

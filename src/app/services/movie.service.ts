@@ -46,13 +46,29 @@ export class MovieService {
     return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 3) }).pipe(delay(500));
   }
 
-  getNewReleases(limit: number = 10): Observable<ApiResponse<Movie[]>> {
-    return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, limit) }).pipe(delay(500));
-  }
+  getNewReleases(page: number = 1, pageSize: number = 10): Observable<ApiResponse<Movie[]>> {
+  // return this.http.get<ApiResponse<Movie[]>>(`${this.apiUrl}/movies/new?page=${page}&pageSize=${pageSize}`);
+  // Mock data xử lý phân trang tạm thời:
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const pagedData = this.mockMovies.slice(startIndex, endIndex);
+
+  return of({
+    success: true,
+    message: 'Success',
+    data: pagedData,
+    pagination: {
+      totalItems: this.mockMovies.length,
+      totalPages: Math.ceil(this.mockMovies.length / pageSize),
+      currentPage: page,
+      pageSize: pageSize
+    }
+  }).pipe(delay(500));
+}
 
   getTrendingMovies(limit: number = 10): Observable<ApiResponse<Movie[]>> {
     return of({ success: true, message: 'Success', data: [...this.mockMovies].reverse().slice(0, limit) }).pipe(delay(500));
-}
+  }
 
   getWatchedHistory(): Observable<ApiResponse<Movie[]>> {
     return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 2) }).pipe(delay(500));
