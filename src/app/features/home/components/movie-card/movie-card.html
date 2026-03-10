@@ -21,5 +21,11 @@
       <span>{{ movie().releaseYear }}</span>
       <span class="flex items-center gap-1">⭐ {{ movie().rating }}</span>
     </div>
+
+    <div class="flex flex-wrap gap-1 max-h-0 opacity-0 overflow-hidden group-hover:max-h-[100px] group-hover:opacity-100 group-hover:mt-3 transition-all duration-300 ease-out">
+      @for (g of movie().genre; track g) {
+        <span class="bg-zinc-800 text-zinc-300 text-[10px] font-medium px-2 py-0.5 rounded border border-zinc-700">{{ g }}</span>
+      }
+    </div>
   </div>
 </div>

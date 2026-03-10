@@ -4,7 +4,7 @@ export interface Movie {
   posterUrl?: string;
   bannerUrl?: string;
   releaseYear: number;
-  genre: string;
+  genre: string[];
   rating: number;
   tags: string[];
   description?: string;
