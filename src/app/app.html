@@ -1,25 +1,18 @@
 <div class="min-h-screen bg-zinc-950 text-white font-sans">
+
   <nav class="p-5 border-b border-zinc-800 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-50">
-    <h1 class="text-3xl font-black text-red-600 italic">VODKA WEB</h1>
+    <h1 class="text-3xl font-black text-red-600 italic tracking-wider">VODKA WEB</h1>
     <ul class="flex gap-8 font-medium">
-      <li class="hover:text-red-500 cursor-pointer">Trang chủ</li>
-      <li class="hover:text-red-500 cursor-pointer">Phim bộ</li>
-      <li class="hover:text-red-500 cursor-pointer">Phim lẻ</li>
+      <li class="hover:text-red-500 cursor-pointer transition-colors">Trang chủ</li>
+      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim bộ</li>
+      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim lẻ</li>
     </ul>
     <div class="flex gap-4">
       <input type="text" placeholder="Tìm phim..." class="bg-zinc-900 border border-zinc-700 px-4 py-1 rounded-full text-sm focus:outline-none focus:border-red-600">
-      <button class="bg-red-600 px-5 py-1.5 rounded-md font-bold text-sm">Đăng nhập</button>
+      <button class="bg-red-600 px-5 py-1.5 rounded-md font-bold text-sm hover:bg-red-700 transition-colors">Đăng nhập</button>
     </div>
   </nav>
 
-  <div class="relative h-[450px] w-full bg-gradient-to-r from-black to-transparent flex items-center px-12">
-    <div class="max-w-xl space-y-4">
-      <span class="bg-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase">Hot Release</span>
-      <h2 class="text-5xl font-bold">Phim Bom Tấn 2026</h2>
-      <p class="text-zinc-400">Trải nghiệm chất lượng 4K mượt mà nhất trên nền tảng Angular Single Page Application.</p>
-      <button class="bg-white text-black px-8 py-3 rounded-md font-bold hover:bg-red-600 hover:text-white transition-all">XEM NGAY</button>
-    </div>
-  </div>
-</div>
+  <router-outlet></router-outlet>
 
-<router-outlet />
+</div>

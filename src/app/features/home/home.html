@@ -1,1 +1,41 @@
-<p>home works!</p>
+<div class="pb-20">
+
+  @if (featuredMovie(); as movie) {
+    <div class="relative w-full h-[50vh] md:h-[70vh] bg-zinc-900 flex items-end pb-12 px-8">
+      <img [src]="movie.bannerUrl" class="absolute inset-0 w-full h-full object-cover opacity-60">
+      <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+
+      <div class="relative z-10 max-w-3xl text-white">
+        <div class="flex gap-2 mb-3">
+          @for (tag of movie.tags; track tag) {
+            <span class="bg-zinc-800/80 backdrop-blur text-xs font-bold px-3 py-1 rounded">{{ tag }}</span>
+          }
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black mb-3 drop-shadow-lg">{{ movie.title }}</h1>
+        <p class="text-zinc-300 mb-6 line-clamp-2 text-lg drop-shadow-md">{{ movie.description }}</p>
+        <div class="flex gap-4">
+          <button class="bg-red-600 px-8 py-3 rounded font-bold hover:bg-red-700 transition flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" /></svg>
+            Xem Ngay
+          </button>
+          <button class="bg-zinc-800/80 backdrop-blur px-8 py-3 rounded font-bold hover:bg-zinc-700 transition">
+            Chi tiết
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="mt-[-40px] relative z-20 space-y-6">
+    <app-movie-slider
+      title="🔥 Đề Xuất Cho Bạn"
+      [movies]="newReleases()">
+    </app-movie-slider>
+
+    <app-movie-slider
+      title="🌟 Phim Đang Thịnh Hành"
+      [movies]="trendingMovies()">
+    </app-movie-slider>
+  </div>
+
+</div>
