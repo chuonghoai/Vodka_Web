@@ -27,6 +27,8 @@ export class ForgotPassword {
       this.isLoading.set(false);
       if (res.success) this.step.set(2);
     });
+
+    console.log(`OTP đã được gửi đến ${emailInput}`);
   }
 
   onOtpInput(event: any, index: number) {

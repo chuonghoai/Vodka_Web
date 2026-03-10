@@ -1,0 +1,46 @@
+<div class="w-full relative overflow-hidden transition-all duration-500 animate-fade-in text-white">
+
+  @if (isLoading()) {
+    <div class="absolute top-0 left-0 h-1 bg-red-600 animate-pulse w-full rounded-full"></div>
+  }
+
+  <h2 class="text-4xl md:text-5xl font-black mb-2 tracking-tight text-center">Hồ sơ cá nhân</h2>
+  <p class="text-zinc-400 mb-8 text-center">Đăng ký thành công! Hãy bổ sung thông tin để trải nghiệm tốt hơn nhé.</p>
+
+  <!-- FORM ADD PROFILE -->
+  <form (submit)="submitProfile(nameRef.value, phoneRef.value); $event.preventDefault()" class="w-full">
+    <div class="space-y-4 mb-6">
+      <div class="flex justify-center mb-8">
+        <div class="relative w-32 h-32 bg-zinc-900 rounded-full border-2 border-dashed border-zinc-600 flex items-center justify-center cursor-pointer hover:border-red-500 hover:bg-zinc-800 transition-all duration-300 group shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:shadow-[0_0_25px_rgba(220,38,38,0.4)]">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-10 h-10 text-zinc-400 group-hover:text-red-500 group-hover:scale-110 transition-transform duration-300">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+          </svg>
+          <div class="absolute bottom-1 right-1 bg-red-600 text-white rounded-full p-1.5 border-2 border-zinc-950 shadow-lg group-hover:scale-110 transition-transform duration-300">
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+             </svg>
+          </div>
+        </div>
+      </div>
+
+      <input #nameRef type="text" placeholder="Tên hiển thị *" class="w-full bg-zinc-900 border-2 border-transparent rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-red-600 focus:bg-zinc-950 transition-all shadow-inner">
+      <input #phoneRef type="tel" placeholder="Số điện thoại (Tuỳ chọn)" class="w-full bg-zinc-900 border-2 border-transparent rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-red-600 focus:bg-zinc-950 transition-all shadow-inner">
+    </div>
+
+    <button type="submit" [disabled]="isLoading()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black tracking-wide py-4 rounded-xl transition-all shadow-lg hover:shadow-red-600/30 active:scale-[0.98] disabled:opacity-50">
+      LƯU THÔNG TIN
+    </button>
+  </form>
+  <!--  -->
+
+  <div class="mt-6 text-center">
+    <a (click)="onSkip.emit()" class="text-zinc-500 hover:text-white text-sm transition-colors cursor-pointer font-medium border-b border-transparent hover:border-white">Bỏ qua bước này</a>
+  </div>
+
+</div>
+
+<style>
+  .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+</style>
