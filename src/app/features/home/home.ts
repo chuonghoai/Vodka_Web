@@ -72,7 +72,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => {
             if (page === 1) {
-              document.getElementById('trending-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
               document.getElementById('new-releases-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }

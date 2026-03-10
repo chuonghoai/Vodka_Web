@@ -1,10 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Genre } from '../../../models/genre.model';
 import { HeaderService } from '../../../services/header.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './header.html',
 })
 export class Header implements OnInit {

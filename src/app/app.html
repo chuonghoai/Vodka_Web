@@ -1,11 +1,15 @@
 <div class="min-h-screen flex flex-col bg-zinc-950 text-white font-sans">
 
-  <app-header></app-header>
+  @if (!isAuthPage()) {
+    <app-header></app-header>
+  }
 
   <main class="flex-grow">
     <router-outlet></router-outlet>
   </main>
 
-  <app-footer></app-footer>
+  @if (!isAuthPage()) {
+    <app-footer></app-footer>
+  }
 
 </div>
