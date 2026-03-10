@@ -38,33 +38,51 @@ export class MovieService {
       id: '5', title: 'Móng Vuốt', releaseYear: 2024, genre: ['Kinh dị', 'Hành động'], rating: 6.5,
       posterUrl: 'https://tse3.mm.bing.net/th/id/OIP.KoSO7K7a8GgIt9PdjRJsiwHaKk?rs=1&pid=ImgDetMain&o=7&rm=3',
       tags: ['Rạp Việt', 'Mới']
+    },
+    {
+      id: '4', title: 'Godzilla x Kong', releaseYear: 2024, genre: ['Hành động', 'Viễn tưởng'], rating: 7.8,
+      posterUrl: 'https://tse1.explicit.bing.net/th/id/OIP.aEGP2jw52nykZFBqRdj8FQHaLN?rs=1&pid=ImgDetMain&o=7&rm=3',
+      tags: ['Bom tấn', 'Thuyết minh']
+    },
+    {
+      id: '4', title: 'Godzilla x Kong', releaseYear: 2024, genre: ['Hành động', 'Viễn tưởng'], rating: 7.8,
+      posterUrl: 'https://tse1.explicit.bing.net/th/id/OIP.aEGP2jw52nykZFBqRdj8FQHaLN?rs=1&pid=ImgDetMain&o=7&rm=3',
+      tags: ['Bom tấn', 'Thuyết minh']
+    },
+    {
+      id: '4', title: 'Godzilla x Kong', releaseYear: 2024, genre: ['Hành động', 'Viễn tưởng'], rating: 7.8,
+      posterUrl: 'https://tse1.explicit.bing.net/th/id/OIP.aEGP2jw52nykZFBqRdj8FQHaLN?rs=1&pid=ImgDetMain&o=7&rm=3',
+      tags: ['Bom tấn', 'Thuyết minh']
+    },
+    {
+      id: '4', title: 'Godzilla x Kong', releaseYear: 2024, genre: ['Hành động', 'Viễn tưởng'], rating: 7.8,
+      posterUrl: 'https://tse1.explicit.bing.net/th/id/OIP.aEGP2jw52nykZFBqRdj8FQHaLN?rs=1&pid=ImgDetMain&o=7&rm=3',
+      tags: ['Bom tấn', 'Thuyết minh']
     }
   ];
+
+  // Tự động sinh ra 80 phim để test phân trang
+  private extendedMockMovies: Movie[] = Array.from({ length: 1000 }).map((_, i) => {
+    const base = this.mockMovies[i % this.mockMovies.length];
+    return { ...base, id: (i + 1).toString(), title: `${base.title} - Phần ${i + 1}` };
+  });
 
   // Fetch API
   getFeaturedMovies(): Observable<ApiResponse<Movie[]>> {
     return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 3) }).pipe(delay(500));
   }
 
-  getNewReleases(page: number = 1, pageSize: number = 10): Observable<ApiResponse<Movie[]>> {
-  // return this.http.get<ApiResponse<Movie[]>>(`${this.apiUrl}/movies/new?page=${page}&pageSize=${pageSize}`);
-  // Mock data xử lý phân trang tạm thời:
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const pagedData = this.mockMovies.slice(startIndex, endIndex);
+  getNewReleases(page: number = 1, pageSize: number = 30): Observable<ApiResponse<Movie[]>> {
+    let startIndex = 0;
+    if (page === 2) startIndex = 30;
 
-  return of({
-    success: true,
-    message: 'Success',
-    data: pagedData,
-    pagination: {
-      totalItems: this.mockMovies.length,
-      totalPages: Math.ceil(this.mockMovies.length / pageSize),
-      currentPage: page,
-      pageSize: pageSize
-    }
-  }).pipe(delay(500));
-}
+    const pagedData = this.extendedMockMovies.slice(startIndex, startIndex + pageSize);
+
+    return of({
+      success: true, message: 'Success', data: pagedData,
+      pagination: { totalItems: 1000, totalPages: 100, currentPage: page, pageSize: pageSize }
+    }).pipe(delay(500));
+  }
 
   getTrendingMovies(limit: number = 10): Observable<ApiResponse<Movie[]>> {
     return of({ success: true, message: 'Success', data: [...this.mockMovies].reverse().slice(0, limit) }).pipe(delay(500));

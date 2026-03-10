@@ -53,11 +53,24 @@
 
   <div class="mt-[-40px] relative z-20 max-w-[1800px] mx-auto px-4 md:px-8 flex flex-col lg:flex-row gap-8">
     <div class="flex-1 space-y-10 overflow-hidden">
-      <div class="space-y-2">
-        <app-movie-slider title="Phim Đang Thịnh Hành" [movies]="trendingMovies()" icon="sparkles"></app-movie-slider>
-        <app-movie-slider title="Được Đánh Giá Cao" [movies]="highlyRated()" icon="star"></app-movie-slider>
-        <app-movie-slider title="Phim Hành Động" [movies]="actionMovies()" icon="fire"></app-movie-slider>
-        <app-movie-slider title="Đề Xuất Cho Bạn" [movies]="newReleases()"></app-movie-slider>
+      <div id="trending-section" class="space-y-2 scroll-mt-24">
+
+        @if (newReleasesPage() === 1) {
+          <app-movie-slider title="Phim Đang Thịnh Hành" [movies]="trendingMovies()" icon="sparkles"></app-movie-slider>
+          <app-movie-slider title="Được Đánh Giá Cao" [movies]="highlyRated()" icon="star"></app-movie-slider>
+          <app-movie-slider title="Phim Hành Động" [movies]="actionMovies()" icon="fire"></app-movie-slider>
+        }
+
+        <div id="new-releases-section" class="scroll-mt-24">
+          <app-movie-list
+             title="Đề Xuất"
+             [movies]="newReleases()"
+             [currentPage]="newReleasesPage()"
+             [totalPages]="newReleasesTotalPages()"
+             (changePage)="loadNewReleases($event)">
+          </app-movie-list>
+        </div>
+
       </div>
     </div>
 
@@ -69,5 +82,4 @@
     </div>
 
   </div>
-
 </div>
