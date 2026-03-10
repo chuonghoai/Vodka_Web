@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+// src/app/features/home/home.ts
+import { Component, inject, OnInit, signal, computed, OnDestroy } from '@angular/core';
 import { MovieService } from '../../services/movie.service';
 import { Movie } from '../../models/movie.model';
 import { MovieSliderComponent } from './components/movie-slider/movie-slider';
@@ -7,27 +8,45 @@ import { WatchedHistoryComponent } from './components/watched-history/watched-hi
 @Component({
   selector: 'app-home',
   standalone: true,
-  // 1. Nhớ import WatchedHistoryComponent vào đây
   imports: [MovieSliderComponent, WatchedHistoryComponent],
   templateUrl: './home.html'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private movieService = inject(MovieService);
 
-  featuredMovie = signal<Movie | null>(null);
+  // --- QUẢN LÝ BANNER CHÍNH ---
+  featuredMovies = signal<Movie[]>([]);
+  bannerIndex = signal(0);
+  currentFeaturedMovie = computed(() => {
+    const movies = this.featuredMovies();
+    return movies.length > 0 ? movies[this.bannerIndex()] : null;
+  });
+
+  // --- QUẢN LÝ DANH SÁCH PHIM ---
   newReleases = signal<Movie[]>([]);
   trendingMovies = signal<Movie[]>([]);
-
-  // 2. Thêm signal chứa danh sách phim đã xem
   watchedMovies = signal<Movie[]>([]);
+  recentlyUpdated = signal<Movie[]>([]);
+  highlyRated = signal<Movie[]>([]);
+  actionMovies = signal<Movie[]>([]);
 
+  // INIT
+  private intervalId: any;
   ngOnInit(): void {
     this.fetchData();
+    this.startAutoSlide();
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.clearAutoSlide();
+    }
   }
 
   private fetchData() {
-    this.movieService.getFeaturedMovie().subscribe(res => {
-      if (res.success) this.featuredMovie.set(res.data);
+    this.movieService.getFeaturedMovies().subscribe(res => {
+      if (res.success) this.featuredMovies.set(res.data);
     });
 
     this.movieService.getMoviesList().subscribe(res => {
@@ -37,11 +56,49 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    // 3. Gọi API lấy lịch sử
     this.movieService.getWatchedHistory().subscribe(res => {
-      if (res.success) {
-        this.watchedMovies.set(res.data);
-      }
+      if (res.success) this.watchedMovies.set(res.data);
     });
+
+    this.movieService.getRecentlyUpdated().subscribe(res => {
+      if (res.success) this.recentlyUpdated.set(res.data);
+    });
+
+    this.movieService.getHighlyRated().subscribe(res => {
+      if (res.success) this.highlyRated.set(res.data);
+    });
+
+    this.movieService.getMoviesByGenre('Hành động').subscribe(res => {
+      if (res.success) this.actionMovies.set(res.data);
+    });
+  }
+
+  // --- HÀM ĐIỀU KHIỂN BANNER ---
+  nextBanner() {
+    this.bannerIndex.update(i => (i + 1) % this.featuredMovies().length);
+    this.resetAutoSlide();
+  }
+
+  prevBanner() {
+    this.bannerIndex.update(i => (i - 1 + this.featuredMovies().length) % this.featuredMovies().length);
+    this.resetAutoSlide();
+  }
+
+  startAutoSlide(): void {
+    this.clearAutoSlide();
+    this.intervalId = setInterval(() => {
+      this.bannerIndex.update(i => (i + 1) % this.featuredMovies().length);
+    }, 5000);
+  }
+
+  clearAutoSlide(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  resetAutoSlide(): void {
+    this.clearAutoSlide();
+    this.startAutoSlide();
   }
 }

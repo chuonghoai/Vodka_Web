@@ -21,44 +21,55 @@ export class MovieService {
     {
       id: '2', title: 'Mai', releaseYear: 2024, genre: 'Tình cảm, Drama', rating: 8.0,
       posterUrl: 'https://tse2.mm.bing.net/th/id/OIP.q9I1OSQLVMMSAC_--U4-owHaKf?rs=1&pid=ImgDetMain&o=7&rm=3',
+      bannerUrl: 'https://tse1.mm.bing.net/th/id/OIP.-69KiookSVfZCNMlLmxq6gHaD0?w=800&h=413&rs=1&pid=ImgDetMain&o=7&rm=3',
       tags: ['Độc quyền', '4K']
     },
     {
       id: '3', title: 'Đào, Phở và Piano', releaseYear: 2024, genre: 'Lịch sử, Chiến tranh', rating: 9.0,
       posterUrl: 'https://tse2.mm.bing.net/th/id/OIP.4bY_5n9G57QExFIXDkm46gHaKv?rs=1&pid=ImgDetMain&o=7&rm=3',
+      bannerUrl: 'https://tse1.mm.bing.net/th/id/OIP.Gj42HHbARXlwukA4ElPgCwHaE8?w=600&h=400&rs=1&pid=ImgDetMain&o=7&rm=3',
       tags: ['Hot', 'Vietsub']
     },
     {
       id: '4', title: 'Godzilla x Kong', releaseYear: 2024, genre: 'Hành động, Viễn tưởng', rating: 7.8,
       posterUrl: 'https://tse1.explicit.bing.net/th/id/OIP.aEGP2jw52nykZFBqRdj8FQHaLN?rs=1&pid=ImgDetMain&o=7&rm=3',
       tags: ['Bom tấn', 'Thuyết minh']
+    },
+    {
+      id: '5', title: 'Móng Vuốt', releaseYear: 2024, genre: 'Kinh dị, Hành động', rating: 6.5,
+      posterUrl: 'https://tse3.mm.bing.net/th/id/OIP.KoSO7K7a8GgIt9PdjRJsiwHaKk?rs=1&pid=ImgDetMain&o=7&rm=3',
+      tags: ['Rạp Việt', 'Mới']
     }
   ];
 
-  // API lấy phim làm Banner chính
-  getFeaturedMovie(): Observable<ApiResponse<Movie>> {
-    return of({
-      success: true,
-      message: 'Success',
-      data: this.mockMovies[0]
-    }).pipe(delay(500));
+  // 1. SỬA: Trả về danh sách phim làm Banner (thay vì 1 phim)
+  getFeaturedMovies(): Observable<ApiResponse<Movie[]>> {
+    return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 3) }).pipe(delay(500));
   }
 
-  // API lấy danh sách phim
   getMoviesList(): Observable<ApiResponse<Movie[]>> {
-    return of({
-      success: true,
-      message: 'Success',
-      data: this.mockMovies
-    }).pipe(delay(500));
+    return of({ success: true, message: 'Success', data: this.mockMovies }).pipe(delay(500));
   }
 
   getWatchedHistory(): Observable<ApiResponse<Movie[]>> {
-    return of({
-      success: true,
-      message: 'Success',
-      // Lấy 3 phim đầu tiên để làm lịch sử xem
-      data: this.mockMovies.slice(0, 3)
-    }).pipe(delay(500));
+    return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 2) }).pipe(delay(500));
+  }
+
+  // 2. THÊM: Các API lọc phim mới
+  getRecentlyUpdated(): Observable<ApiResponse<Movie[]>> {
+    // Trả về phim đảo ngược giả làm phim mới
+    return of({ success: true, message: 'Success', data: [...this.mockMovies].slice(0, 3).reverse() }).pipe(delay(500));
+  }
+
+  getHighlyRated(): Observable<ApiResponse<Movie[]>> {
+    // Lọc phim rating >= 8.0
+    const topMovies = this.mockMovies.filter(m => m.rating >= 8.0).sort((a, b) => b.rating - a.rating);
+    return of({ success: true, message: 'Success', data: topMovies }).pipe(delay(500));
+  }
+
+  getMoviesByGenre(genre: string): Observable<ApiResponse<Movie[]>> {
+    // Lọc phim theo thể loại (chứa từ khóa)
+    const genreMovies = this.mockMovies.filter(m => m.genre.includes(genre));
+    return of({ success: true, message: 'Success', data: genreMovies }).pipe(delay(500));
   }
 }

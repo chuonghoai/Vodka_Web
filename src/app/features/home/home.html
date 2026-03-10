@@ -1,50 +1,71 @@
 <div class="pb-20">
 
-  @if (featuredMovie(); as movie) {
-    <div class="relative w-full h-[50vh] md:h-[70vh] bg-zinc-900 flex items-end pb-12 px-8">
-      <img [src]="movie.bannerUrl" class="absolute inset-0 w-full h-full object-cover opacity-60">
-      <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+  @if (currentFeaturedMovie(); as movie) {
+    <div class="relative w-full h-[50vh] md:h-[70vh] bg-zinc-900 overflow-hidden group">
 
-      <div class="relative z-10 max-w-3xl text-white">
-        <div class="flex gap-2 mb-3">
-          @for (tag of movie.tags; track tag) {
-            <span class="bg-zinc-800/80 backdrop-blur text-xs font-bold px-3 py-1 rounded">{{ tag }}</span>
-          }
-        </div>
-        <h1 class="text-4xl md:text-6xl font-black mb-3 drop-shadow-lg">{{ movie.title }}</h1>
-        <p class="text-zinc-300 mb-6 line-clamp-2 text-lg drop-shadow-md">{{ movie.description }}</p>
-        <div class="flex gap-4">
-          <button class="bg-red-600 px-8 py-3 rounded font-bold hover:bg-red-700 transition flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" /></svg>
-            Xem Ngay
-          </button>
-          <button class="bg-zinc-800/80 backdrop-blur px-8 py-3 rounded font-bold hover:bg-zinc-700 transition">
-            Chi tiết
-          </button>
-        </div>
+      <div class="flex w-full h-full transition-transform duration-700 ease-in-out"
+          [style.transform]="'translateX(-' + (bannerIndex() * 100) + '%)'">
+
+        @for (movie of featuredMovies(); track movie.id) {
+          <div class="w-full h-full shrink-0 relative flex items-end pb-12 px-8">
+
+            <img [src]="movie.bannerUrl" class="absolute inset-0 w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+
+            <div class="relative z-10 max-w-3xl text-white">
+              <div class="flex gap-2 mb-3">
+                @for (tag of movie.tags; track tag) {
+                  <span class="bg-zinc-800/80 backdrop-blur text-xs font-bold px-3 py-1 rounded border border-zinc-700">{{ tag }}</span>
+                }
+              </div>
+              <h1 class="text-4xl md:text-6xl font-black mb-3 drop-shadow-lg">{{ movie.title }}</h1>
+              <p class="text-zinc-300 mb-6 line-clamp-2 text-lg drop-shadow-md">{{ movie.description }}</p>
+              <div class="flex gap-4">
+                <button class="bg-red-600 px-8 py-3 rounded font-bold hover:bg-red-700 transition flex items-center gap-2">
+                  ▶ Xem Ngay
+                </button>
+                <button class="bg-zinc-800/80 backdrop-blur px-8 py-3 rounded font-bold hover:bg-zinc-700 transition">
+                  Chi tiết
+                </button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
+
+      <button (click)="prevBanner()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-3 rounded-full text-white opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all z-30">
+        ❮
+      </button>
+      <button (click)="nextBanner()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-3 rounded-full text-white opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all z-30">
+        ❯
+      </button>
+
+      <div class="absolute bottom-6 left-8 z-30 flex gap-2">
+        @for (m of featuredMovies(); track m.id; let idx = $index) {
+          <div class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
+              [class]="idx === bannerIndex() ? 'w-8 bg-red-600' : 'w-4 bg-zinc-600 hover:bg-zinc-400'"
+              (click)="bannerIndex.set(idx)">
+          </div>
+        }
+      </div>
+
     </div>
   }
 
   <div class="mt-[-40px] relative z-20 max-w-[1800px] mx-auto px-4 md:px-8 flex flex-col lg:flex-row gap-8">
-
-    <div class="flex-1 space-y-6 overflow-hidden">
-      <app-movie-slider
-        title="🌟 Phim Đang Thịnh Hành"
-        [movies]="trendingMovies()">
-      </app-movie-slider>
-
-      <app-movie-slider
-        title="🔥 Đề Xuất Cho Bạn"
-        [movies]="newReleases()">
-      </app-movie-slider>
+    <div class="flex-1 space-y-10 overflow-hidden">
+      <div class="space-y-2">
+        <app-movie-slider title="🌟 Phim Đang Thịnh Hành" [movies]="trendingMovies()"></app-movie-slider>
+        <app-movie-slider title="⭐ Được Đánh Giá Cao" [movies]="highlyRated()"></app-movie-slider>
+        <app-movie-slider title="💥 Phim Hành Động" [movies]="actionMovies()"></app-movie-slider>
+        <app-movie-slider title="🔥 Đề Xuất Cho Bạn" [movies]="newReleases()"></app-movie-slider>
+      </div>
     </div>
 
     <div class="w-full lg:w-[350px] xl:w-[400px] shrink-0 pt-6">
       <div class="sticky top-24">
-        <app-watched-history
-          [movies]="watchedMovies()">
-        </app-watched-history>
+        <app-watched-history title="🕒 Lịch sử xem" [movies]="watchedMovies()"></app-watched-history>
+        <app-watched-history title="⚡ Mới Cập Nhật" [movies]="recentlyUpdated()"></app-watched-history>
       </div>
     </div>
 

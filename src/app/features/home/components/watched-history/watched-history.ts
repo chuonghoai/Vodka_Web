@@ -7,5 +7,6 @@ import { Movie } from '../../../../models/movie.model';
   templateUrl: './watched-history.html'
 })
 export class WatchedHistoryComponent {
+  title = input<string>('Đã xem');
   movies = input.required<Movie[]>();
 }
