@@ -26,16 +26,28 @@
     </div>
   }
 
-  <div class="mt-[-40px] relative z-20 space-y-6">
-    <app-movie-slider
-      title="🔥 Đề Xuất Cho Bạn"
-      [movies]="newReleases()">
-    </app-movie-slider>
+  <div class="mt-[-40px] relative z-20 max-w-[1800px] mx-auto px-4 md:px-8 flex flex-col lg:flex-row gap-8">
 
-    <app-movie-slider
-      title="🌟 Phim Đang Thịnh Hành"
-      [movies]="trendingMovies()">
-    </app-movie-slider>
+    <div class="flex-1 space-y-6 overflow-hidden">
+      <app-movie-slider
+        title="🌟 Phim Đang Thịnh Hành"
+        [movies]="trendingMovies()">
+      </app-movie-slider>
+
+      <app-movie-slider
+        title="🔥 Đề Xuất Cho Bạn"
+        [movies]="newReleases()">
+      </app-movie-slider>
+    </div>
+
+    <div class="w-full lg:w-[350px] xl:w-[400px] shrink-0 pt-6">
+      <div class="sticky top-24">
+        <app-watched-history
+          [movies]="watchedMovies()">
+        </app-watched-history>
+      </div>
+    </div>
+
   </div>
 
 </div>

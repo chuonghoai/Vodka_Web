@@ -52,4 +52,13 @@ export class MovieService {
       data: this.mockMovies
     }).pipe(delay(500));
   }
+
+  getWatchedHistory(): Observable<ApiResponse<Movie[]>> {
+    return of({
+      success: true,
+      message: 'Success',
+      // Lấy 3 phim đầu tiên để làm lịch sử xem
+      data: this.mockMovies.slice(0, 3)
+    }).pipe(delay(500));
+  }
 }
