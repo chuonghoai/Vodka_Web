@@ -6,24 +6,25 @@ import { MovieSliderComponent } from './components/movie-slider/movie-slider';
 import { MovieColumnComponent } from './components/movie-column/movie-column';
 import { MovieListComponent } from "./components/movie-list/movie-list";
 import { isPlatformBrowser } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MovieSliderComponent, MovieColumnComponent, MovieListComponent],
+  imports: [MovieSliderComponent, MovieColumnComponent, MovieListComponent, RouterLink],
   templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private movieService = inject(MovieService);
   private platformId = inject(PLATFORM_ID);
 
-  // --- QUẢN LÝ BANNER CHÍNH ---
+  // List banner
   featuredMovies = signal<Movie[]>([]);
   bannerIndex = signal(0);
   currentFeaturedMovie = computed(() => { const m = this.featuredMovies(); return m.length > 0 ? m[this.bannerIndex()] : null; });
   private intervalId: any;
 
-  // --- QUẢN LÝ DANH SÁCH PHIM ---
+  // List movie
   newReleases = signal<Movie[]>([]);
   newReleasesPage = signal(1);
   newReleasesTotalPages = signal(1);
@@ -82,7 +83,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- HÀM ĐIỀU KHIỂN BANNER ---
+  // Control banner
   nextBanner() { this.bannerIndex.update(i => (i + 1) % this.featuredMovies().length); this.resetAutoSlide(); }
   prevBanner() { this.bannerIndex.update(i => (i - 1 + this.featuredMovies().length) % this.featuredMovies().length); this.resetAutoSlide(); }
   startAutoSlide(): void { this.clearAutoSlide(); this.intervalId = setInterval(() => { this.bannerIndex.update(i => (i + 1) % this.featuredMovies().length); }, 5000); }

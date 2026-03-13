@@ -1,0 +1,28 @@
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-16 text-white animate-fade-in">
+
+  <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-10 min-h-[50vh] flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+    <div class="absolute inset-0 bg-red-600/5 blur-[100px] rounded-full w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+
+    <div class="relative z-10">
+      <span class="bg-zinc-800 text-zinc-300 text-sm font-bold px-4 py-1.5 rounded-full mb-6 inline-block">Movie Detail Page</span>
+      <h1 class="text-5xl md:text-6xl font-black mb-6 tracking-tight">Thông Tin Phim</h1>
+
+      <p class="text-xl text-zinc-400 mb-10">
+        Bạn đang xem chi tiết của bộ phim có ID:
+        <span class="text-red-500 font-black text-2xl ml-2">{{ movieId() }}</span>
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <button [routerLink]="['/watch', movieId()]" class="bg-red-600 px-8 py-3.5 rounded-xl font-bold hover:bg-red-700 hover:scale-105 transition-all flex items-center gap-2 shadow-lg shadow-red-600/20">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" /></svg>
+          Xem Phim Ngay
+        </button>
+
+        <button routerLink="/" class="bg-zinc-800 px-8 py-3.5 rounded-xl font-bold hover:bg-zinc-700 transition-colors border border-zinc-700">
+          ← Về Trang Chủ
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -21,10 +21,10 @@
               <h1 class="text-4xl md:text-6xl font-black mb-3 drop-shadow-lg">{{ movie.title }}</h1>
               <p class="text-zinc-300 mb-6 line-clamp-2 text-lg drop-shadow-md">{{ movie.description }}</p>
               <div class="flex gap-4">
-                <button class="bg-red-600 px-8 py-3 rounded font-bold hover:bg-red-700 transition flex items-center gap-2">
+                <button [routerLink]="['/watch', movie.id]" class="bg-red-600 px-8 py-3 rounded font-bold hover:bg-red-700 transition flex items-center gap-2">
                   ▶ Xem Ngay
                 </button>
-                <button class="bg-zinc-800/80 backdrop-blur px-8 py-3 rounded font-bold hover:bg-zinc-700 transition">
+                <button [routerLink]="['/movie', movie.id]" class="bg-zinc-800/80 backdrop-blur px-8 py-3 rounded font-bold hover:bg-zinc-700 transition">
                   Chi tiết
                 </button>
               </div>
