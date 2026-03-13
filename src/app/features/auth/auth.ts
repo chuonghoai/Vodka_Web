@@ -4,6 +4,8 @@ import { ForgotPassword } from './forgot-password/forgot-password';
 import { AddProfile } from './add-profile/add-profile';
 import { AuthService } from '../../services/auth.service';
 import { handleHttpError } from '../../shared/util/exception.handle';
+import { NotificationService } from '../../services/notification.service';
+import { NotificationType as NotifType } from '../../models/notification.model';
 
 @Component({
   selector: 'app-auth',
@@ -15,6 +17,7 @@ export class Auth implements OnDestroy {
   // Injection
   private router = inject(Router);
   private authService = inject(AuthService);
+  private notif = inject(NotificationService);
 
   viewMode = signal<'login' | 'register' | 'forgot' | 'add-profile'>('login');
 
@@ -47,6 +50,7 @@ export class Auth implements OnDestroy {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success) {
+          this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.name)
           this.finishAuthFlow();
         } else {
           this.errorMessage.set(res.message);
@@ -72,6 +76,7 @@ export class Auth implements OnDestroy {
     this.authService.requestRegister(email).subscribe({
       next: (res) => {
         if (res.success) {
+          this.notif.show(NotifType.SUCCESS, 'Mã OTP đã được gửi đến ' + email);
           this.otpCountdown.set(30);
           this.countdownInterval = setInterval(() => {
             if (this.otpCountdown() > 0) this.otpCountdown.update(c => c - 1);
@@ -103,6 +108,7 @@ export class Auth implements OnDestroy {
 
     this.authService.register(email, otp, pass).subscribe({
       next: (res) => {
+        this.notif.show(NotifType.SUCCESS, 'Đăng ký thành công, vui lòng cập nhật hồ sơ')
         this.isLoading.set(false);
         if (res.success) {
           this.viewMode.set('add-profile');

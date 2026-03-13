@@ -1,6 +1,8 @@
 import { Component, inject, signal, output } from '@angular/core';
 import { UserService } from '../../../services/user.service';
 import { handleHttpError } from '../../../shared/util/exception.handle';
+import { NotificationService } from '../../../services/notification.service';
+import { NotificationType } from '../../../models/notification.model';
 
 @Component({
   selector: 'app-add-profile',
@@ -9,6 +11,7 @@ import { handleHttpError } from '../../../shared/util/exception.handle';
 })
 export class AddProfile {
   private userService = inject(UserService);
+  private notif = inject(NotificationService);
 
   isLoading = signal<boolean>(false);
   errorMessage = signal<string>('');
@@ -28,6 +31,7 @@ export class AddProfile {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, 'Cập nhật hồ sơ thành công, chào mừng ' + displayName);
           this.onComplete.emit();
         } else {
           this.errorMessage.set(res.message);

@@ -1,6 +1,8 @@
 import { Component, inject, signal, output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { handleHttpError } from '../../../shared/util/exception.handle';
+import { NotificationService } from '../../../services/notification.service';
+import { NotificationType } from '../../../models/notification.model';
 
 @Component({
   selector: 'app-forgot-password',
@@ -9,6 +11,7 @@ import { handleHttpError } from '../../../shared/util/exception.handle';
 })
 export class ForgotPassword {
   private authService = inject(AuthService);
+  private notif = inject(NotificationService);
 
   step = signal<number>(1);
   isLoading = signal<boolean>(false);
@@ -29,7 +32,10 @@ export class ForgotPassword {
     this.authService.requestPasswordReset(emailInput).subscribe({
       next: (res) => {
         this.isLoading.set(false);
-        if (res.success) this.step.set(2);
+        if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, 'Mã xác thực đã được gửi đến ' + emailInput);
+          this.step.set(2);
+        }
         else this.errorMessage.set(res.message);
       },
       error: (err) => {
@@ -69,6 +75,7 @@ export class ForgotPassword {
         this.isLoading.set(false);
         if (res.success) {
           this.resetToken.set(res.data.resetToken);
+          this.notif.show(NotificationType.SUCCESS, 'Xác thực thành công, vui lòng đặt lại mật khẩu');
           this.step.set(3);
         } else {
           this.errorMessage.set(res.message);
@@ -93,6 +100,7 @@ export class ForgotPassword {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, 'Đặt lại mật khẩu thành công, vui lòng đăng nhập lại');
           this.onComplete.emit();
           setTimeout(() => {
             this.step.set(1);

@@ -3,10 +3,11 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Header } from './shared/components/header/header';
 import { Footer } from './shared/components/footer/footer';
+import { NotificationComponent } from './shared/components/notification/notification';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer],
+  imports: [RouterOutlet, Header, Footer, NotificationComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
