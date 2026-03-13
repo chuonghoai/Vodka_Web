@@ -48,6 +48,7 @@ export class Auth implements OnDestroy {
 
     this.authService.login(email, pass).subscribe({
       next: (res) => {
+        console.log(res);
         this.isLoading.set(false);
         if (res.success) {
           this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.name)
@@ -108,6 +109,7 @@ export class Auth implements OnDestroy {
 
     this.authService.register(email, otp, pass).subscribe({
       next: (res) => {
+        console.log(res);
         this.notif.show(NotifType.SUCCESS, 'Đăng ký thành công, vui lòng cập nhật hồ sơ')
         this.isLoading.set(false);
         if (res.success) {

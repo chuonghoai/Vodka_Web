@@ -3,6 +3,7 @@ import { Genre } from '../../../models/genre.model';
 import { HeaderService } from '../../../services/header.service';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { UserState } from '../../../core/states/user.state';
 
 @Component({
   selector: 'app-header',
@@ -12,11 +13,12 @@ import { AuthService } from '../../../services/auth.service';
 export class Header implements OnInit {
   private headerService = inject(HeaderService);
   private authService = inject(AuthService);
+  private userState = inject(UserState);
 
   genres = signal<Genre[]>([]);
   selectedGenres = signal<string[]>([]);
   isMobileMenuOpen = signal<boolean>(false);
-  currentUser = this.authService.currentUser;
+  currentUser = this.userState.currentUser;
 
   ngOnInit(): void {
     this.headerService.getGenres().subscribe(res => {
