@@ -1,5 +1,6 @@
 import { Component, inject, signal, output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
+import { handleHttpError } from '../../../shared/util/exception.handle';
 
 @Component({
   selector: 'app-forgot-password',
@@ -14,8 +15,8 @@ export class ForgotPassword {
   email = signal<string>('');
   otpArray = signal<string[]>(['', '', '', '', '', '']);
   errorMessage = signal<string>('');
+  resetToken = signal<string>('');
 
-  // Khai báo sự kiện gửi ra ngoài thay vì dùng Router
   onComplete = output<void>();
   onCancel = output<void>();
 
@@ -23,12 +24,19 @@ export class ForgotPassword {
     if (!emailInput) return;
     this.email.set(emailInput);
     this.isLoading.set(true);
-    this.authService.requestPasswordReset(emailInput).subscribe(res => {
-      this.isLoading.set(false);
-      if (res.success) this.step.set(2);
-    });
+    this.errorMessage.set('');
 
-    console.log(`OTP đã được gửi đến ${emailInput}`);
+    this.authService.requestPasswordReset(emailInput).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) this.step.set(2);
+        else this.errorMessage.set(res.message);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
+      }
+    });
   }
 
   onOtpInput(event: any, index: number) {
@@ -54,13 +62,21 @@ export class ForgotPassword {
 
   verifyOtp(fullOtp: string) {
     this.isLoading.set(true);
-    this.authService.verifyOtp(this.email(), fullOtp).subscribe(res => {
-      this.isLoading.set(false);
-      if (res.success) {
-        this.step.set(3);
-        this.errorMessage.set('');
-      } else {
-        this.errorMessage.set(res.message);
+    this.errorMessage.set('');
+
+    this.authService.verifyOtp(this.email(), fullOtp).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) {
+          this.resetToken.set(res.data.resetToken);
+          this.step.set(3);
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
       }
     });
   }
@@ -71,14 +87,25 @@ export class ForgotPassword {
       return;
     }
     this.isLoading.set(true);
-    this.authService.resetPassword(this.email(), newPass).subscribe(res => {
-      this.isLoading.set(false);
-      if (res.success) {
-        // Hoàn tất thì phát sự kiện cho component cha
-        this.onComplete.emit();
+    this.errorMessage.set('');
 
-        // Reset lại form để lần sau vào lại là bước 1
-        setTimeout(() => { this.step.set(1); this.otpArray.set(['','','','','','']); }, 500);
+    this.authService.resetPassword(this.email(), this.resetToken(), newPass).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) {
+          this.onComplete.emit();
+          setTimeout(() => {
+            this.step.set(1);
+            this.otpArray.set(['','','','','','']);
+            this.resetToken.set('');
+          }, 500);
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
       }
     });
   }

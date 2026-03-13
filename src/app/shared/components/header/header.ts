@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Genre } from '../../../models/genre.model';
 import { HeaderService } from '../../../services/header.service';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -10,12 +11,12 @@ import { RouterModule } from '@angular/router';
 })
 export class Header implements OnInit {
   private headerService = inject(HeaderService);
+  private authService = inject(AuthService);
 
   genres = signal<Genre[]>([]);
   selectedGenres = signal<string[]>([]);
-
-  // Trạng thái menu trên giao diện mobile
   isMobileMenuOpen = signal<boolean>(false);
+  currentUser = this.authService.currentUser;
 
   ngOnInit(): void {
     this.headerService.getGenres().subscribe(res => {
@@ -23,7 +24,6 @@ export class Header implements OnInit {
     });
   }
 
-  // Hàm mở/đóng menu mobile
   toggleMobileMenu() {
     this.isMobileMenuOpen.update(v => !v);
   }
@@ -40,5 +40,10 @@ export class Header implements OnInit {
   applyFilter() {
     console.log('Các thể loại đang lọc:', this.selectedGenres());
     // TODO: Chuyển hướng sang trang tìm kiếm kèm query params
+  }
+
+  logout() {
+    this.authService.logout();
+    this.isMobileMenuOpen.set(false);
   }
 }

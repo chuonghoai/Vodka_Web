@@ -1,58 +1,78 @@
-import { Injectable } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { ApiResponse } from '../models/api-response.model';
+import { ApiResponse } from './../models/api-response.model';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Observable, delay, of, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment.development';
+import { API_ENDPOINTS } from './api-endpoints/api.endpoints';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private baseUrl = environment.apiUrl;
+  private platformId = inject(PLATFORM_ID);
+  currentUser = signal<any>(null);
+  
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('accessToken');
+      const userStr = localStorage.getItem('user');
+      if (token && userStr) {
+        this.currentUser.set(JSON.parse(userStr));
+      }
+    }
+  }
+
   // Login
   login(email: string, pass: string): Observable<ApiResponse<any>> {
-    const isValid = email === 'test@gmail.com' && pass === '123456';
-    return of({
-      success: isValid,
-      message: isValid ? 'Đăng nhập thành công' : 'Sai email hoặc mật khẩu (Test: test@gmail.com / 123456)',
-      data: isValid ? { token: 'mock-jwt-token', user: { name: 'Người dùng test' } } : null
-    }).pipe(delay(1000));
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.LOGIN}`, { email, password: pass })
+      .pipe(
+        tap((res) => {
+          if (res.success && res.data) {
+            if (res.data.accessToken) localStorage.setItem('accessToken', res.data.accessToken);
+
+            if (res.data.user) {
+              localStorage.setItem('user', JSON.stringify(res.data.user));
+              this.currentUser.set(res.data.user);
+            }
+          }
+        })
+      );
+  }
+
+  // Logout
+  logout() {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
+    }
+    this.currentUser.set(null);
   }
 
   // Request OTP reset password
   requestPasswordReset(email: string): Observable<ApiResponse<null>> {
-    return of({ success: true, message: 'Mã OTP đã được gửi đến email của bạn.', data: null }).pipe(delay(800));
+    return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_SEND_OTP}`, { email });
   }
 
   // Verify otp
-  verifyOtp(email: string, otp: string): Observable<ApiResponse<boolean>> {
-    const isValid = otp === '123456';
-    return of({
-      success: isValid,
-      message: isValid ? 'Xác thực thành công.' : 'Mã OTP không hợp lệ.',
-      data: isValid
-    }).pipe(delay(1000));
+  verifyOtp(email: string, otp: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_VERIFY_OTP}`, { email, otp });
   }
 
   // Reset password
-  resetPassword(email: string, newPass: string): Observable<ApiResponse<null>> {
-    return of({ success: true, message: 'Đổi mật khẩu thành công.', data: null }).pipe(delay(800));
+  resetPassword(email: string, resetToken: string, newPass: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_RESET}`, { email, resetToken, newPassword: newPass });
   }
 
   // Request OTP register
   requestRegister(email: string): Observable<ApiResponse<null>> {
-    return of({ success: true, message: 'Mã OTP đã được gửi đến email của bạn.', data: null }).pipe(delay(800));
+    return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER_SEND_OTP}`, { email });
   }
 
   // Register
   register(email: string, otp: string, pass: string): Observable<ApiResponse<null>> {
-    const isValidOtp = otp === '123456';
-    return of({
-      success: isValidOtp,
-      message: isValidOtp ? 'Đăng ký thành công!' : 'Mã OTP không chính xác.',
-      data: null
-    }).pipe(delay(1000));
-  }
-
-  // update profile
-  updateProfile(data: any): Observable<ApiResponse<null>> {
-    return of({ success: true, message: 'Cập nhật hồ sơ thành công.', data: null }).pipe(delay(800));
+    return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER}`, { email, otp, password: pass });
   }
 }

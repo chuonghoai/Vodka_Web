@@ -54,7 +54,40 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
     </div>
-    <button routerLink="/auth" class="bg-red-600 px-3 md:px-5 py-1.5 rounded-full font-bold text-xs md:text-sm hover:bg-red-700 transition-colors text-white whitespace-nowrap">Đăng nhập</button>
+    @if (currentUser(); as user) {
+
+      <div class="relative group cursor-pointer flex items-center gap-3">
+        <span class="text-sm font-bold text-white hidden md:block max-w-[120px] truncate">
+          {{ user.name || user.displayName || 'Người dùng' }}
+        </span>
+
+        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden border-2 border-zinc-700 group-hover:border-red-500 transition-colors bg-zinc-800 flex items-center justify-center shrink-0">
+          @if (user.avatarUrl) {
+            <img [src]="user.avatarUrl" alt="Avatar" class="w-full h-full object-cover">
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-zinc-400"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" /></svg>
+          }
+        </div>
+
+        <div class="absolute top-full right-0 mt-3 w-48 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2 flex flex-col">
+          <div class="px-4 py-3 border-b border-zinc-800 md:hidden flex flex-col">
+            <span class="text-xs text-zinc-500">Đăng nhập với</span>
+            <span class="text-sm text-white font-bold truncate">{{ user.email }}</span>
+          </div>
+          <a class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Hồ sơ cá nhân</a>
+          <a class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Phim yêu thích</a>
+          <a class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Lịch sử xem</a>
+          <div class="border-t border-zinc-800 my-1"></div>
+          <button (click)="logout()" class="px-4 py-2.5 text-sm text-red-500 text-left hover:bg-zinc-800 transition-colors font-bold w-full">Đăng xuất</button>
+        </div>
+      </div>
+
+    } @else {
+      <button routerLink="/auth" class="bg-red-600 px-3 md:px-5 py-1.5 rounded-full font-bold text-xs md:text-sm hover:bg-red-700 transition-colors text-white whitespace-nowrap">
+        Đăng nhập
+      </button>
+    }
+    <!-- <button routerLink="/auth" class="bg-red-600 px-3 md:px-5 py-1.5 rounded-full font-bold text-xs md:text-sm hover:bg-red-700 transition-colors text-white whitespace-nowrap">Đăng nhập</button> -->
   </div>
 
   @if (isMobileMenuOpen()) {

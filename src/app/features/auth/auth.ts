@@ -3,6 +3,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ForgotPassword } from './forgot-password/forgot-password';
 import { AddProfile } from './add-profile/add-profile';
 import { AuthService } from '../../services/auth.service';
+import { handleHttpError } from '../../shared/util/exception.handle';
 
 @Component({
   selector: 'app-auth',
@@ -42,12 +43,18 @@ export class Auth implements OnDestroy {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.authService.login(email, pass).subscribe(res => {
-      this.isLoading.set(false);
-      if (res.success) {
-        this.finishAuthFlow();
-      } else {
-        this.errorMessage.set(res.message);
+    this.authService.login(email, pass).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) {
+          this.finishAuthFlow();
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
       }
     });
   }
@@ -60,13 +67,24 @@ export class Auth implements OnDestroy {
     }
     if (this.otpCountdown() > 0) return;
 
-    // TODO: Ở thực tế sẽ gọi API sendOtp() ở đây. Hiện tại giả lập đếm ngược luôn.
     this.errorMessage.set('');
-    this.otpCountdown.set(30);
-    this.countdownInterval = setInterval(() => {
-      if (this.otpCountdown() > 0) this.otpCountdown.update(c => c - 1);
-      else clearInterval(this.countdownInterval);
-    }, 1000);
+
+    this.authService.requestRegister(email).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.otpCountdown.set(30);
+          this.countdownInterval = setInterval(() => {
+            if (this.otpCountdown() > 0) this.otpCountdown.update(c => c - 1);
+            else clearInterval(this.countdownInterval);
+          }, 1000);
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.errorMessage.set(handleHttpError(err));
+      }
+    });
   }
 
   // Register button
@@ -83,12 +101,18 @@ export class Auth implements OnDestroy {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.authService.register(email, otp, pass).subscribe(res => {
-      this.isLoading.set(false);
-      if (res.success) {
-        this.viewMode.set('add-profile');
-      } else {
-        this.errorMessage.set(res.message);
+    this.authService.register(email, otp, pass).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) {
+          this.viewMode.set('add-profile');
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
       }
     });
   }

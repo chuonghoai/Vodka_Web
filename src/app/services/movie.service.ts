@@ -1,15 +1,20 @@
 // src/app/services/movie.service.ts
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
 import { Movie } from '../models/movie.model';
 import { ApiResponse } from '../models/api-response.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../environments/environment.development';
+import { API_ENDPOINTS } from './api-endpoints/api.endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieService {
+  private http = inject(HttpClient);
+  private baseUrl = environment.apiUrl;
 
-  // Dữ liệu giả lập
+  // MOCK Dữ liệu giả lập
   private mockMovies: Movie[] = [
     {
       id: '1', title: 'Lật Mặt 7: Một Điều Ước', releaseYear: 2024, genre: ['Tâm lý', 'Gia đình'], rating: 8.5,
@@ -61,7 +66,7 @@ export class MovieService {
     }
   ];
 
-  // Tự động sinh ra 80 phim để test phân trang
+  // MOCK Tự động sinh ra 80 phim để test phân trang
   private extendedMockMovies: Movie[] = Array.from({ length: 1000 }).map((_, i) => {
     const base = this.mockMovies[i % this.mockMovies.length];
     return { ...base, id: (i + 1).toString(), title: `${base.title} - Phần ${i + 1}` };
@@ -69,40 +74,32 @@ export class MovieService {
 
   // Fetch API
   getFeaturedMovies(): Observable<ApiResponse<Movie[]>> {
-    return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 3) }).pipe(delay(500));
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.FEATURED}`);
   }
 
   getNewReleases(page: number = 1, pageSize: number = 30): Observable<ApiResponse<Movie[]>> {
-    let startIndex = 0;
-    if (page === 2) startIndex = 30;
-
-    const pagedData = this.extendedMockMovies.slice(startIndex, startIndex + pageSize);
-
-    return of({
-      success: true, message: 'Success', data: pagedData,
-      pagination: { totalItems: 1000, totalPages: 100, currentPage: page, pageSize: pageSize }
-    }).pipe(delay(500));
+    const params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.NEW_RELEASES}`, { params });
   }
 
   getTrendingMovies(limit: number = 10): Observable<ApiResponse<Movie[]>> {
-    return of({ success: true, message: 'Success', data: [...this.mockMovies].reverse().slice(0, limit) }).pipe(delay(500));
+    const params = new HttpParams().set('limit', limit.toString());
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.TRENDING}`, { params });
   }
 
   getWatchedHistory(): Observable<ApiResponse<Movie[]>> {
-    return of({ success: true, message: 'Success', data: this.mockMovies.slice(0, 2) }).pipe(delay(500));
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.HISTORY}`);
   }
 
   getRecentlyUpdated(): Observable<ApiResponse<Movie[]>> {
-    return of({ success: true, message: 'Success', data: [...this.mockMovies].slice(0, 3).reverse() }).pipe(delay(500));
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.RECENTLY_UPDATED}`);
   }
 
   getHighlyRated(): Observable<ApiResponse<Movie[]>> {
-    const topMovies = this.mockMovies.filter(m => m.rating >= 8.0).sort((a, b) => b.rating - a.rating);
-    return of({ success: true, message: 'Success', data: topMovies }).pipe(delay(500));
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.HIGHLY_RATED}`);
   }
 
   getMoviesByGenre(genre: string): Observable<ApiResponse<Movie[]>> {
-    const genreMovies = this.mockMovies.filter(m => m.genre.includes(genre));
-    return of({ success: true, message: 'Success', data: genreMovies }).pipe(delay(500));
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_GENRE(genre)}`);
   }
 }

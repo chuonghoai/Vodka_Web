@@ -1,5 +1,6 @@
 import { Component, inject, signal, output } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
+import { UserService } from '../../../services/user.service';
+import { handleHttpError } from '../../../shared/util/exception.handle';
 
 @Component({
   selector: 'app-add-profile',
@@ -7,22 +8,34 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './add-profile.html'
 })
 export class AddProfile {
-  private authService = inject(AuthService);
+  private userService = inject(UserService);
 
   isLoading = signal<boolean>(false);
-
-  // Phát sự kiện ra ngoài (dùng được ở cả trang Auth và trang Profile sau này)
+  errorMessage = signal<string>('');
   onComplete = output<void>();
   onSkip = output<void>();
 
   submitProfile(displayName: string, phone: string) {
-    if (!displayName) return;
-    this.isLoading.set(true);
+    if (!displayName) {
+      this.errorMessage.set('Vui lòng nhập tên hiển thị.');
+      return;
+    }
 
-    this.authService.updateProfile({ displayName, phone }).subscribe(res => {
-      this.isLoading.set(false);
-      if (res.success) {
-        this.onComplete.emit(); // Hoàn tất
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    this.userService.updateProfile({ displayName, phone }).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) {
+          this.onComplete.emit();
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
       }
     });
   }
