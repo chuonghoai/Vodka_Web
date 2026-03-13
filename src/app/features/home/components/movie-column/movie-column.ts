@@ -2,11 +2,11 @@ import { Component, input } from '@angular/core';
 import { Movie } from '../../../../models/movie.model';
 
 @Component({
-  selector: 'app-watched-history',
+  selector: 'app-movie-column',
   standalone: true,
-  templateUrl: './watched-history.html'
+  templateUrl: './movie-column.html'
 })
-export class WatchedHistoryComponent {
+export class MovieColumnComponent {
   title = input<string>('Đã xem');
   movies = input.required<Movie[]>();
 }

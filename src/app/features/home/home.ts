@@ -3,14 +3,14 @@ import { Component, inject, OnInit, signal, computed, OnDestroy, PLATFORM_ID } f
 import { MovieService } from '../../services/movie.service';
 import { Movie } from '../../models/movie.model';
 import { MovieSliderComponent } from './components/movie-slider/movie-slider';
-import { WatchedHistoryComponent } from './components/watched-history/watched-history';
+import { MovieColumnComponent } from './components/movie-column/movie-column';
 import { MovieListComponent } from "./components/movie-list/movie-list";
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MovieSliderComponent, WatchedHistoryComponent, MovieListComponent],
+  imports: [MovieSliderComponent, MovieColumnComponent, MovieListComponent],
   templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit, OnDestroy {
