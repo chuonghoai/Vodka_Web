@@ -31,7 +31,7 @@ export class AddProfile {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success) {
-          this.notif.show(NotificationType.SUCCESS, 'Cập nhật hồ sơ thành công, chào mừng ' + displayName);
+          this.notif.show(NotificationType.SUCCESS, 'Cập nhật hồ sơ thành công, chào mừng ' + res.data.updatedUser.name);
           this.onComplete.emit();
         } else {
           this.errorMessage.set(res.message);

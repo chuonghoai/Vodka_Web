@@ -14,7 +14,7 @@ export class AuthService {
   private baseUrl = environment.apiUrl;
   private platformId = inject(PLATFORM_ID);
   currentUser = signal<any>(null);
-  
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('accessToken');
@@ -22,6 +22,13 @@ export class AuthService {
       if (token && userStr) {
         this.currentUser.set(JSON.parse(userStr));
       }
+    }
+  }
+
+  updateCurrentUserState(user: any) {
+    this.currentUser.set(user);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('user', JSON.stringify(user));
     }
   }
 
@@ -72,7 +79,17 @@ export class AuthService {
   }
 
   // Register
-  register(email: string, otp: string, pass: string): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER}`, { email, otp, password: pass });
+  register(email: string, otp: string, pass: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER}`, { email, otp, password: pass })
+      .pipe(
+        tap((res) => {
+          if (res.success && res.data) {
+            if (res.data.accessToken) localStorage.setItem('accessToken', res.data.accessToken);
+            if (res.data.user) {
+              this.updateCurrentUserState(res.data.user);
+            }
+          }
+        })
+      );
   }
 }
