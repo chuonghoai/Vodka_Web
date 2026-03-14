@@ -1,7 +1,7 @@
 // src/app/services/movie.service.ts
-import { inject, Injectable } from '@angular/core';
+import { ApplicationRef, inject, Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
-import { Movie } from '../models/movie.model';
+import { Movie, MovieDetail } from '../models/movie.model';
 import { ApiResponse } from '../models/api-response.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment.development';
@@ -43,5 +43,9 @@ export class MovieService {
 
   getMoviesByGenre(genre: string): Observable<ApiResponse<Movie[]>> {
     return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_GENRE(genre)}`);
+  }
+
+  getMovieById(id: string): Observable<ApiResponse<MovieDetail>> {
+    return this.http.get<ApiResponse<MovieDetail>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_ID(id)}`);
   }
 }

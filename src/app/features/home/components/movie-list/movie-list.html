@@ -32,7 +32,7 @@
         <button (click)="changePage.emit(page.value)"
                 [class.bg-red-600]="currentPage() === page.value"
                 [class.bg-zinc-800]="currentPage() !== page.value"
-                class="min-w-[40px] h-10 px-2 rounded-full flex items-center justify-center text-white font-bold hover:bg-red-500 transition-colors shadow-lg shrink-0">
+                class="min-w-10 h-10 px-2 rounded-full flex items-center justify-center text-white font-bold hover:bg-red-500 transition-colors shadow-lg shrink-0">
           {{ page.label }}
         </button>
       }

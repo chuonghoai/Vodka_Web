@@ -10,12 +10,12 @@
           <div class="w-full h-full shrink-0 relative flex items-end pb-12 px-8">
 
             <img [src]="movie.bannerUrl" class="absolute inset-0 w-full h-full object-cover opacity-60">
-            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
 
             <div class="relative z-10 max-w-3xl text-white">
               <div class="flex gap-2 mb-3">
-                @for (tag of movie.tags; track tag) {
-                  <span class="bg-zinc-800/80 backdrop-blur text-xs font-bold px-3 py-1 rounded border border-zinc-700">{{ tag }}</span>
+                @for (tag of movie.tags; track tag.id) {
+                  <span class="bg-zinc-800/80 backdrop-blur text-xs font-bold px-3 py-1 rounded border border-zinc-700">{{ tag.name }}</span>
                 }
               </div>
               <h1 class="text-4xl md:text-6xl font-black mb-3 drop-shadow-lg">{{ movie.title }}</h1>
@@ -51,7 +51,7 @@
     </div>
   }
 
-  <div class="mt-[-40px] relative z-20 max-w-[1800px] mx-auto px-4 md:px-8 flex flex-col lg:flex-row gap-8">
+  <div class="-mt-10 relative z-20 max-w-450 mx-auto px-4 md:px-8 flex flex-col lg:flex-row gap-8">
     <div class="flex-1 space-y-10 overflow-hidden">
       <div id="trending-section" class="space-y-2 scroll-mt-24">
 
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <div class="w-full lg:w-[350px] xl:w-[400px] shrink-0 pt-6">
+    <div class="w-full lg:w-87.5 xl:w-100 shrink-0 pt-6">
       <div class="sticky top-24">
         <app-movie-column title="Đã xem" [movies]="watchedMovies()"></app-movie-column>
         <app-movie-column title="Mới Cập Nhật" [movies]="recentlyUpdated()"></app-movie-column>

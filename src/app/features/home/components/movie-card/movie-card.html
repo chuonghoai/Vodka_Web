@@ -10,8 +10,8 @@
   </div>
 
   <div class="absolute top-2 left-2 flex gap-1 z-10">
-    @for (tag of movie().tags; track tag) {
-      <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">{{ tag }}</span>
+    @for (tag of movie().tags; track tag.id) {
+      <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">{{ tag.name }}</span>
     }
   </div>
 
@@ -22,9 +22,9 @@
       <span class="flex items-center gap-1">⭐ {{ movie().rating }}</span>
     </div>
 
-    <div class="flex flex-wrap gap-1 max-h-0 opacity-0 overflow-hidden group-hover:max-h-[100px] group-hover:opacity-100 group-hover:mt-3 transition-all duration-300 ease-out">
-      @for (g of movie().genre; track g) {
-        <span class="bg-zinc-800 text-zinc-300 text-[10px] font-medium px-2 py-0.5 rounded border border-zinc-700">{{ g }}</span>
+    <div class="flex flex-wrap gap-1 max-h-0 opacity-0 overflow-hidden group-hover:max-h-25 group-hover:opacity-100 group-hover:mt-3 transition-all duration-300 ease-out">
+      @for (g of movie().genre; track g.id) {
+        <span class="bg-zinc-800 text-zinc-300 text-[10px] font-medium px-2 py-0.5 rounded border border-zinc-700">{{ g.name }}</span>
       }
     </div>
   </div>

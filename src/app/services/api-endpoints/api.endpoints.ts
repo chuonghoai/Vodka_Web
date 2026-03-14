@@ -17,9 +17,13 @@ export const API_ENDPOINTS = {
     HISTORY: '/api/movies/history',
     RECENTLY_UPDATED: '/api/movies/recently-updated',
     HIGHLY_RATED: '/api/movies/highly-rated',
-    BY_GENRE: (genreName: string) => `/api/movies/genre/${encodeURIComponent(genreName)}`
+    BY_GENRE: (genreName: string) => `/api/movies/genre/${encodeURIComponent(genreName)}`,
+    BY_ID: (id: string) => `/api/movies/${encodeURIComponent(id)}`,
   },
   GENRES: {
     GET_ALL: '/api/genres',
+  },
+  REVIEWS: {
+    BY_MOVIE: (movieId: string) => `/api/movies/${movieId}/reviews`,
   }
 };

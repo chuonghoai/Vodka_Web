@@ -9,6 +9,5 @@ import { RouterLink } from '@angular/router';
   templateUrl: './movie-card.html'
 })
 export class MovieCardComponent {
-  // Angular 21: Sử dụng Signal Input
   movie = input.required<Movie>();
 }
