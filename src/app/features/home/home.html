@@ -67,7 +67,7 @@
              [movies]="newReleases()"
              [currentPage]="newReleasesPage()"
              [totalPages]="newReleasesTotalPages()"
-             (changePage)="loadNewReleases($event)">
+             (changePage)="onPageChange($event)">
           </app-movie-list>
         </div>
 

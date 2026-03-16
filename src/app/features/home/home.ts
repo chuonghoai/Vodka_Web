@@ -6,7 +6,7 @@ import { MovieSliderComponent } from './components/movie-slider/movie-slider';
 import { MovieColumnComponent } from './components/movie-column/movie-column';
 import { MovieListComponent } from "./components/movie-list/movie-list";
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -15,8 +15,11 @@ import { RouterLink } from '@angular/router';
   templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  // Inject
   private movieService = inject(MovieService);
   private platformId = inject(PLATFORM_ID);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   // List banner
   featuredMovies = signal<Movie[]>([]);
@@ -39,7 +42,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fetchData();
     this.startAutoSlide();
-    this.loadNewReleases(1);
+    this.route.queryParams.subscribe(params => {
+      const page = params['page']? parseInt(params['page'], 10): 1;
+      this.loadNewReleases(page);
+    })
   }
 
   ngOnDestroy(): void {
@@ -80,6 +86,14 @@ export class HomeComponent implements OnInit, OnDestroy {
           }, 100);
         }
       }
+    });
+  }
+
+  onPageChange(page: number) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page },
+      queryParamsHandling: 'merge'
     });
   }
 
