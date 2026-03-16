@@ -5,15 +5,22 @@ import { MovieDetail } from '../../models/movie.model';
 import { CommonModule } from '@angular/common';
 import { MovieSliderComponent } from '../home/components/movie-slider/movie-slider';
 import { DurationPipe } from "../../shared/pipes/duration.pipe";
-
-// 1. IMPORT REVIEW COMPONENT VÀO ĐÂY
 import { ReviewComponent } from './components/review/review';
+import { TotalViewsPipe } from '../../shared/pipes/total-views.pipe';
+import { FavoritesPipe } from '../../shared/pipes/favorites.pipe';
 
 @Component({
   selector: 'app-movie',
   standalone: true,
-  // 2. KHAI BÁO VÀO MẢNG IMPORTS
-  imports: [RouterModule, CommonModule, MovieSliderComponent, DurationPipe, ReviewComponent],
+  imports: [
+    RouterModule,
+    CommonModule,
+    MovieSliderComponent,
+    ReviewComponent,
+    DurationPipe,
+    TotalViewsPipe,
+    FavoritesPipe
+  ],
   templateUrl: './movie.html'
 })
 export class MovieComponent implements OnInit {
@@ -25,6 +32,7 @@ export class MovieComponent implements OnInit {
   selectedSeasonId = signal<string>('');
   isDescriptionExpanded = signal<boolean>(false);
 
+  // Get list episodes of current season
   currentEpisodes = computed(() => {
     const data = this.movie();
     if (!data || !data.episodes) return [];
@@ -32,11 +40,21 @@ export class MovieComponent implements OnInit {
     return season ? season.episodes : [];
   });
 
+  // Get thumbnail of current season
   currentSeasonThumbnail = computed(() => {
     const data = this.movie();
     if (!data || !data.episodes) return null;
     const season = data.episodes.find(s => s.id === this.selectedSeasonId());
     return season?.thumbnailUrl || null;
+  });
+
+  // Auto compute first episode
+  firstEpisodeId = computed(() => {
+    const data = this.movie();
+    if (data?.episodes?.[0]?.episodes?.[0]) {
+      return data.episodes[0].episodes[0].id;
+    }
+    return '';
   });
 
   ngOnInit() {
