@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment.development';
 import { API_ENDPOINTS } from './api-endpoints/api.endpoints';
 import { isPlatformBrowser } from '@angular/common';
 import { UserState } from '../core/states/user.state';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,9 @@ import { UserState } from '../core/states/user.state';
 export class AuthService {
   private http = inject(HttpClient);
   private userState = inject(UserState);
+  private platformId = inject(PLATFORM_ID);
+  private socialAuthService = inject(SocialAuthService);
+
   private baseUrl = environment.apiUrl;
 
   private handleAuthSuccess(res: ApiResponse<any>) {
@@ -35,7 +39,16 @@ export class AuthService {
   // Logout
   logout() {
     this.userState.clearUser();
+
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        this.socialAuthService.signOut().catch(() => {});
+      } catch (error) {
+        console.error('Lỗi khi đăng xuất Google:', error);
+      }
+    }
   }
+
   // Request OTP reset password
   requestPasswordReset(email: string): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_SEND_OTP}`, { email });
@@ -59,6 +72,12 @@ export class AuthService {
   // Register
   register(email: string, otp: string, pass: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER}`, { email, otp, password: pass })
+      .pipe(tap(res => this.handleAuthSuccess(res)));
+  }
+
+  // Login with google
+  loginWithGoogle(idToken: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.GOOGLE_LOGIN}`, { idToken })
       .pipe(tap(res => this.handleAuthSuccess(res)));
   }
 }

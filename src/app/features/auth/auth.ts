@@ -6,11 +6,13 @@ import { AuthService } from '../../services/auth.service';
 import { handleHttpError } from '../../shared/util/exception.handle';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationType as NotifType } from '../../models/notification.model';
+import { GoogleSigninButtonModule, SocialAuthService } from '@abacritt/angularx-social-login';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [RouterModule, ForgotPassword, AddProfile],
+  imports: [RouterModule, ForgotPassword, AddProfile, GoogleSigninButtonModule],
   templateUrl: './auth.html',
 })
 export class Auth implements OnDestroy {
@@ -18,6 +20,9 @@ export class Auth implements OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private notif = inject(NotificationService);
+  private socialAuthService = inject(SocialAuthService);
+
+  private authSubscription!: Subscription;
 
   viewMode = signal<'login' | 'register' | 'forgot' | 'add-profile'>('login');
 
@@ -35,6 +40,42 @@ export class Auth implements OnDestroy {
   goToForgot() { this.viewMode.set('forgot'); this.errorMessage.set(''); }
   backToLogin() { this.viewMode.set('login'); this.errorMessage.set(''); }
   finishAuthFlow() { this.router.navigate(['/']); }
+
+  // Init
+  ngOnInit() {
+    this.authSubscription = this.socialAuthService.authState.subscribe((user) => {
+      if (user && user.idToken) {
+        this.handleGoogleLogin(user.idToken);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription)  this.authSubscription.unsubscribe();
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
+  }
+
+  // Login with google
+  handleGoogleLogin(idToken: string) {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    this.authService.loginWithGoogle(idToken).subscribe({
+      next: (res) => {
+        this.isLoading.set(false);
+        if (res.success) {
+          this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.name);
+          this.finishAuthFlow();
+        } else {
+          this.errorMessage.set(res.message);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(handleHttpError(err));
+      }
+    });
+  }
 
   // Button Login
   onLogin(email: string, pass: string) {
@@ -123,9 +164,5 @@ export class Auth implements OnDestroy {
         this.errorMessage.set(handleHttpError(err));
       }
     });
-  }
-
-  ngOnDestroy() {
-    if (this.countdownInterval) clearInterval(this.countdownInterval);
   }
 }
