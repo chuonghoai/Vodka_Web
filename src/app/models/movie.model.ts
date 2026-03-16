@@ -1,5 +1,5 @@
 import { Genre } from "./genre.model";
-import { tag } from "./tag.model";
+import { Tag } from "./tag.model";
 
 export interface Movie {
   id: string;
@@ -9,7 +9,7 @@ export interface Movie {
   rating: number;
   posterUrl?: string;
   bannerUrl?: string;
-  tags: tag[];
+  tags: Tag[];
   description?: string;
 }
 

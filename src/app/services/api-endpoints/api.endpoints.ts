@@ -21,9 +21,13 @@ export const API_ENDPOINTS = {
     BY_GENRE: (genreName: string) => `/api/movies/genre/${encodeURIComponent(genreName)}`,
     BY_ID: (id: string) => `/api/movies/${encodeURIComponent(id)}`,
     WATCH: (episodeId: string) => `/api/movies/watch/${episodeId}`,
+    BY_FILTER: '/api/movies/filter',
   },
   GENRES: {
     GET_ALL: '/api/genres',
+  },
+  TAGS: {
+    GET_ALL: '/api/tags',
   },
   REVIEWS: {
     BY_MOVIE: (movieId: string) => `/api/movies/${movieId}/reviews`,

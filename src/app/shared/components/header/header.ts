@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Genre } from '../../../models/genre.model';
-import { HeaderService } from '../../../services/header.service';
-import { RouterModule } from '@angular/router';
+import { FilterService } from '../../../services/filter.service';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UserState } from '../../../core/states/user.state';
+import { Tag } from '../../../models/tag.model';
 
 @Component({
   selector: 'app-header',
@@ -11,37 +12,49 @@ import { UserState } from '../../../core/states/user.state';
   templateUrl: './header.html',
 })
 export class Header implements OnInit {
-  private headerService = inject(HeaderService);
+  // Inject
+  private filterService = inject(FilterService);
   private authService = inject(AuthService);
   private userState = inject(UserState);
+  private router = inject(Router);
 
-  genres = signal<Genre[]>([]);
-  selectedGenres = signal<string[]>([]);
+  // Meta data
+  genres = this.filterService.genres;
+  tags = this.filterService.tags;
+  selectedGenreIds = signal<string[]>([]);
+
+  // mobile/pc
   isMobileMenuOpen = signal<boolean>(false);
+
+  // Current user from state
   currentUser = this.userState.currentUser;
 
+  // Init
   ngOnInit(): void {
-    this.headerService.getGenres().subscribe(res => {
-      if (res.success) this.genres.set(res.data);
-    });
   }
 
   toggleMobileMenu() {
     this.isMobileMenuOpen.update(v => !v);
   }
 
-  toggleGenreSelection(genreName: string) {
-    const currentSelected = this.selectedGenres();
-    if (currentSelected.includes(genreName)) {
-      this.selectedGenres.set(currentSelected.filter(g => g !== genreName));
-    } else {
-      this.selectedGenres.set([...currentSelected, genreName]);
-    }
+  // API filter movies
+  applyFilter(tagId?: string) {
+    const queryParams: any = { page: 1 };
+    if (tagId) queryParams.tag = tagId;
+    if (this.selectedGenreIds().length > 0) queryParams.genres = this.selectedGenreIds();
+
+    this.router.navigate(['/search'], { queryParams });
+    this.isMobileMenuOpen.set(false);
   }
 
-  applyFilter() {
-    console.log('Các thể loại đang lọc:', this.selectedGenres());
-    // TODO: Chuyển hướng sang trang tìm kiếm kèm query params
+  toggleGenre(id: string) {
+    this.selectedGenreIds.update(ids =>
+      ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]
+    );
+  }
+
+  clearSelectedGenres() {
+    this.selectedGenreIds.set([]);
   }
 
   logout() {

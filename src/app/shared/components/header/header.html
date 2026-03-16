@@ -9,39 +9,36 @@
 
     <h1 routerLink="/" class="text-2xl md:text-3xl font-black text-red-600 italic tracking-wider cursor-pointer">VODKA WEB</h1>
 
-    <ul class="hidden md:flex gap-6 items-center font-medium text-sm text-zinc-300">
-      <li class="text-white hover:text-red-500 cursor-pointer transition-colors">Trang chủ</li>
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim bộ</li>
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim lẻ</li>
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Phim chiếu rạp</li>
-      <li class="hover:text-red-500 cursor-pointer transition-colors">Anime</li>
+    <ul class="flex items-center gap-6">
+      @for (tag of tags(); track tag.id) {
+        <li>
+          <button (click)="applyFilter(tag.id)"
+                  class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider">
+            {{ tag.name }}
+          </button>
+        </li>
+      }
 
-      <li class="relative group cursor-pointer py-2">
-        <span class="hover:text-red-500 transition-colors flex items-center gap-1">
+      <li class="relative group" (mouseleave)="clearSelectedGenres()">
+        <button class="flex items-center gap-1.5 text-zinc-300 group-hover:text-white font-bold text-sm uppercase tracking-wider transition-colors py-2">
           Thể loại
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 group-hover:rotate-180 transition-transform"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
-        </span>
+          <svg class="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
 
-        <div class="absolute top-full left-0 mt-2 w-80 bg-zinc-950 border border-zinc-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 p-5">
-          <p class="text-white font-bold mb-4 border-b border-zinc-800 pb-2">Chọn thể loại:</p>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-4 z-[100]">
 
-          <div class="grid grid-cols-2 gap-y-3 gap-x-4">
+          <div class="w-[500px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3">
             @for (genre of genres(); track genre.id) {
-              <label class="flex items-center gap-2.5 cursor-pointer group/item text-zinc-300 hover:text-white transition-colors">
-                <input type="checkbox"
-                       class="accent-red-600 w-4 h-4 cursor-pointer"
-                       [checked]="selectedGenres().includes(genre.name)"
-                       (change)="toggleGenreSelection(genre.name)">
-                <span class="text-sm">{{ genre.name }}</span>
+              <label class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item">
+                <input type="checkbox" [checked]="selectedGenreIds().includes(genre.id)" (change)="toggleGenre(genre.id)" class="accent-red-600 w-4 h-4">
+                <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{ genre.name }}</span>
               </label>
             }
-          </div>
-
-          <div class="mt-5 pt-4 border-t border-zinc-800 flex justify-end">
-            <button (click)="applyFilter()" class="bg-red-600 text-white text-xs px-4 py-2 rounded font-bold hover:bg-red-700 transition">
-              Lọc Phim
+            <button (click)="applyFilter()" class="col-span-3 mt-4 bg-red-600 hover:bg-red-700 py-3.5 rounded-xl font-bold text-white shadow-lg transition-colors">
+              Áp dụng bộ lọc
             </button>
           </div>
+
         </div>
       </li>
     </ul>
@@ -91,29 +88,37 @@
 
   @if (isMobileMenuOpen()) {
     <div class="absolute top-full left-0 w-full bg-zinc-950 border-b border-zinc-800 shadow-2xl md:hidden z-50 flex flex-col p-5">
-      <ul class="flex flex-col gap-5 font-medium text-base text-zinc-300">
-        <li class="text-white hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Trang chủ</li>
-        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Phim bộ</li>
-        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Phim lẻ</li>
-        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Phim chiếu rạp</li>
-        <li class="hover:text-red-500 cursor-pointer transition-colors" (click)="toggleMobileMenu()">Anime</li>
+      <ul class="hidden lg:flex items-center gap-8 ml-10 z-50">
+        @for (tag of tags(); track tag.id) {
+          <li>
+            <button (click)="applyFilter(tag.id)"
+                    class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider">
+              {{ tag.name }}
+            </button>
+          </li>
+        }
 
-        <li class="flex flex-col gap-3">
-          <span class="text-white font-bold border-b border-zinc-800 pb-2">Thể loại</span>
-          <div class="grid grid-cols-2 gap-y-3 gap-x-4">
-            @for (genre of genres(); track genre.id) {
-              <label class="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-300 hover:text-white transition-colors">
-                <input type="checkbox"
-                       class="accent-red-600 w-4 h-4 cursor-pointer"
-                       [checked]="selectedGenres().includes(genre.name)"
-                       (change)="toggleGenreSelection(genre.name)">
-                <span>{{ genre.name }}</span>
-              </label>
-            }
-          </div>
-          <button (click)="applyFilter(); toggleMobileMenu()" class="mt-4 bg-red-600 text-white text-sm px-4 py-2 rounded font-bold hover:bg-red-700 transition w-full">
-            Lọc Phim
+        <li class="relative group" (mouseleave)="clearSelectedGenres()">
+          <button class="flex items-center gap-1.5 text-zinc-300 group-hover:text-white font-bold text-sm uppercase tracking-wider transition-colors py-2">
+            Thể loại
+            <svg class="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
           </button>
+
+          <div class="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-4 z-[100]">
+
+            <div class="w-[600px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3">
+              @for (genre of genres(); track genre.id) {
+                <label class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item">
+                  <input type="checkbox" [checked]="selectedGenreIds().includes(genre.id)" (change)="toggleGenre(genre.id)" class="accent-red-600 w-4 h-4">
+                  <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{ genre.name }}</span>
+                </label>
+              }
+              <button (click)="applyFilter()" class="col-span-3 mt-4 bg-red-600 hover:bg-red-700 py-3.5 rounded-xl font-bold text-white shadow-lg transition-colors">
+                Áp dụng bộ lọc
+              </button>
+            </div>
+
+          </div>
         </li>
       </ul>
     </div>
