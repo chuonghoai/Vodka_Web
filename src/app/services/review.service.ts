@@ -20,4 +20,8 @@ export class ReviewService {
 
     return this.http.get<ApiResponse<Review[]>>(`${this.baseUrl}${API_ENDPOINTS.REVIEWS.BY_MOVIE(movieId)}`, { params });
   }
+
+  postReview(payload: { movieId: string; rating?: number; content: string; replyToId?: string }): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.REVIEWS.NEW}`, payload);
+  }
 }

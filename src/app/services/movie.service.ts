@@ -60,6 +60,6 @@ export class MovieService {
       filters.genres.forEach(g => params = params.append('genres', g));
     }
 
-    return this.http.get<any>(`${this.baseUrl}/api/movies/filter`, { params });
+    return this.http.get<any>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_FILTER}`, { params });
   }
 }

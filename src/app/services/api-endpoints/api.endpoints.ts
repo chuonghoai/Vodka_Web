@@ -31,5 +31,6 @@ export const API_ENDPOINTS = {
   },
   REVIEWS: {
     BY_MOVIE: (movieId: string) => `/api/movies/${movieId}/reviews`,
+    NEW: '/api/movies/reviews'
   }
 };

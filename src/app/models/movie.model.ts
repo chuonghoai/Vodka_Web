@@ -1,6 +1,7 @@
 import { Genre } from "./genre.model";
 import { Tag } from "./tag.model";
 
+// Movie card
 export interface Movie {
   id: string;
   title: string;
@@ -13,6 +14,7 @@ export interface Movie {
   description?: string;
 }
 
+// Movie detail screen
 export interface MovieDetail {
   movie: Movie;
   episodes: Season[];
@@ -40,6 +42,15 @@ export interface Review {
   userName: string;
   avatarUrl?: string;
   rating: number;
+  content: string;
+  createdAt: string;
+  replied?: ReplyReview[]
+}
+
+export interface ReplyReview {
+  id: string;
+  userName: string;
+  avatarUrl?: string;
   content: string;
   createdAt: string;
 }

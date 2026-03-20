@@ -27,6 +27,7 @@ export class MovieComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
 
+  isMainContentDimmed = signal<boolean>(false);
   movieId = signal<string>('');
   movie = signal<MovieDetail | null>(null);
   selectedSeasonId = signal<string>('');
@@ -87,5 +88,36 @@ export class MovieComponent implements OnInit {
         }
       });
     });
+  }
+
+  // Render new review
+  onReviewAdded(newReview: any) {
+    this.movie.update(currentMovie => {
+      if (!currentMovie) return currentMovie;
+
+      const updatedReviews = [...(currentMovie.reviews || [])];
+
+      if (!newReview.replyToId) {
+        updatedReviews.unshift(newReview);
+      } else {
+        const parentIndex = updatedReviews.findIndex(r => r.id === newReview.replyToId);
+
+        if (parentIndex > -1) {
+          const parentReview = { ...updatedReviews[parentIndex] };
+          parentReview.replied = [...(parentReview.replied || []), newReview];
+          updatedReviews[parentIndex] = parentReview;
+        }
+      }
+
+      return {
+        ...currentMovie,
+        reviews: updatedReviews
+      };
+    });
+  }
+
+  // Blue screen if open rating modal
+  onRatingModalToggled(isDimmed: boolean) {
+    this.isMainContentDimmed.set(isDimmed);
   }
 }
