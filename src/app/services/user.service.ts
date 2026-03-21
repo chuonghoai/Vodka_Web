@@ -22,7 +22,8 @@ export class UserService{
       .pipe(
         tap((res) => {
           if (res.success && res.data) {
-            this.userState.setUser(res.data);
+            const userData = res.data.updatedUser ? res.data.updatedUser : res.data;
+            this.userState.updateUser(userData);
           }
         })
       );

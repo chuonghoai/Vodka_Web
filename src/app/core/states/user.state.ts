@@ -29,6 +29,19 @@ export class UserState {
     }
   }
 
+  updateUser(partialUser: any) {
+    this.currentUser.update(current => {
+      if (!current) return partialUser;
+
+      const updated = { ...current, ...partialUser };
+
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('user', JSON.stringify(updated));
+      }
+      return updated;
+    });
+  }
+
   clearUser() {
     this.currentUser.set(null);
     if (isPlatformBrowser(this.platformId)) {
