@@ -29,6 +29,7 @@ export class AddProfile {
 
     this.userService.updateProfile({ displayName, phone }).subscribe({
       next: (res) => {
+        console.log('Thêm mới thông tin thành công: ' + res);
         this.isLoading.set(false);
         if (res.success) {
           this.notif.show(NotificationType.SUCCESS, 'Cập nhật hồ sơ thành công, chào mừng ' + res.data.updatedUser.name);
