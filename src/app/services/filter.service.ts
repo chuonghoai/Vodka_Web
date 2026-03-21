@@ -41,9 +41,9 @@ export class FilterService {
     }
   }
 
-  getNameById(id: string): string {
+  getNameBySlug(slug: string): string {
     const allMetadata = [...this.genres(), ...this.tags()];
-    const found = allMetadata.find(item => item.id === id);
+    const found = allMetadata.find(item => item.slug === slug);
     return found ? found.name : 'Đề Xuất';
   }
 }

@@ -45,11 +45,11 @@ export class MovieService {
     return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_GENRE(genre)}`);
   }
 
-  getMovieById(id: string): Observable<ApiResponse<MovieDetail>> {
+  getMovieById(id: number): Observable<ApiResponse<MovieDetail>> {
     return this.http.get<ApiResponse<MovieDetail>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_ID(id)}`);
   }
 
-  getMovies(filters: { keyword?: string, genres?: string[], tag?: string, page?: number, pageSize?: number }) {
+  filterMovies(filters: { keyword?: string, genres?: string[], tag?: string, page?: number, pageSize?: number }) {
     let params = new HttpParams();
     if (filters.page) params = params.set('page', filters.page.toString());
     if (filters.pageSize) params = params.set('pageSize', filters.pageSize.toString());

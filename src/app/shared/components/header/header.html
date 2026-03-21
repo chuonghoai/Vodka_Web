@@ -12,7 +12,7 @@
     <ul class="flex items-center gap-6">
       @for (tag of tags(); track tag.id) {
         <li>
-          <button (click)="applyFilter(tag.id)"
+          <button (click)="applyFilter(tag.slug || tag.name)"
                   class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider">
             {{ tag.name }}
           </button>
@@ -30,7 +30,7 @@
           <div class="w-[500px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3">
             @for (genre of genres(); track genre.id) {
               <label class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item">
-                <input type="checkbox" [checked]="selectedGenreIds().includes(genre.id)" (change)="toggleGenre(genre.id)" class="accent-red-600 w-4 h-4">
+                <input type="checkbox" [checked]="selectedGenreSlugs().includes(genre.slug || genre.name)" (change)="toggleGenre(genre.slug || genre.name)" class="accent-red-600 w-4 h-4">
                 <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{ genre.name }}</span>
               </label>
             }
@@ -91,7 +91,7 @@
       <ul class="hidden lg:flex items-center gap-8 ml-10 z-50">
         @for (tag of tags(); track tag.id) {
           <li>
-            <button (click)="applyFilter(tag.id)"
+            <button (click)="applyFilter(tag.slug || tag.name)"
                     class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider">
               {{ tag.name }}
             </button>
@@ -109,7 +109,7 @@
             <div class="w-[600px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3">
               @for (genre of genres(); track genre.id) {
                 <label class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item">
-                  <input type="checkbox" [checked]="selectedGenreIds().includes(genre.id)" (change)="toggleGenre(genre.id)" class="accent-red-600 w-4 h-4">
+                  <input type="checkbox" [checked]="selectedGenreSlugs().includes(genre.slug || genre.name)" (change)="toggleGenre(genre.slug || genre.name)" class="accent-red-600 w-4 h-4">
                   <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{ genre.name }}</span>
                 </label>
               }

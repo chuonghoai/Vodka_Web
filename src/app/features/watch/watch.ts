@@ -28,15 +28,15 @@ export class WatchComponent implements OnInit {
   private watchService = inject(WatchService);
   private platformId = inject(PLATFORM_ID);
 
-  episodeId = signal<string>('');
+  episodeId = signal<number>(0);
   watchData = signal<WatchDetailData | null>(null);
 
-  selectedSeasonId = signal<string>('');
+  selectedSeasonId = signal<number>(0);
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
+      const id = Number(params.get('id'));
+      if (Number.isFinite(id)) {
         this.episodeId.set(id);
         this.loadWatchData(id);
         if (isPlatformBrowser(this.platformId)) {
@@ -46,7 +46,7 @@ export class WatchComponent implements OnInit {
     });
   }
 
-  loadWatchData(id: string) {
+  loadWatchData(id: number) {
     this.watchData.set(null);
 
     this.watchService.getWatchDetail(id).subscribe(res => {
@@ -66,15 +66,15 @@ export class WatchComponent implements OnInit {
     });
   }
 
-  goToEpisode(epId: string) {
+  goToEpisode(epId: number) {
     if (this.episodeId() !== epId) {
       this.router.navigate(['/watch', epId]);
     }
   }
 
-  toggleSeason(seasonId: string) {
+  toggleSeason(seasonId: number) {
     if (this.selectedSeasonId() === seasonId) {
-      this.selectedSeasonId.set('');
+      this.selectedSeasonId.set(0);
     } else {
       this.selectedSeasonId.set(seasonId);
     }

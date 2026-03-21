@@ -28,9 +28,9 @@ export class MovieComponent implements OnInit {
   private movieService = inject(MovieService);
 
   isMainContentDimmed = signal<boolean>(false);
-  movieId = signal<string>('');
+  movieId = signal<number>(0);
   movie = signal<MovieDetail | null>(null);
-  selectedSeasonId = signal<string>('');
+  selectedSeasonId = signal<number>(0);
   isDescriptionExpanded = signal<boolean>(false);
 
   // Get list episodes of current season
@@ -55,15 +55,16 @@ export class MovieComponent implements OnInit {
     if (data?.episodes?.[0]?.episodes?.[0]) {
       return data.episodes[0].episodes[0].id;
     }
-    return '';
+    return 0;
   });
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id') || '';
+      const id = Number(params.get('id'));
+      if (!Number.isFinite(id)) return;
       this.movieId.set(id);
 
-      this.selectedSeasonId.set('');
+      this.selectedSeasonId.set(0);
       this.isDescriptionExpanded.set(false);
       this.movie.set(null);
 

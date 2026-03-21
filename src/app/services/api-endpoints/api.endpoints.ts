@@ -19,8 +19,8 @@ export const API_ENDPOINTS = {
     RECENTLY_UPDATED: '/api/movies/recently-updated',
     HIGHLY_RATED: '/api/movies/highly-rated',
     BY_GENRE: (genreName: string) => `/api/movies/genre/${encodeURIComponent(genreName)}`,
-    BY_ID: (id: string) => `/api/movies/${encodeURIComponent(id)}`,
-    WATCH: (episodeId: string) => `/api/movies/watch/${episodeId}`,
+    BY_ID: (id: number) => `/api/movies/${encodeURIComponent(id)}`,
+    WATCH: (episodeId: number) => `/api/movies/watch/${episodeId}`,
     BY_FILTER: '/api/movies/filter',
   },
   GENRES: {
@@ -30,7 +30,7 @@ export const API_ENDPOINTS = {
     GET_ALL: '/api/tags',
   },
   REVIEWS: {
-    BY_MOVIE: (movieId: string) => `/api/movies/${movieId}/reviews`,
+    BY_MOVIE: (movieId: number) => `/api/movies/${movieId}/reviews`,
     NEW: '/api/movies/reviews'
   }
 };

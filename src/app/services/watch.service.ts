@@ -13,7 +13,7 @@ export class WatchService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
 
-  getWatchDetail(episodeId: string): Observable<ApiResponse<WatchDetailData>> {
+  getWatchDetail(episodeId: number): Observable<ApiResponse<WatchDetailData>> {
     return this.http.get<ApiResponse<WatchDetailData>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.WATCH(episodeId)}`);
   }
 }

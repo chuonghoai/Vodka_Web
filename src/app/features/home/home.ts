@@ -61,7 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.movieService.getWatchedHistory().subscribe(res => { if (res.success) this.watchedMovies.set(res.data); });
     this.movieService.getRecentlyUpdated().subscribe(res => { if (res.success) this.recentlyUpdated.set(res.data); });
     this.movieService.getHighlyRated().subscribe(res => { if (res.success) this.highlyRated.set(res.data); });
-    this.movieService.getMoviesByGenre('g5').subscribe(res => { if (res.success) this.actionMovies.set(res.data); });
+    this.movieService.filterMovies({genres: ['hanh-dong']}).subscribe(res => { if (res.success) this.actionMovies.set(res.data); });
   }
 
   loadNewReleases(page: number) {

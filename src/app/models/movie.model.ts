@@ -3,7 +3,7 @@ import { Tag } from "./tag.model";
 
 // Movie card
 export interface Movie {
-  id: string;
+  id: number;
   title: string;
   releaseYear: number;
   genre: Genre[];
@@ -25,20 +25,20 @@ export interface MovieDetail {
 
 // util
 export interface Episode {
-  id: string;
+  id: number;
   title: string;
   duration: number;
 }
 
 export interface Season {
-  id: string;
+  id: number;
   title: string;
   thumbnailUrl?: string;
   episodes: Episode[];
 }
 
 export interface Review {
-  id: string;
+  id: number;
   userName: string;
   avatarUrl?: string;
   rating: number;
@@ -48,7 +48,7 @@ export interface Review {
 }
 
 export interface ReplyReview {
-  id: string;
+  id: number;
   userName: string;
   avatarUrl?: string;
   content: string;

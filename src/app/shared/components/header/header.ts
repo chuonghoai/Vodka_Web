@@ -21,7 +21,7 @@ export class Header implements OnInit {
   // Meta data
   genres = this.filterService.genres;
   tags = this.filterService.tags;
-  selectedGenreIds = signal<string[]>([]);
+  selectedGenreSlugs = signal<string[]>([]);
 
   // mobile/pc
   isMobileMenuOpen = signal<boolean>(false);
@@ -38,23 +38,23 @@ export class Header implements OnInit {
   }
 
   // API filter movies
-  applyFilter(tagId?: string) {
+  applyFilter(tagSlug?: string) {
     const queryParams: any = { page: 1 };
-    if (tagId) queryParams.tag = tagId;
-    if (this.selectedGenreIds().length > 0) queryParams.genres = this.selectedGenreIds();
+    if (tagSlug) queryParams.tag = tagSlug;
+    if (this.selectedGenreSlugs().length > 0) queryParams.genres = this.selectedGenreSlugs();
 
     this.router.navigate(['/search'], { queryParams });
     this.isMobileMenuOpen.set(false);
   }
 
-  toggleGenre(id: string) {
-    this.selectedGenreIds.update(ids =>
-      ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]
+  toggleGenre(slug: string) {
+    this.selectedGenreSlugs.update(slugs =>
+      slugs.includes(slug) ? slugs.filter(item => item !== slug) : [...slugs, slug]
     );
   }
 
   clearSelectedGenres() {
-    this.selectedGenreIds.set([]);
+    this.selectedGenreSlugs.set([]);
   }
 
   logout() {

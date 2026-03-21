@@ -44,21 +44,21 @@ export class SearchComponent implements OnInit {
   updateTitle(params: any) {
     let parts = [];
     if (params['keyword']) parts.push(`Từ khóa "${params['keyword']}"`);
-    if (params['tag']) parts.push(this.filterService.getNameById(params['tag']));
+    if (params['tag']) parts.push(this.filterService.getNameBySlug(params['tag']));
     if (params['genres']) {
       const g = Array.isArray(params['genres']) ? params['genres'] : [params['genres']];
-      parts.push(g.map(id => this.filterService.getNameById(id)).join(', '));
+      parts.push(g.map((slug: string) => this.filterService.getNameBySlug(slug)).join(', '));
     }
     this.listTitle.set(parts.length > 0 ? `Kết quả: ${parts.join(' - ')}` : 'Tất cả phim');
   }
 
   loadData(params: any) {
     const page = params['page'] ? parseInt(params['page'], 10) : 1;
-    
-    this.movieService.getMovies({
+
+    this.movieService.filterMovies({
       keyword: params['keyword'],
       tag: params['tag'],
-      genres: params['genres'],
+      genres: params['genres'] ? (Array.isArray(params['genres']) ? params['genres'] : [params['genres']]) : undefined,
       page: page,
       pageSize: 30
     }).subscribe(res => {

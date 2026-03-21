@@ -16,7 +16,7 @@ export class ReviewComponent {
   ratingModalToggled = output<boolean>();
 
   isLoading = signal<boolean>(false);
-  movieId = input.required<string>();
+  movieId = input.required<number>();
   reviewsList = signal<Review[]>([]);
   initialReviews = input<Review[]>([]);
   totalReviews = input<number>(0);
@@ -28,7 +28,7 @@ export class ReviewComponent {
   selectedRating = signal(0);
   hoverRating = signal(0);
   isSubmitting = signal(false);
-  replyingToId = signal<string | null>(null);
+  replyingToId = signal<number | null>(null);
   replyContent = signal('');
 
   constructor() {
@@ -95,7 +95,7 @@ export class ReviewComponent {
   }
 
   // Toggle reply review
-  toggleReply(reviewId: string) {
+  toggleReply(reviewId: number) {
     if (this.replyingToId() === reviewId) {
       this.replyingToId.set(null);
       this.replyContent.set('');
@@ -106,7 +106,7 @@ export class ReviewComponent {
   }
 
   // Reply reviews
-  submitReply(parentId: string) {
+  submitReply(parentId: number) {
     if (!this.replyContent().trim()) return;
     this.isSubmitting.set(true);
 

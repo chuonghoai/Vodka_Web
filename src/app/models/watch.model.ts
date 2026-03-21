@@ -1,7 +1,7 @@
 import { Episode, Movie, MovieStats, Review, Season } from "./movie.model";
 
 export interface WatchDetailData {
-  movie: { id: string; title: string };
+  movie: { id: number; title: string };
   currentEpisode: Episode & { videoUrl?: string; description?: string };
   seasons: Season[];
   reviews: Review[];
