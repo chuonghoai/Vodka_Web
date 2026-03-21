@@ -28,6 +28,7 @@ export class Auth implements OnDestroy {
 
   // State manager
   isLoading = signal<boolean>(false);
+  isSendingOTP = signal<boolean>(false);
   errorMessage = signal<string>('');
   otpCountdown = signal<number>(0);
   private countdownInterval: any;
@@ -114,9 +115,11 @@ export class Auth implements OnDestroy {
     if (this.otpCountdown() > 0) return;
 
     this.errorMessage.set('');
+    this.isSendingOTP.set(true);
 
     this.authService.requestRegister(email).subscribe({
       next: (res) => {
+        this.isSendingOTP.set(false);
         if (res.success) {
           this.notif.show(NotifType.SUCCESS, 'Mã OTP đã được gửi đến ' + email);
           this.otpCountdown.set(30);
@@ -129,6 +132,7 @@ export class Auth implements OnDestroy {
         }
       },
       error: (err) => {
+        this.isSendingOTP.set(false);
         this.errorMessage.set(handleHttpError(err));
       }
     });
@@ -150,6 +154,7 @@ export class Auth implements OnDestroy {
 
     this.authService.register(email, otp, pass).subscribe({
       next: (res) => {
+        console.log('Đăng ký thành công' + res);
         console.log(res);
         this.notif.show(NotifType.SUCCESS, 'Đăng ký thành công, vui lòng cập nhật hồ sơ')
         this.isLoading.set(false);

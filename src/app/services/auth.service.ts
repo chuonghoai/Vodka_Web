@@ -54,7 +54,7 @@ export class AuthService {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_SEND_OTP}`, { email });
   }
 
-  // Verify otp
+  // Verify otp - forgot password
   verifyOtp(email: string, otp: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_VERIFY_OTP}`, { email, otp });
   }
