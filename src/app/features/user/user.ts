@@ -5,6 +5,10 @@ import { ProfileInfoComponent } from './components/profile-info/profile-info';
 import { UserReviewsComponent } from './components/user-reviews/user-reviews';
 import { Movie } from '../../models/movie.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user.model';
+import { NotificationService } from '../../services/notification.service';
+import { NotificationType } from '../../models/notification.model';
 
 @Component({
   selector: 'app-user',
@@ -15,18 +19,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class UserComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private userService = inject(UserService);
+  private notiService = inject(NotificationService)
+
   activeTab = signal<'history' | 'favorites' | 'reviews'>('history');
 
-  userProfile = signal<any>({
-    id: "u123",
-    fullName: "Nguyễn Văn A",
-    dateOfBirth: "15/10/1998",
-    gender: "Nam",
-    phone: "0987654321",
-    email: "nguyenvana@gmail.com",
-    avatarUrl: "https://i.pravatar.cc/150?img=11"
-  });
+  // User info
+  userProfile = signal<User | null>(null);
+  isLoadingProfile = signal<boolean>(true);
 
+  // Movies info
   mockMovies: Movie[] = [
     { id: 1, title: 'Lật Mặt 7: Một Điều Ước', releaseYear: 2024, rating: 8.5, posterUrl: 'https://picsum.photos/id/1/300/400', genre: [{id: 1, name: 'Tâm lý', slug: 'tam-ly'}], tags: [{id: 1, name: 'Full HD'}] },
     { id: 2, title: 'Mai', releaseYear: 2024, rating: 7.9, posterUrl: 'https://picsum.photos/id/2/300/400', genre: [{id: 2, name: 'Tình cảm', slug: 'tinh-cam'}], tags: [{id: 1, name: 'Chiếu rạp'}] },
@@ -41,6 +43,7 @@ export class UserComponent implements OnInit {
   favoritePage = signal(1);
   favoriteTotalPages = signal(3);
 
+  // Reviews info
   myReviews = signal<any[]>([
     {
       id: "r1",
@@ -78,15 +81,37 @@ export class UserComponent implements OnInit {
       }
     });
 
+    this.loadUserProfile();
+
     this.historyMovies.set([...this.mockMovies]);
     this.favoriteMovies.set([this.mockMovies[1], this.mockMovies[2]]);
   }
 
+  // Call api load user profile
+  loadUserProfile() {
+    this.isLoadingProfile.set(true);
+    this.userService.getProfile().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.userProfile.set(res.data);
+        }
+        this.isLoadingProfile.set(false);
+      },
+      error: (err) => {
+        console.error('Lỗi khi tải thông tin cá nhân:', err);
+        this.isLoadingProfile.set(false);
+        this.notiService.show(NotificationType.ERROR, `Lỗi: ${err}`);
+      }
+    });
+  }
+
+  // Button edit profile
   handleEditProfile() {
     // TODO: Mở modal hoặc navigate tới trang chỉnh sửa (Call /api/users/me/profile)
     console.log('Clicked Edit Profile');
   }
 
+  // Button change tab
   changeTab(tab: 'history' | 'favorites' | 'reviews') {
     this.activeTab.set(tab);
 

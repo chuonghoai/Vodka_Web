@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { User } from '../../../../models/user.model';
 
 @Component({
   selector: 'app-profile-info',
@@ -33,6 +34,6 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class ProfileInfoComponent {
-  profile = input.required<any>();
+  profile = input<User | null>(null);
   onEdit = output<void>();
 }

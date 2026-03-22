@@ -6,6 +6,7 @@ import { environment } from "../../environments/environment.development";
 import { API_ENDPOINTS } from "./api-endpoints/api.endpoints";
 import { AuthService } from "./auth.service";
 import { UserState } from "../core/states/user.state";
+import { User } from "../models/user.model";
 
 @Injectable({
   providedIn: 'root'
@@ -27,5 +28,10 @@ export class UserService{
           }
         })
       );
+  }
+
+  // Get profile
+  getProfile(): Observable<ApiResponse<User>> {
+    return this.http.get<ApiResponse<User>>(`${this.baseUrl}${API_ENDPOINTS.USER.PROFILE}`);
   }
 }
