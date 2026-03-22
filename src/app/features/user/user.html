@@ -1,0 +1,101 @@
+<div class="min-h-screen bg-zinc-950 text-white font-sans pt-24 pb-20 animate-fade-in">
+  <div class="max-w-400 mx-auto px-4 md:px-8 lg:px-12">
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+      <div class="col-span-1">
+        <div class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 flex flex-col items-center text-center sticky top-28 shadow-2xl">
+          <div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-zinc-800 mb-6 shadow-xl group">
+            @if (userProfile()?.avatarUrl) {
+              <img [src]="userProfile().avatarUrl" alt="Avatar" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+            } @else {
+              <div class="w-full h-full bg-zinc-800 flex items-center justify-center">
+                <svg class="w-16 h-16 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+            }
+          </div>
+          <h2 class="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">{{ userProfile()?.fullName }}</h2>
+          <p class="text-zinc-400 font-medium mb-6">{{ userProfile()?.email }}</p>
+
+          <div class="w-full h-px bg-zinc-800/80 mb-6"></div>
+
+          <button class="w-full py-3 rounded-xl bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white font-bold transition-colors border border-red-600/20 shadow-sm">
+            Đổi mật khẩu
+          </button>
+        </div>
+      </div>
+
+      <div class="col-span-1 lg:col-span-3 space-y-8">
+
+        <app-profile-info [profile]="userProfile()" (onEdit)="handleEditProfile()"></app-profile-info>
+
+        <div class="bg-zinc-900/40 backdrop-blur-xl rounded-3xl border border-zinc-800/60 shadow-xl overflow-hidden min-h-125">
+
+          <div class="flex border-b border-zinc-800/80 overflow-x-auto hide-scrollbar">
+            <button (click)="changeTab('history')"
+                    class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
+                    [class.text-red-500]="activeTab() === 'history'" [class.border-red-500]="activeTab() === 'history'" [class.bg-zinc-800/30]="activeTab() === 'history'"
+                    [class.text-zinc-500]="activeTab() !== 'history'" [class.border-transparent]="activeTab() !== 'history'" [class.hover:text-zinc-300]="activeTab() !== 'history'">
+              LỊCH SỬ ĐÃ XEM
+            </button>
+            <button (click)="changeTab('favorites')"
+                    class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
+                    [class.text-red-500]="activeTab() === 'favorites'" [class.border-red-500]="activeTab() === 'favorites'" [class.bg-zinc-800/30]="activeTab() === 'favorites'"
+                    [class.text-zinc-500]="activeTab() !== 'favorites'" [class.border-transparent]="activeTab() !== 'favorites'" [class.hover:text-zinc-300]="activeTab() !== 'favorites'">
+              PHIM YÊU THÍCH
+            </button>
+            <button (click)="changeTab('reviews')"
+                    class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
+                    [class.text-red-500]="activeTab() === 'reviews'" [class.border-red-500]="activeTab() === 'reviews'" [class.bg-zinc-800/30]="activeTab() === 'reviews'"
+                    [class.text-zinc-500]="activeTab() !== 'reviews'" [class.border-transparent]="activeTab() !== 'reviews'" [class.hover:text-zinc-300]="activeTab() !== 'reviews'">
+              ĐÁNH GIÁ CỦA TÔI
+            </button>
+          </div>
+
+          <div class="p-6 md:p-8">
+            @switch (activeTab()) {
+              @case ('history') {
+                <div class="animate-fade-in">
+                  <app-movie-list
+                    title="Lịch sử đã xem"
+                    [movies]="historyMovies()"
+                    [currentPage]="historyPage()"
+                    [totalPages]="historyTotalPages()"
+                    (changePage)="onHistoryPageChange($event)">
+                  </app-movie-list>
+                </div>
+              }
+              @case ('favorites') {
+                <div class="animate-fade-in">
+                  <app-movie-list
+                    title="Phim yêu thích"
+                    [movies]="favoriteMovies()"
+                    [currentPage]="favoritePage()"
+                    [totalPages]="favoriteTotalPages()"
+                    (changePage)="onFavoritePageChange($event)">
+                  </app-movie-list>
+                </div>
+              }
+              @case ('reviews') {
+                <div class="animate-fade-in">
+                  <app-user-reviews
+                    [reviews]="myReviews()"
+                    [currentPage]="reviewPage()"
+                    [totalPages]="reviewTotalPages()"
+                    (changePage)="onReviewPageChange($event)">
+                  </app-user-reviews>
+                </div>
+              }
+            }
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

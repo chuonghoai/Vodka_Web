@@ -53,7 +53,7 @@
     </div>
     @if (currentUser(); as user) {
 
-      <div class="relative group cursor-pointer flex items-center gap-3">
+      <div (click)="goToProfile()" class="relative group cursor-pointer flex items-center gap-3">
         <span class="text-sm font-bold text-white hidden md:block max-w-30 truncate">
           {{ user.name || user.displayName || 'Người dùng' }}
         </span>
@@ -71,9 +71,9 @@
             <span class="text-xs text-zinc-500">Đăng nhập với</span>
             <span class="text-sm text-white font-bold truncate">{{ user.email }}</span>
           </div>
-          <a class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Hồ sơ cá nhân</a>
-          <a class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Phim yêu thích</a>
-          <a class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Lịch sử xem</a>
+          <a (click)="goToProfile()" class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Hồ sơ cá nhân</a>
+          <a (click)="goToProfile('favorites')" class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Phim yêu thích</a>
+          <a (click)="goToProfile('history')" class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Lịch sử xem</a>
           <div class="border-t border-zinc-800 my-1"></div>
           <button (click)="logout()" class="px-4 py-2.5 text-sm text-red-500 text-left hover:bg-zinc-800 transition-colors font-bold w-full">Đăng xuất</button>
         </div>

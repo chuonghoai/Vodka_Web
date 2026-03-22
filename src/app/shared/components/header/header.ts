@@ -57,6 +57,12 @@ export class Header implements OnInit {
     this.selectedGenreSlugs.set([]);
   }
 
+  goToProfile(tab?: string) {
+    const queryParams = tab ? { tab } : {};
+    this.router.navigate(['/profile'], { queryParams });
+    this.isMobileMenuOpen.set(false);
+  }
+
   logout() {
     this.authService.logout();
     this.isMobileMenuOpen.set(false);
