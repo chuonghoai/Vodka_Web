@@ -55,7 +55,7 @@
 
       <div (click)="goToProfile()" class="relative group cursor-pointer flex items-center gap-3">
         <span class="text-sm font-bold text-white hidden md:block max-w-30 truncate">
-          {{ user.name || user.displayName || 'Người dùng' }}
+          {{ user.name || user.fullName || 'Người dùng' }}
         </span>
 
         <div class="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden border-2 border-zinc-700 group-hover:border-red-500 transition-colors bg-zinc-800 flex items-center justify-center shrink-0">
