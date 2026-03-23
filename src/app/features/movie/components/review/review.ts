@@ -117,6 +117,13 @@ export class ReviewComponent {
     }).subscribe({
       next: (res) => {
         if (res.success) {
+          const currentList = this.reviewsList();
+          const parentReview = currentList.find(r => r.id === parentId);
+          if (parentReview) {
+            if (!parentReview.replied) parentReview.replied = [];
+            parentReview.replied.push(res.data);
+            this.reviewsList.set([...currentList]);
+          }
           this.reviewAdded.emit(res.data);
           this.replyingToId.set(null);
           this.replyContent.set('');
