@@ -5,138 +5,169 @@
 
       <div class="col-span-1">
         @if (isLoadingProfile()) {
-          <div class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 flex flex-col items-center text-center sticky top-28 shadow-2xl animate-pulse">
-            <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-zinc-800 mb-6"></div>
-            <div class="h-6 w-3/4 bg-zinc-800 rounded mb-4"></div>
-            <div class="h-4 w-1/2 bg-zinc-800 rounded mb-6"></div>
-            <div class="w-full h-px bg-zinc-800/80 mb-6"></div>
-            <div class="w-full h-12 rounded-xl bg-zinc-800"></div>
-          </div>
+        <div
+          class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 flex flex-col items-center text-center sticky top-28 shadow-2xl animate-pulse">
+          <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-zinc-800 mb-6"></div>
+          <div class="h-6 w-3/4 bg-zinc-800 rounded mb-4"></div>
+          <div class="h-4 w-1/2 bg-zinc-800 rounded mb-6"></div>
+          <div class="w-full h-px bg-zinc-800/80 mb-6"></div>
+          <div class="w-full h-12 rounded-xl bg-zinc-800"></div>
+        </div>
         } @else {
-          <div class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 flex flex-col items-center text-center sticky top-28 shadow-2xl">
-            <div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-zinc-800 mb-6 shadow-xl group">
-              @if (userProfile()?.avatarUrl) {
-                <img [src]="userProfile()?.avatarUrl" alt="Avatar" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-              } @else {
-                <div class="w-full h-full bg-zinc-800 flex items-center justify-center">
-                  <svg class="w-16 h-16 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                </div>
-              }
+        <div
+          class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-8 flex flex-col items-center text-center sticky top-28 shadow-2xl">
+          <div
+            class="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-zinc-800 mb-6 shadow-xl group">
+            @if (isEditingProfile() && editAvatarUrl()) {
+            <img [src]="editAvatarUrl()" alt="Avatar" class="w-full h-full object-cover">
+            } @else if (userProfile()?.avatarUrl) {
+            <img [src]="userProfile()?.avatarUrl" alt="Avatar"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+            } @else {
+            <div class="w-full h-full bg-zinc-800 flex items-center justify-center">
+              <svg class="w-16 h-16 text-zinc-600" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
             </div>
-            <h2 class="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">{{ userProfile()?.fullName }}</h2>
-            <p class="text-zinc-400 font-medium mb-6">{{ userProfile()?.email }}</p>
+            }
 
-            <div class="w-full h-px bg-zinc-800/80 mb-6"></div>
-
-            <button (click)="openChangePasswordModal()" class="w-full py-3 rounded-xl bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white font-bold transition-colors border border-red-600/20 shadow-sm">
-              Đổi mật khẩu
-            </button>
+            @if (isEditingProfile()) {
+            <label for="avatarFile"
+              class="absolute inset-0 bg-black/70 rounded-full flex flex-col items-center justify-center gap-2 text-white cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity border-2 border-red-500 border-dashed animate-fade-in">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-7 h-7">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+            </label>
+            <input type="file" id="avatarFile" accept="image/*" (change)="onFileChange($event)" class="hidden">
+            }
           </div>
+          @if (!isEditingProfile()) {
+          <h2 class="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">{{ userProfile()?.fullName }}</h2>
+          } @else {
+          <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-1">Họ và tên</p>
+          <input type="text" [(ngModel)]="editFullName" placeholder="Nhập họ và tên"
+            class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-white text-center font-bold focus:outline-none focus:border-red-600 transition-colors mb-2">
+          }
+          <p class="text-zinc-400 font-medium mb-6">{{ userProfile()?.email }}</p>
+
+          <div class="w-full h-px bg-zinc-800/80 mb-6"></div>
+
+          <button (click)="openChangePasswordModal()"
+            class="w-full py-3 rounded-xl bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white font-bold transition-colors border border-red-600/20 shadow-sm">
+            Đổi mật khẩu
+          </button>
+        </div>
         }
       </div>
 
       <div class="col-span-1 lg:col-span-3 space-y-8">
 
         @if (isLoadingProfile()) {
-          <div class="bg-zinc-900/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-zinc-800/60 shadow-xl animate-pulse h-55"></div>
+        <div
+          class="bg-zinc-900/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-zinc-800/60 shadow-xl animate-pulse h-55">
+        </div>
         } @else {
-          <app-profile-info [profile]="userProfile()" (onSaveProfile)="handleSaveProfile($event)"></app-profile-info>
+        <app-profile-info [profile]="userProfile()" (onEditStart)="handleEditStart()"
+          (onEditCancel)="handleEditCancel()" (onSaveProfile)="handleSaveProfile($event)">
+        </app-profile-info>
         }
 
-        <div class="bg-zinc-900/40 backdrop-blur-xl rounded-3xl border border-zinc-800/60 shadow-xl overflow-hidden min-h-125">
+        <div
+          class="bg-zinc-900/40 backdrop-blur-xl rounded-3xl border border-zinc-800/60 shadow-xl overflow-hidden min-h-125">
 
           <div class="flex border-b border-zinc-800/80 overflow-x-auto hide-scrollbar">
             <button (click)="changeTab('history')"
-                    class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
-                    [class.text-red-500]="activeTab() === 'history'" [class.border-red-500]="activeTab() === 'history'" [class.bg-zinc-800/30]="activeTab() === 'history'"
-                    [class.text-zinc-500]="activeTab() !== 'history'" [class.border-transparent]="activeTab() !== 'history'" [class.hover:text-zinc-300]="activeTab() !== 'history'">
+              class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
+              [class.text-red-500]="activeTab() === 'history'" [class.border-red-500]="activeTab() === 'history'"
+              [class.bg-zinc-800/30]="activeTab() === 'history'" [class.text-zinc-500]="activeTab() !== 'history'"
+              [class.border-transparent]="activeTab() !== 'history'"
+              [class.hover:text-zinc-300]="activeTab() !== 'history'">
               LỊCH SỬ ĐÃ XEM
             </button>
             <button (click)="changeTab('favorites')"
-                    class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
-                    [class.text-red-500]="activeTab() === 'favorites'" [class.border-red-500]="activeTab() === 'favorites'" [class.bg-zinc-800/30]="activeTab() === 'favorites'"
-                    [class.text-zinc-500]="activeTab() !== 'favorites'" [class.border-transparent]="activeTab() !== 'favorites'" [class.hover:text-zinc-300]="activeTab() !== 'favorites'">
+              class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
+              [class.text-red-500]="activeTab() === 'favorites'" [class.border-red-500]="activeTab() === 'favorites'"
+              [class.bg-zinc-800/30]="activeTab() === 'favorites'" [class.text-zinc-500]="activeTab() !== 'favorites'"
+              [class.border-transparent]="activeTab() !== 'favorites'"
+              [class.hover:text-zinc-300]="activeTab() !== 'favorites'">
               PHIM YÊU THÍCH
             </button>
             <button (click)="changeTab('reviews')"
-                    class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
-                    [class.text-red-500]="activeTab() === 'reviews'" [class.border-red-500]="activeTab() === 'reviews'" [class.bg-zinc-800/30]="activeTab() === 'reviews'"
-                    [class.text-zinc-500]="activeTab() !== 'reviews'" [class.border-transparent]="activeTab() !== 'reviews'" [class.hover:text-zinc-300]="activeTab() !== 'reviews'">
+              class="flex-1 py-5 px-6 font-bold text-sm md:text-base whitespace-nowrap transition-all duration-300 border-b-2"
+              [class.text-red-500]="activeTab() === 'reviews'" [class.border-red-500]="activeTab() === 'reviews'"
+              [class.bg-zinc-800/30]="activeTab() === 'reviews'" [class.text-zinc-500]="activeTab() !== 'reviews'"
+              [class.border-transparent]="activeTab() !== 'reviews'"
+              [class.hover:text-zinc-300]="activeTab() !== 'reviews'">
               ĐÁNH GIÁ CỦA TÔI
             </button>
           </div>
 
           <div class="p-6 md:p-8">
             @switch (activeTab()) {
-              @case ('history') {
-                <div class="animate-fade-in relative min-h-75">
-                  @if (isLoadingHistory()) {
-                    <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
-                      <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
-                    </div>
-                  }
-
-                  <app-movie-list
-                    title="Lịch sử đã xem"
-                    [movies]="historyMovies()"
-                    [currentPage]="historyPage()"
-                    [totalPages]="historyTotalPages()"
-                    (changePage)="onHistoryPageChange($event)">
-                  </app-movie-list>
-
-                  @if (!isLoadingHistory() && historyMovies().length === 0) {
-                    <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
-                      <p class="text-zinc-500">Bạn chưa xem bộ phim nào gần đây.</p>
-                    </div>
-                  }
-                </div>
+            @case ('history') {
+            <div class="animate-fade-in relative min-h-75">
+              @if (isLoadingHistory()) {
+              <div
+                class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
+                <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
+              </div>
               }
-              @case ('favorites') {
-                <div class="animate-fade-in relative min-h-75">
-                  @if (isLoadingFavorites()) {
-                    <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
-                      <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
-                    </div>
-                  }
 
-                  <app-movie-list
-                    title="Phim yêu thích"
-                    [movies]="favoriteMovies()"
-                    [currentPage]="favoritePage()"
-                    [totalPages]="favoriteTotalPages()"
-                    (changePage)="onFavoritePageChange($event)">
-                  </app-movie-list>
+              <app-movie-list title="Lịch sử đã xem" [movies]="historyMovies()" [currentPage]="historyPage()"
+                [totalPages]="historyTotalPages()" (changePage)="onHistoryPageChange($event)">
+              </app-movie-list>
 
-                  @if (!isLoadingFavorites() && favoriteMovies().length === 0) {
-                    <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
-                      <p class="text-zinc-500">Bạn chưa thêm bộ phim nào vào danh sách yêu thích.</p>
-                    </div>
-                  }
-                </div>
+              @if (!isLoadingHistory() && historyMovies().length === 0) {
+              <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
+                <p class="text-zinc-500">Bạn chưa xem bộ phim nào gần đây.</p>
+              </div>
               }
-              @case ('reviews') {
-                <div class="animate-fade-in relative min-h-75">
-
-                  @if (isLoadingReviews()) {
-                    <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
-                      <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
-                    </div>
-                  }
-
-                  <app-user-reviews
-                    [reviews]="myReviews()"
-                    [currentPage]="reviewPage()"
-                    [totalPages]="reviewTotalPages()"
-                    (changePage)="onReviewPageChange($event)">
-                  </app-user-reviews>
-
-                  @if (!isLoadingReviews() && myReviews().length === 0) {
-                    <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
-                      <p class="text-zinc-500">Bạn chưa viết bài đánh giá nào.</p>
-                    </div>
-                  }
-                </div>
+            </div>
+            }
+            @case ('favorites') {
+            <div class="animate-fade-in relative min-h-75">
+              @if (isLoadingFavorites()) {
+              <div
+                class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
+                <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
+              </div>
               }
+
+              <app-movie-list title="Phim yêu thích" [movies]="favoriteMovies()" [currentPage]="favoritePage()"
+                [totalPages]="favoriteTotalPages()" (changePage)="onFavoritePageChange($event)">
+              </app-movie-list>
+
+              @if (!isLoadingFavorites() && favoriteMovies().length === 0) {
+              <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
+                <p class="text-zinc-500">Bạn chưa thêm bộ phim nào vào danh sách yêu thích.</p>
+              </div>
+              }
+            </div>
+            }
+            @case ('reviews') {
+            <div class="animate-fade-in relative min-h-75">
+
+              @if (isLoadingReviews()) {
+              <div
+                class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
+                <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
+              </div>
+              }
+
+              <app-user-reviews [reviews]="myReviews()" [currentPage]="reviewPage()" [totalPages]="reviewTotalPages()"
+                (changePage)="onReviewPageChange($event)">
+              </app-user-reviews>
+
+              @if (!isLoadingReviews() && myReviews().length === 0) {
+              <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
+                <p class="text-zinc-500">Bạn chưa viết bài đánh giá nào.</p>
+              </div>
+              }
+            </div>
+            }
             }
           </div>
 
@@ -148,65 +179,124 @@
 </div>
 
 @if (isChangePasswordModalOpen()) {
-  <div class="fixed inset-0 z-9999 flex items-center justify-center p-4">
+<div class="fixed inset-0 z-9999 flex items-center justify-center p-4">
 
-    <div (click)="isChangePasswordModalOpen.set(false)" class="absolute inset-0 bg-black/80 backdrop-blur-sm animate-fade-in"></div>
+  <div (click)="isChangePasswordModalOpen.set(false)"
+    class="absolute inset-0 bg-black/80 backdrop-blur-sm animate-fade-in"></div>
 
-    <div class="bg-zinc-900 border-2 border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl relative w-full max-w-md z-[10000] animate-fade-in-up">
+  <div
+    class="bg-zinc-900 border-2 border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl relative w-full max-w-md z-[10000] animate-fade-in-up">
 
-      <button (click)="isChangePasswordModalOpen.set(false)" class="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white transition-colors bg-zinc-800/50 hover:bg-zinc-800 rounded-full">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-      </button>
+    <button (click)="isChangePasswordModalOpen.set(false)"
+      class="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white transition-colors bg-zinc-800/50 hover:bg-zinc-800 rounded-full">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
 
-      <h3 class="text-2xl font-black text-white mb-2">Đổi mật khẩu</h3>
+    <h3 class="text-2xl font-black text-white mb-2">Đổi mật khẩu</h3>
 
-      @if (userProfile()?.provider !== 'LOCAL' && userProfile()?.provider !== undefined) {
-        <div class="mt-6 bg-red-500/10 border border-red-500/20 rounded-2xl p-5 text-center flex flex-col items-center">
-          <div class="w-12 h-12 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-3">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-          </div>
-          <p class="text-red-400 text-sm font-medium leading-relaxed">
-            Tài khoản hiện tại được đăng nhập thông qua bên thứ 3 ({{ userProfile()?.provider }}). <br>Bạn không thể đổi mật khẩu trên hệ thống của chúng tôi.
-          </p>
-        </div>
-        <button (click)="isChangePasswordModalOpen.set(false)" class="w-full mt-6 py-3.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition-colors">
-          Đóng
-        </button>
-      } @else {
-        <p class="text-zinc-400 text-sm mb-6">Vui lòng nhập mật khẩu hiện tại và thiết lập mật khẩu mới.</p>
-
-        <form (submit)="submitChangePassword(oldPass.value, newPass.value, confirmPass.value); $event.preventDefault()" class="space-y-4">
-          <div>
-            <input #oldPass type="password" placeholder="Mật khẩu hiện tại" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-600 transition-colors">
-          </div>
-          <div>
-            <input #newPass type="password" placeholder="Mật khẩu mới" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-600 transition-colors">
-          </div>
-          <div>
-            <input #confirmPass type="password" placeholder="Xác nhận mật khẩu mới" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-600 transition-colors">
-          </div>
-
-          <div class="pt-4 flex gap-3">
-            <button type="button" (click)="isChangePasswordModalOpen.set(false)" class="flex-1 py-3.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition-colors">
-              Hủy
-            </button>
-            <button type="submit" [disabled]="isChangingPassword()" class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-colors shadow-lg shadow-red-600/20 disabled:opacity-50">
-              {{ isChangingPassword() ? 'ĐANG ĐỔI...' : 'XÁC NHẬN' }}
-            </button>
-          </div>
-        </form>
-      }
+    @if (userProfile()?.provider !== 'LOCAL' && userProfile()?.provider !== undefined) {
+    <div class="mt-6 bg-red-500/10 border border-red-500/20 rounded-2xl p-5 text-center flex flex-col items-center">
+      <div class="w-12 h-12 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-3">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <p class="text-red-400 text-sm font-medium leading-relaxed">
+        Tài khoản hiện tại được đăng nhập thông qua bên thứ 3 ({{ userProfile()?.provider }}). <br>Bạn không thể đổi mật
+        khẩu trên hệ thống của chúng tôi.
+      </p>
     </div>
+    <button (click)="isChangePasswordModalOpen.set(false)"
+      class="w-full mt-6 py-3.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition-colors">
+      Đóng
+    </button>
+    } @else {
+    <p class="text-zinc-400 text-sm mb-6">Vui lòng nhập mật khẩu hiện tại và thiết lập mật khẩu mới.</p>
+
+    <form (submit)="submitChangePassword(oldPass.value, newPass.value, confirmPass.value); $event.preventDefault()"
+      class="space-y-4">
+      <div>
+        <input #oldPass type="password" placeholder="Mật khẩu hiện tại"
+          class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-600 transition-colors">
+      </div>
+      <div>
+        <input #newPass type="password" placeholder="Mật khẩu mới"
+          class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-600 transition-colors">
+      </div>
+      <div>
+        <input #confirmPass type="password" placeholder="Xác nhận mật khẩu mới"
+          class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-600 transition-colors">
+      </div>
+
+      <div class="pt-4 flex gap-3">
+        <button type="button" (click)="isChangePasswordModalOpen.set(false)"
+          class="flex-1 py-3.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition-colors">
+          Hủy
+        </button>
+        <button type="submit" [disabled]="isChangingPassword()"
+          class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-colors shadow-lg shadow-red-600/20 disabled:opacity-50">
+          {{ isChangingPassword() ? 'ĐANG ĐỔI...' : 'XÁC NHẬN' }}
+        </button>
+      </div>
+    </form>
+    }
   </div>
+</div>
 }
 
+<app-avatar-cropper [imageChangedEvent]="imageChangedEvent()" (onCropped)="handleAvatarCropped($event)"
+  (onCancel)="imageChangedEvent.set(null)">
+</app-avatar-cropper>
+
 <style>
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .animate-fade-in { animation: fadeIn 0.2s ease-out forwards; }
-  .animate-fade-in-up { animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 </style>

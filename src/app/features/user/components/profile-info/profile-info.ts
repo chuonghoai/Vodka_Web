@@ -66,6 +66,9 @@ import { User } from '../../../../models/user.model';
 })
 export class ProfileInfoComponent {
   profile = input<User | null>(null);
+  
+  onEditStart = output<void>();
+  onEditCancel = output<void>();
   onSaveProfile = output<any>();
 
   isEditing = signal<boolean>(false);
@@ -89,14 +92,16 @@ export class ProfileInfoComponent {
     if (this.profile()?.dateOfBirth) {
       const d = new Date(this.profile()!.dateOfBirth);
       if (!isNaN(d.getTime())) {
-        formattedDate = d.toISOString().split('T')[0];
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        formattedDate = `${year}-${month}-${day}`;
       }
     }
     this.editDob.set(formattedDate);
     this.editGender.set(this.profile()?.gender?.toLowerCase() || 'other');
   }
 
-  // Hàm chuyển đổi tiếng Anh sang tiếng Việt khi hiển thị (Không lúc Edit)
   getDisplayGender(gender?: string): string {
     if (!gender) return 'Chưa cập nhật';
     const g = gender.toLowerCase();
@@ -106,7 +111,6 @@ export class ProfileInfoComponent {
     return gender;
   }
 
-  // Hàm format ngày tháng đẹp cho tiếng Việt (DD/MM/YYYY)
   getDisplayDate(dateStr?: string): string {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -117,26 +121,28 @@ export class ProfileInfoComponent {
   startEdit() {
     this.resetEditData();
     this.isEditing.set(true);
+    this.onEditStart.emit();
   }
 
   cancelEdit() {
+    this.resetEditData();
     this.isEditing.set(false);
+    this.onEditCancel.emit();
   }
 
   saveEdit() {
     let formattedDob = this.editDob();
-
     if (formattedDob && formattedDob.includes('-')) {
       const [year, month, day] = formattedDob.split('-');
       formattedDob = `${month}/${day}/${year}`;
     }
 
-    const updatedData = {
+    const childData = {
       phone: this.editPhone(),
       dateOfBirth: formattedDob,
       gender: this.editGender()
     };
-    this.onSaveProfile.emit(updatedData);
+    this.onSaveProfile.emit(childData);
     this.isEditing.set(false);
   }
 }

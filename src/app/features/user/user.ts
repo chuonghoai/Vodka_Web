@@ -11,11 +11,13 @@ import { NotificationService } from '../../services/notification.service';
 import { NotificationType } from '../../models/notification.model';
 import { handleHttpError } from '../../shared/util/exception.handle';
 import { UserState } from '../../core/states/user.state';
+import { AvatarCropperComponent } from './components/avatar-cropper/avatar-cropper';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [CommonModule, MovieListComponent, ProfileInfoComponent, UserReviewsComponent],
+  imports: [CommonModule, FormsModule, MovieListComponent, ProfileInfoComponent, UserReviewsComponent, AvatarCropperComponent],
   templateUrl: './user.html'
 })
 export class UserComponent implements OnInit {
@@ -26,6 +28,12 @@ export class UserComponent implements OnInit {
   private userState = inject(UserState)
 
   activeTab = signal<'history' | 'favorites' | 'reviews'>('history');
+
+  // State edit profile
+  isEditingProfile = signal<boolean>(false);
+  editFullName = signal<string>('');
+  editAvatarUrl = signal<string>('');
+  imageChangedEvent = signal<any>(null);
 
   // Modal change password
   isChangePasswordModalOpen = signal<boolean>(false);
@@ -83,24 +91,66 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Edit profile
-  handleSaveProfile(updatedData: any) {
+  // Listen event start edit profile
+  handleEditStart() {
+    this.isEditingProfile.set(true);
+    this.editFullName.set(this.userProfile()?.fullName || '');
+    this.editAvatarUrl.set(this.userProfile()?.avatarUrl || '');
+  }
+
+  // Listen event cancel edit profile
+  handleEditCancel() {
+    this.isEditingProfile.set(false);
+  }
+
+  // Button change avatar
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.imageChangedEvent.set(event);
+    }
+  }
+
+  // receive avatar from cropper
+  handleAvatarCropped(base64Image: string) {
+    this.editAvatarUrl.set(base64Image);
+    this.imageChangedEvent.set(null);
+  }
+
+  // Handle edit profile
+  handleSaveProfile(profileInfoData: any) {
     const payload = {
-      displayName: this.userProfile()?.fullName || '',
-      avatarUrl: this.userProfile()?.avatarUrl || '',
+      displayName: this.editFullName(),
+      avatarUrl: this.editAvatarUrl(),
       email: this.userProfile()?.email || '',
       status: 'active',
-      ...updatedData
+      ...profileInfoData
     }
 
+    this.isEditingProfile.set(false);
+
+    const avatarUrl = payload.avatarUrl;
+    if (avatarUrl && avatarUrl.startsWith('data:image/')) {
+      console.log('Phát hiện ảnh mới, đang chờ cấu hình MediaService...');
+      this.callUpdateProfileApi(payload);
+    } else {
+      this.callUpdateProfileApi(payload);
+    }
+  }
+
+  // Call api edit profile
+  private callUpdateProfileApi(payload: any) {
     this.userService.updateProfile(payload).subscribe({
       next: (res) => {
-        if (res.success && res.data) {
-          const userData = res.data.updatedUser ? res.data.updatedUser : res.data;
-          this.loadUserProfile(false);
-          this.userProfile.set(userData);
-          this.userState.updateUser(userData);
+        if (res.success) {
           this.notiService.show(NotificationType.SUCCESS, 'Cập nhật thông tin thành công!');
+          this.loadUserProfile(false);
+
+          if (res.data) {
+            const userData = res.data.updatedUser ? res.data.updatedUser : res.data;
+            this.userProfile.set(userData);
+            this.userState.updateUser(userData);
+          }
         } else {
           this.notiService.show(NotificationType.ERROR, res.message || 'Cập nhật thất bại!');
         }
@@ -111,7 +161,7 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Change password
+  // Call api change password
   submitChangePassword(oldPass: string, newPass: string, confirmPass: string) {
     if (!oldPass || !newPass || !confirmPass) {
       this.notiService.show(NotificationType.WARNING, 'Vui lòng điền đầy đủ thông tin mật khẩu!');
