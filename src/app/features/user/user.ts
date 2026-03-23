@@ -29,6 +29,7 @@ export class UserComponent implements OnInit {
   isLoadingProfile = signal<boolean>(true);
   isLoadingFavorites = signal<boolean>(false);
   isLoadingHistory = signal<boolean>(false);
+  isLoadingReviews = signal<boolean>(false);
 
   // Movies info
   mockMovies: Movie[] = [
@@ -48,34 +49,9 @@ export class UserComponent implements OnInit {
   favoriteTotalPages = signal(3);
 
   // Reviews info
-  myReviews = signal<any[]>([
-    {
-      id: "r1",
-      content: "Phim rất hay, cảm động rơi nước mắt. Hình ảnh đẹp, diễn viên diễn xuất thần.",
-      rating: 9.0,
-      createdAt: "2024-03-21T10:00:00Z",
-      movie: {
-        id: 1,
-        title: "Lật Mặt 7: Một Điều Ước",
-        posterUrl: "https://picsum.photos/id/1/300/400",
-        tags: [{id: 't1', name: 'Chiếu rạp'}, {id: 't2', name: 'Full HD'}]
-      }
-    },
-    {
-      id: "r2",
-      content: "Nội dung hơi dễ đoán nhưng nhạc phim xuất sắc.",
-      rating: 7.5,
-      createdAt: "2024-02-15T14:30:00Z",
-      movie: {
-        id: 2,
-        title: "Mai",
-        posterUrl: "https://picsum.photos/id/2/300/400",
-        tags: [{id: 't1', name: 'Chiếu rạp'}]
-      }
-    }
-  ]);
+  myReviews = signal<any[]>([]);
   reviewPage = signal(1);
-  reviewTotalPages = signal(2);
+  reviewTotalPages = signal(1);
 
   ngOnInit() {
     this.loadUserProfile();
@@ -97,6 +73,7 @@ export class UserComponent implements OnInit {
       }
       else if (this.activeTab() === 'reviews') {
         this.reviewPage.set(page);
+        this.loadReviews(page);
       }
     });
   }
@@ -112,8 +89,9 @@ export class UserComponent implements OnInit {
         this.isLoadingProfile.set(false);
       },
       error: (err) => {
-        console.error('Lỗi khi tải thông tin cá nhân:', err);
+        console.error('Lỗi khi tải thông tin cá nhân:', err.error.message);
         this.isLoadingProfile.set(false);
+        this.userProfile.set(null);
         this.notiService.show(NotificationType.ERROR, `Lỗi: ${err}`);
       }
     });
@@ -136,6 +114,7 @@ export class UserComponent implements OnInit {
       },
       error: (err) => {
         console.error('Lỗi khi tải phim yêu thích:', err);
+        this.favoriteMovies.set([]);
         this.isLoadingFavorites.set(false);
         this.notiService.show(NotificationType.ERROR, `Lỗi tải phim yêu thích: ${err}`);
       }
@@ -159,7 +138,30 @@ export class UserComponent implements OnInit {
       },
       error: (err) => {
         console.error('Lỗi khi tải lịch sử:', err);
+        this.historyMovies.set([]);
         this.isLoadingHistory.set(false);
+      }
+    });
+  }
+
+  loadReviews(page: number) {
+    this.isLoadingReviews.set(true);
+    this.userService.getReviews(page, 10).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.myReviews.set(res.data);
+
+          if (res.pagination) {
+            this.reviewPage.set(res.pagination.currentPage);
+            this.reviewTotalPages.set(res.pagination.totalPages);
+          }
+        }
+        this.isLoadingReviews.set(false);
+      },
+      error: (err) => {
+        console.error('Lỗi khi tải đánh giá:', err);
+        this.myReviews.set([]);
+        this.isLoadingReviews.set(false);
       }
     });
   }

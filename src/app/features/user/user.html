@@ -115,13 +115,26 @@
                 </div>
               }
               @case ('reviews') {
-                <div class="animate-fade-in">
+                <div class="animate-fade-in relative min-h-[300px]">
+
+                  @if (isLoadingReviews()) {
+                    <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
+                      <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
+                    </div>
+                  }
+
                   <app-user-reviews
                     [reviews]="myReviews()"
                     [currentPage]="reviewPage()"
                     [totalPages]="reviewTotalPages()"
                     (changePage)="onReviewPageChange($event)">
                   </app-user-reviews>
+
+                  @if (!isLoadingReviews() && myReviews().length === 0) {
+                    <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
+                      <p class="text-zinc-500">Bạn chưa viết bài đánh giá nào.</p>
+                    </div>
+                  }
                 </div>
               }
             }

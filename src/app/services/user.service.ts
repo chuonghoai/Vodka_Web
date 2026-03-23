@@ -49,5 +49,12 @@ export class UserService{
       .set('pageSize', pageSize.toString());
     return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.MOVIE_HISTORY}`, { params });
   }
+
   // Get user's reviews
+  getReviews(page: number = 1, pageSize: number = 40): Observable<ApiResponse<any[]>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.REVIEWS}`, { params });
+  }
 }
