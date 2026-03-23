@@ -42,7 +42,7 @@ import { User } from '../../../../models/user.model';
         <div class="bg-zinc-950/50 p-4 rounded-2xl border border-zinc-800/50 transition-colors" [class.border-zinc-700]="isEditing()">
           <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-2">Ngày sinh</p>
           @if (!isEditing()) {
-            <p class="text-zinc-200 font-medium text-lg">{{ profile()?.dateOfBirth || 'Chưa cập nhật' }}</p>
+            <p class="text-zinc-200 font-medium text-lg">{{ getDisplayDate(profile()?.dateOfBirth) || 'Chưa cập nhật' }}</p>
           } @else {
             <input type="date" [(ngModel)]="editDob" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500 transition-colors [color-scheme:dark]">
           }
@@ -51,14 +51,12 @@ import { User } from '../../../../models/user.model';
         <div class="bg-zinc-950/50 p-4 rounded-2xl border border-zinc-800/50 transition-colors" [class.border-zinc-700]="isEditing()">
           <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-2">Giới tính</p>
           @if (!isEditing()) {
-            <p class="text-zinc-200 font-medium text-lg">
-              {{ profile()?.gender === 'male' || profile()?.gender === 'MALE' ? 'Nam' : profile()?.gender === 'female' || profile()?.gender === 'FEMALE' ? 'Nữ' : profile()?.gender === 'other' || profile()?.gender === 'OTHER' ? 'Khác' : (profile()?.gender || 'Chưa cập nhật') }}
-            </p>
+            <p class="text-zinc-200 font-medium text-lg">{{ getDisplayGender(profile()?.gender) }}</p>
           } @else {
             <select [(ngModel)]="editGender" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-red-500 transition-colors appearance-none cursor-pointer">
-              <option value="Nam">Nam</option>
-              <option value="Nữ">Nữ</option>
-              <option value="Khác">Khác</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="other">Khác</option>
             </select>
           }
         </div>
@@ -73,11 +71,10 @@ export class ProfileInfoComponent {
   isEditing = signal<boolean>(false);
   editPhone = signal<string>('');
   editDob = signal<string>('');
-  editGender = signal<string>('Khác');
+  editGender = signal<string>('other');
 
   constructor() {
     effect(() => {
-      // Tự động đồng bộ data khi profile thay đổi và đang không trong chế độ edit
       if (this.profile() && !this.isEditing()) {
         this.resetEditData();
       }
@@ -87,27 +84,34 @@ export class ProfileInfoComponent {
   private resetEditData() {
     this.editPhone.set(this.profile()?.phone || '');
 
-    // Server format: MM/dd/yyyy -> input needs: yyyy-MM-dd
-    let formattedDob = '';
-    const serverDob = this.profile()?.dateOfBirth;
-    if (serverDob) {
-      const parts = serverDob.split('/');
-      if (parts.length === 3) {
-        // [0:MM, 1:dd, 2:yyyy]
-        formattedDob = `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
-      } else {
-        formattedDob = serverDob;
+    // Convert Date từ backend thành chuẩn YYYY-MM-DD để hiển thị vào thẻ <input type="date">
+    let formattedDate = '';
+    if (this.profile()?.dateOfBirth) {
+      const d = new Date(this.profile()!.dateOfBirth);
+      if (!isNaN(d.getTime())) {
+        formattedDate = d.toISOString().split('T')[0];
       }
     }
-    this.editDob.set(formattedDob);
+    this.editDob.set(formattedDate);
+    this.editGender.set(this.profile()?.gender?.toLowerCase() || 'other');
+  }
 
-    let genderVal = this.profile()?.gender;
-    if (genderVal === 'male' || genderVal === 'MALE') genderVal = 'Nam';
-    else if (genderVal === 'female' || genderVal === 'FEMALE') genderVal = 'Nữ';
-    else if (genderVal === 'other' || genderVal === 'OTHER') genderVal = 'Khác';
-    else genderVal = 'Khác';
+  // Hàm chuyển đổi tiếng Anh sang tiếng Việt khi hiển thị (Không lúc Edit)
+  getDisplayGender(gender?: string): string {
+    if (!gender) return 'Chưa cập nhật';
+    const g = gender.toLowerCase();
+    if (g === 'male') return 'Nam';
+    if (g === 'female') return 'Nữ';
+    if (g === 'other') return 'Khác';
+    return gender;
+  }
 
-    this.editGender.set(genderVal);
+  // Hàm format ngày tháng đẹp cho tiếng Việt (DD/MM/YYYY)
+  getDisplayDate(dateStr?: string): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('vi-VN');
   }
 
   startEdit() {
@@ -120,38 +124,19 @@ export class ProfileInfoComponent {
   }
 
   saveEdit() {
-    // Convert yyyy-MM-dd to MM/dd/yyyy for Server
-    let finalDob = '';
-    const dob = this.editDob();
-    if (dob) {
-      const parts = dob.split('-');
-      if (parts.length === 3) {
-        // [0:yyyy, 1:MM, 2:dd]
-        finalDob = `${parts[1]}/${parts[2]}/${parts[0]}`;
-      } else {
-        finalDob = dob;
-      }
+    let formattedDob = this.editDob();
+
+    if (formattedDob && formattedDob.includes('-')) {
+      const [year, month, day] = formattedDob.split('-');
+      formattedDob = `${month}/${day}/${year}`;
     }
 
-    // Convert string to match Server EGender
-    let finalGender = 'other';
-    const g = this.editGender();
-    if (g === 'Nam') finalGender = 'male';
-    else if (g === 'Nữ') finalGender = 'female';
-
-    // Dữ liệu hợp lệ theo chuẩn DTO Server (UpdateProfileRequest)
     const updatedData = {
-      displayName: this.profile()?.fullName || '',
       phone: this.editPhone(),
-      dateOfBirth: finalDob,
-      gender: finalGender,
-      status: 'ACTIVE' // Server yêu cầu @NotNull EStatus
+      dateOfBirth: formattedDob,
+      gender: this.editGender()
     };
-
-    console.log('Dữ liệu chuẩn bị lưu:', updatedData);
     this.onSaveProfile.emit(updatedData);
-
-    // Đoạn này có thể giữ form hoặc đóng form tùy logic sau khi API success, tạm thời cứ tắt form
     this.isEditing.set(false);
   }
 }

@@ -10,6 +10,7 @@ import { User } from '../../models/user.model';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationType } from '../../models/notification.model';
 import { handleHttpError } from '../../shared/util/exception.handle';
+import { UserState } from '../../core/states/user.state';
 
 @Component({
   selector: 'app-user',
@@ -22,6 +23,7 @@ export class UserComponent implements OnInit {
   private router = inject(Router);
   private userService = inject(UserService);
   private notiService = inject(NotificationService)
+  private userState = inject(UserState)
 
   activeTab = signal<'history' | 'favorites' | 'reviews'>('history');
 
@@ -83,11 +85,21 @@ export class UserComponent implements OnInit {
 
   // Edit profile
   handleSaveProfile(updatedData: any) {
-    this.userService.updateProfile(updatedData).subscribe({
+    const payload = {
+      displayName: this.userProfile()?.fullName || '',
+      avatarUrl: this.userProfile()?.avatarUrl || '',
+      email: this.userProfile()?.email || '',
+      status: 'active',
+      ...updatedData
+    }
+
+    this.userService.updateProfile(payload).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           const userData = res.data.updatedUser ? res.data.updatedUser : res.data;
+          this.loadUserProfile(false);
           this.userProfile.set(userData);
+          this.userState.updateUser(userData);
           this.notiService.show(NotificationType.SUCCESS, 'Cập nhật thông tin thành công!');
         } else {
           this.notiService.show(NotificationType.ERROR, res.message || 'Cập nhật thất bại!');
@@ -129,18 +141,20 @@ export class UserComponent implements OnInit {
   }
 
   // Call api load user profile
-  loadUserProfile() {
-    this.isLoadingProfile.set(true);
+  loadUserProfile(showLoading: boolean = true) {
+    if (showLoading) this.isLoadingProfile.set(true);
+
     this.userService.getProfile().subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.userProfile.set(res.data);
+          this.userState.updateUser(res.data);
         }
-        this.isLoadingProfile.set(false);
+        if (showLoading) this.isLoadingProfile.set(false);
       },
       error: (err) => {
         console.error('Lỗi khi tải thông tin cá nhân:', err.error.message);
-        this.isLoadingProfile.set(false);
+        if (showLoading) this.isLoadingProfile.set(false);
         this.userProfile.set(null);
         this.notiService.show(NotificationType.ERROR, `Lỗi: ${err}`);
       }
