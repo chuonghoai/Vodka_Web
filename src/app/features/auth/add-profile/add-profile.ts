@@ -32,7 +32,7 @@ export class AddProfile {
         console.log('Thêm mới thông tin thành công: ' + res);
         this.isLoading.set(false);
         if (res.success) {
-          this.notif.show(NotificationType.SUCCESS, 'Cập nhật hồ sơ thành công, chào mừng ' + res.data.updatedUser.name);
+          this.notif.show(NotificationType.SUCCESS, 'Cập nhật hồ sơ thành công, chào mừng ' + res.data.updatedUser.fullName);
           this.onComplete.emit();
         } else {
           this.errorMessage.set(res.message);

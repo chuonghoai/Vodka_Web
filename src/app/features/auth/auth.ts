@@ -65,7 +65,7 @@ export class Auth implements OnDestroy {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success) {
-          this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.name);
+          this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.fullName);
           this.finishAuthFlow();
         } else {
           this.errorMessage.set(res.message);
@@ -93,7 +93,7 @@ export class Auth implements OnDestroy {
         console.log(res);
         this.isLoading.set(false);
         if (res.success) {
-          this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.name)
+          this.notif.show(NotifType.SUCCESS, 'Đăng nhập thành công! Chào mừng ' + res.data.user.fullName)
           this.finishAuthFlow();
         } else {
           this.errorMessage.set(res.message);
