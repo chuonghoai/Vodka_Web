@@ -8,6 +8,8 @@ import { DurationPipe } from "../../shared/pipes/duration.pipe";
 import { ReviewComponent } from './components/review/review';
 import { TotalViewsPipe } from '../../shared/pipes/total-views.pipe';
 import { FavoritesPipe } from '../../shared/pipes/favorites.pipe';
+import { NotificationService } from '../../services/notification.service';
+import { NotificationType } from '../../models/notification.model';
 
 @Component({
   selector: 'app-movie',
@@ -26,12 +28,15 @@ import { FavoritesPipe } from '../../shared/pipes/favorites.pipe';
 export class MovieComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private movieService = inject(MovieService);
+  private notifService = inject(NotificationService);
 
   isMainContentDimmed = signal<boolean>(false);
   movieId = signal<number>(0);
   movie = signal<MovieDetail | null>(null);
   selectedSeasonId = signal<number>(0);
   isDescriptionExpanded = signal<boolean>(false);
+  isFavorited = signal<boolean>(false);
+  isTogglingFavorite = signal<boolean>(false);
 
   // Get list episodes of current season
   currentEpisodes = computed(() => {
@@ -63,6 +68,7 @@ export class MovieComponent implements OnInit {
       const id = Number(params.get('id'));
       if (!Number.isFinite(id)) return;
       this.movieId.set(id);
+      this.isFavorited.set(false);
 
       this.selectedSeasonId.set(0);
       this.isDescriptionExpanded.set(false);
@@ -88,6 +94,27 @@ export class MovieComponent implements OnInit {
           }
         }
       });
+    });
+  }
+
+  toggleFavorite() {
+    if (this.isTogglingFavorite() || !this.movieId()) return;
+    this.isTogglingFavorite.set(true);
+
+    this.movieService.toggleFavorite(this.movieId()).subscribe({
+      next: (res) => {
+        this.isTogglingFavorite.set(false);
+        if (res.success && res.data) {
+          this.isFavorited.set(res.data.isFavorited);
+          this.notifService.show(NotificationType.SUCCESS, res.message);
+        } else {
+          this.notifService.show(NotificationType.ERROR, res.message || 'Có lỗi xảy ra');
+        }
+      },
+      error: (err) => {
+        this.isTogglingFavorite.set(false);
+        this.notifService.show(NotificationType.ERROR, 'Không thể cập nhật yêu thích lúc này. Vui lòng thử lại sau.');
+      }
     });
   }
 

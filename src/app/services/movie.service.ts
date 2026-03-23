@@ -62,4 +62,8 @@ export class MovieService {
 
     return this.http.get<any>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.BY_FILTER}`, { params });
   }
+
+  toggleFavorite(movieId: number): Observable<ApiResponse<{isFavorited: boolean}>> {
+    return this.http.post<ApiResponse<{isFavorited: boolean}>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.FAVORITE(movieId)}`, {});
+  }
 }
