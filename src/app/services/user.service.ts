@@ -57,4 +57,9 @@ export class UserService{
       .set('pageSize', pageSize.toString());
     return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.REVIEWS}`, { params });
   }
+
+  // Change password
+  changePassword(oldPassword: string, newPassword: string, confirmNewPassword: string) {
+    return this.http.put(`${this.baseUrl}${API_ENDPOINTS.USER.CHANGE_PASSWORD}`, { oldPassword, newPassword, confirmNewPassword });
+  }
 }

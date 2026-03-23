@@ -9,6 +9,7 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationType } from '../../models/notification.model';
+import { handleHttpError } from '../../shared/util/exception.handle';
 
 @Component({
   selector: 'app-user',
@@ -24,19 +25,20 @@ export class UserComponent implements OnInit {
 
   activeTab = signal<'history' | 'favorites' | 'reviews'>('history');
 
+  // Modal change password
+  isChangePasswordModalOpen = signal<boolean>(false);
+  isChangingPassword = signal<boolean>(false);
+  openChangePasswordModal() {
+    console.log(this.userProfile());
+    this.isChangePasswordModalOpen.set(true);
+  }
+
   // User info
   userProfile = signal<User | null>(null);
   isLoadingProfile = signal<boolean>(true);
   isLoadingFavorites = signal<boolean>(false);
   isLoadingHistory = signal<boolean>(false);
   isLoadingReviews = signal<boolean>(false);
-
-  // Movies info
-  mockMovies: Movie[] = [
-    { id: 1, title: 'Lật Mặt 7: Một Điều Ước', releaseYear: 2024, rating: 8.5, posterUrl: 'https://picsum.photos/id/1/300/400', genre: [{id: 1, name: 'Tâm lý', slug: 'tam-ly'}], tags: [{id: 1, name: 'Full HD'}] },
-    { id: 2, title: 'Mai', releaseYear: 2024, rating: 7.9, posterUrl: 'https://picsum.photos/id/2/300/400', genre: [{id: 2, name: 'Tình cảm', slug: 'tinh-cam'}], tags: [{id: 1, name: 'Chiếu rạp'}] },
-    { id: 3, title: 'Quỷ Cẩu', releaseYear: 2023, rating: 8.0, posterUrl: 'https://picsum.photos/id/3/300/400', genre: [{id: 3, name: 'Kinh dị', slug: 'kinh-di'}], tags: [] },
-  ];
 
   // History info
   historyMovies = signal<Movie[]>([]);
@@ -53,6 +55,7 @@ export class UserComponent implements OnInit {
   reviewPage = signal(1);
   reviewTotalPages = signal(1);
 
+  // Init
   ngOnInit() {
     this.loadUserProfile();
     this.route.queryParams.subscribe(params => {
@@ -74,6 +77,53 @@ export class UserComponent implements OnInit {
       else if (this.activeTab() === 'reviews') {
         this.reviewPage.set(page);
         this.loadReviews(page);
+      }
+    });
+  }
+
+  // Edit profile
+  handleSaveProfile(updatedData: any) {
+    this.userService.updateProfile(updatedData).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const userData = res.data.updatedUser ? res.data.updatedUser : res.data;
+          this.userProfile.set(userData);
+          this.notiService.show(NotificationType.SUCCESS, 'Cập nhật thông tin thành công!');
+        } else {
+          this.notiService.show(NotificationType.ERROR, res.message || 'Cập nhật thất bại!');
+        }
+      },
+      error: (err) => {
+        this.notiService.show(NotificationType.ERROR, handleHttpError(err));
+      }
+    });
+  }
+
+  // Change password
+  submitChangePassword(oldPass: string, newPass: string, confirmPass: string) {
+    if (!oldPass || !newPass || !confirmPass) {
+      this.notiService.show(NotificationType.WARNING, 'Vui lòng điền đầy đủ thông tin mật khẩu!');
+      return;
+    }
+    if (newPass !== confirmPass) {
+      this.notiService.show(NotificationType.WARNING, 'Mật khẩu mới và xác nhận không khớp!');
+      return;
+    }
+
+    this.isChangingPassword.set(true);
+    this.userService.changePassword(oldPass, newPass, confirmPass).subscribe({
+      next: (res: any) => {
+        this.isChangingPassword.set(false);
+        if (res.success) {
+          this.notiService.show(NotificationType.SUCCESS, 'Đổi mật khẩu thành công!');
+          this.isChangePasswordModalOpen.set(false);
+        } else {
+          this.notiService.show(NotificationType.ERROR, res.message || 'Đổi mật khẩu thất bại!');
+        }
+      },
+      error: (err) => {
+        this.isChangingPassword.set(false);
+        this.notiService.show(NotificationType.ERROR, handleHttpError(err));
       }
     });
   }
@@ -144,6 +194,7 @@ export class UserComponent implements OnInit {
     });
   }
 
+  // Call api load reviews
   loadReviews(page: number) {
     this.isLoadingReviews.set(true);
     this.userService.getReviews(page, 10).subscribe({
@@ -164,12 +215,6 @@ export class UserComponent implements OnInit {
         this.isLoadingReviews.set(false);
       }
     });
-  }
-
-  // Button edit profile
-  handleEditProfile() {
-    // TODO: Mở modal hoặc navigate tới trang chỉnh sửa (Call /api/users/me/profile)
-    console.log('Clicked Edit Profile');
   }
 
   // Button change tab

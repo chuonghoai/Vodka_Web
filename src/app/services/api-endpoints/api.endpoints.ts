@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     FAVORITES: '/api/users/favorites',
     MOVIE_HISTORY: '/api/users/history',
     REVIEWS: '/api/users/reviews',
+    CHANGE_PASSWORD: '/api/users/change-password',
   },
   MOVIES: {
     FEATURED: '/api/movies/featured',
