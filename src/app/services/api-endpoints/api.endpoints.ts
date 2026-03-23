@@ -10,6 +10,10 @@ export const API_ENDPOINTS = {
   },
   USER: {
     PROFILE: '/api/users/me/profile',
+    FAVORITES: '/api/users/favorites',
+    MOVIE_HISTORY: '/api/users/history',
+    REVIEWS: '/api/users/reviews',
+
   },
   MOVIES: {
     FEATURED: '/api/movies/featured',

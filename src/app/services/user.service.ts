@@ -1,12 +1,13 @@
 import { inject, Injectable } from "@angular/core";
 import { Observable, tap } from "rxjs";
 import { ApiResponse } from "../models/api-response.model";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "../../environments/environment.development";
 import { API_ENDPOINTS } from "./api-endpoints/api.endpoints";
 import { AuthService } from "./auth.service";
 import { UserState } from "../core/states/user.state";
 import { User } from "../models/user.model";
+import { Movie } from "../models/movie.model";
 
 @Injectable({
   providedIn: 'root'
@@ -34,4 +35,14 @@ export class UserService{
   getProfile(): Observable<ApiResponse<User>> {
     return this.http.get<ApiResponse<User>>(`${this.baseUrl}${API_ENDPOINTS.USER.PROFILE}`);
   }
+
+  // Get movies favorite
+  getFavorites(page: number = 1, pageSize: number = 50): Observable<ApiResponse<Movie[]>> {
+    const params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.FAVORITES}`, { params })
+  }
+
+  // Get movies history
+
+  // Get user's reviews
 }

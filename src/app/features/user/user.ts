@@ -27,6 +27,7 @@ export class UserComponent implements OnInit {
   // User info
   userProfile = signal<User | null>(null);
   isLoadingProfile = signal<boolean>(true);
+  isLoadingFavorites = signal<boolean>(false);
 
   // Movies info
   mockMovies: Movie[] = [
@@ -35,10 +36,12 @@ export class UserComponent implements OnInit {
     { id: 3, title: 'Quỷ Cẩu', releaseYear: 2023, rating: 8.0, posterUrl: 'https://picsum.photos/id/3/300/400', genre: [{id: 3, name: 'Kinh dị', slug: 'kinh-di'}], tags: [] },
   ];
 
+  // History info
   historyMovies = signal<Movie[]>([]);
   historyPage = signal(1);
   historyTotalPages = signal(5);
 
+  // Favorites info
   favoriteMovies = signal<Movie[]>([]);
   favoritePage = signal(1);
   favoriteTotalPages = signal(3);
@@ -74,17 +77,27 @@ export class UserComponent implements OnInit {
   reviewTotalPages = signal(2);
 
   ngOnInit() {
+    this.loadUserProfile();
     this.route.queryParams.subscribe(params => {
-      const tab = params['tab'];
+      const tab = params['tab'] || 'history';
+      const page = parseInt(params['page'], 10) || 1;
+
       if (tab === 'history' || tab === 'favorites' || tab === 'reviews') {
         this.activeTab.set(tab);
       }
+
+      if (this.activeTab() === 'favorites') {
+        this.favoritePage.set(page);
+        this.loadFavorites(page);
+      }
+      else if (this.activeTab() === 'history') {
+        this.historyPage.set(page);
+        this.historyMovies.set([...this.mockMovies]);
+      }
+      else if (this.activeTab() === 'reviews') {
+        this.reviewPage.set(page);
+      }
     });
-
-    this.loadUserProfile();
-
-    this.historyMovies.set([...this.mockMovies]);
-    this.favoriteMovies.set([this.mockMovies[1], this.mockMovies[2]]);
   }
 
   // Call api load user profile
@@ -105,6 +118,29 @@ export class UserComponent implements OnInit {
     });
   }
 
+  // Call api load user favorites
+  loadFavorites(page: number) {
+    this.isLoadingFavorites.set(true);
+    this.userService.getFavorites(page, 10).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.favoriteMovies.set(res.data);
+
+          if (res.pagination) {
+            this.favoritePage.set(res.pagination.currentPage);
+            this.favoriteTotalPages.set(res.pagination.totalPages);
+          }
+        }
+        this.isLoadingFavorites.set(false);
+      },
+      error: (err) => {
+        console.error('Lỗi khi tải phim yêu thích:', err);
+        this.isLoadingFavorites.set(false);
+        this.notiService.show(NotificationType.ERROR, `Lỗi tải phim yêu thích: ${err}`);
+      }
+    });
+  }
+
   // Button edit profile
   handleEditProfile() {
     // TODO: Mở modal hoặc navigate tới trang chỉnh sửa (Call /api/users/me/profile)
@@ -113,27 +149,34 @@ export class UserComponent implements OnInit {
 
   // Button change tab
   changeTab(tab: 'history' | 'favorites' | 'reviews') {
-    this.activeTab.set(tab);
-
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab },
+      queryParams: { tab: tab, page: 1 },
       queryParamsHandling: 'merge'
     });
   }
 
   onHistoryPageChange(page: number) {
-    this.historyPage.set(page);
-    // TODO: Call API GET /api/users/history?page=page
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page },
+      queryParamsHandling: 'merge'
+    });
   }
 
   onFavoritePageChange(page: number) {
-    this.favoritePage.set(page);
-    // TODO: Call API GET /api/users/favorites?page=page
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page },
+      queryParamsHandling: 'merge'
+    });
   }
 
   onReviewPageChange(page: number) {
-    this.reviewPage.set(page);
-    // TODO: Call API GET /api/users/reviews?page=page
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page },
+      queryParamsHandling: 'merge'
+    });
   }
 }
