@@ -12,6 +12,7 @@ export interface Movie {
   bannerUrl?: string;
   tags: Tag[];
   description?: string;
+  watchedAt?: string | Date;
 }
 
 // Movie detail screen

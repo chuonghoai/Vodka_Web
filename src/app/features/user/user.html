@@ -69,7 +69,13 @@
           <div class="p-6 md:p-8">
             @switch (activeTab()) {
               @case ('history') {
-                <div class="animate-fade-in">
+                <div class="animate-fade-in relative min-h-75">
+                  @if (isLoadingHistory()) {
+                    <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
+                      <div class="w-12 h-12 border-4 border-zinc-700 border-t-red-600 rounded-full animate-spin"></div>
+                    </div>
+                  }
+
                   <app-movie-list
                     title="Lịch sử đã xem"
                     [movies]="historyMovies()"
@@ -77,6 +83,12 @@
                     [totalPages]="historyTotalPages()"
                     (changePage)="onHistoryPageChange($event)">
                   </app-movie-list>
+
+                  @if (!isLoadingHistory() && historyMovies().length === 0) {
+                    <div class="text-center py-10 bg-zinc-900/30 rounded-2xl border border-zinc-800 border-dashed mt-4">
+                      <p class="text-zinc-500">Bạn chưa xem bộ phim nào gần đây.</p>
+                    </div>
+                  }
                 </div>
               }
               @case ('favorites') {

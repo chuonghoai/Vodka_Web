@@ -28,6 +28,7 @@ export class UserComponent implements OnInit {
   userProfile = signal<User | null>(null);
   isLoadingProfile = signal<boolean>(true);
   isLoadingFavorites = signal<boolean>(false);
+  isLoadingHistory = signal<boolean>(false);
 
   // Movies info
   mockMovies: Movie[] = [
@@ -92,7 +93,7 @@ export class UserComponent implements OnInit {
       }
       else if (this.activeTab() === 'history') {
         this.historyPage.set(page);
-        this.historyMovies.set([...this.mockMovies]);
+        this.loadHistory(page);
       }
       else if (this.activeTab() === 'reviews') {
         this.reviewPage.set(page);
@@ -121,7 +122,7 @@ export class UserComponent implements OnInit {
   // Call api load user favorites
   loadFavorites(page: number) {
     this.isLoadingFavorites.set(true);
-    this.userService.getFavorites(page, 10).subscribe({
+    this.userService.getFavorites(page, 40).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.favoriteMovies.set(res.data);
@@ -137,6 +138,28 @@ export class UserComponent implements OnInit {
         console.error('Lỗi khi tải phim yêu thích:', err);
         this.isLoadingFavorites.set(false);
         this.notiService.show(NotificationType.ERROR, `Lỗi tải phim yêu thích: ${err}`);
+      }
+    });
+  }
+
+  // Call api load movie history
+  loadHistory(page: number) {
+    this.isLoadingHistory.set(true);
+    this.userService.getHistory(page, 40).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.historyMovies.set(res.data);
+
+          if (res.pagination) {
+            this.historyPage.set(res.pagination.currentPage);
+            this.historyTotalPages.set(res.pagination.totalPages);
+          }
+        }
+        this.isLoadingHistory.set(false);
+      },
+      error: (err) => {
+        console.error('Lỗi khi tải lịch sử:', err);
+        this.isLoadingHistory.set(false);
       }
     });
   }
