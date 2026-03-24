@@ -1,0 +1,59 @@
+<aside
+  [class.w-[240px]]="!isCollapsed()"
+  [class.w-[72px]]="isCollapsed()"
+  class="h-screen sticky left-0 top-0 bg-zinc-950 flex flex-col border-r border-zinc-800/50 shadow-2xl shadow-black z-[60] transition-all duration-300"
+>
+  <!-- Logo -->
+  <div class="p-6">
+    <h1 class="text-2xl font-black italic tracking-tighter text-red-600">
+      @if (!isCollapsed()) {
+        VODKA
+      } @else {
+        V
+      }
+    </h1>
+    @if (!isCollapsed()) {
+      <p class="text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-500 mt-1">WEB ADMIN</p>
+    }
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 px-3 space-y-1 mt-4">
+    @for (item of menuItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="text-white bg-zinc-800 border-l-4 border-red-600 scale-[0.98]"
+        [routerLinkActiveOptions]="{ exact: item.exact }"
+        class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors duration-200"
+      >
+        <span class="material-symbols-outlined text-[20px]">{{ item.icon }}</span>
+        @if (!isCollapsed()) {
+          <span class="text-sm font-medium uppercase tracking-wider">{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <!-- Bottom Actions -->
+  <div class="p-4 mt-auto border-t border-zinc-900">
+    @if (!isCollapsed()) {
+      <button
+        class="w-full py-3 px-4 bg-red-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-all active:scale-95"
+      >
+        <span class="material-symbols-outlined">add</span>
+        <span class="text-xs uppercase tracking-widest">Thêm phim mới</span>
+      </button>
+    }
+    <a
+      (click)="toggleSidebar()"
+      class="flex items-center gap-3 px-4 py-3 mt-4 text-zinc-500 hover:text-red-500 transition-colors cursor-pointer"
+    >
+      <span class="material-symbols-outlined">
+        {{ isCollapsed() ? 'menu' : 'menu_open' }}
+      </span>
+      @if (!isCollapsed()) {
+        <span class="text-sm font-medium uppercase tracking-wider">Thu gọn</span>
+      }
+    </a>
+  </div>
+</aside>

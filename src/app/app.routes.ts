@@ -14,5 +14,10 @@ export const routes: Routes = [
   { path: 'movie/:id', component: MovieComponent },
   { path: 'watch/:id', component: WatchComponent },
   { path: 'search', component: SearchComponent},
-  { path: 'profile', component: UserComponent }
+  { path: 'profile', component: UserComponent },
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
+  },
 ];

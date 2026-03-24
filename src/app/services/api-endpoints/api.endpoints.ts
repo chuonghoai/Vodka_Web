@@ -8,6 +8,12 @@ export const API_ENDPOINTS = {
     FORGOT_VERIFY_OTP: '/api/auth/forgot-password/verify-otp',
     FORGOT_RESET: '/api/auth/forgot-password/reset',
   },
+
+  ADMIN: {
+    MOVIES: '/api/admin/movies',               // GET: danh sách + pagination
+    MOVIE_BY_ID: (id: number) => `/api/admin/movies/${id}`,  // GET/PUT/DELETE
+    MOVIE_STATS: '/api/admin/movies/stats',     // GET: summary stats
+  },
   USER: {
     PROFILE: '/api/users/me/profile',
     FAVORITES: '/api/users/favorites',

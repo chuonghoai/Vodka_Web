@@ -1,0 +1,4 @@
+/* Tailwind v4: chỉ cần nếu có style đặc biệt */
+:host {
+    display: block;
+}
