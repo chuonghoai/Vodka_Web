@@ -17,11 +17,11 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/movie-management/movie-management').then(m => m.MovieManagementComponent),
       },
-    //   {
-    //     path: 'users',
-    //     loadComponent: () =>
-    //       import('./pages/user-management/user-management').then(m => m.UserManagementComponent),
-    //   },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./pages/user-management/user-management').then(m => m.UserManagementComponent),
+      },
     //   {
     //     path: 'genres',
     //     loadComponent: () =>
