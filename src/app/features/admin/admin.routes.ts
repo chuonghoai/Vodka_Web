@@ -32,11 +32,11 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/tag-management/tag-management').then(m => m.TagManagementComponent),
       },
-    //   {
-    //     path: 'reviews',
-    //     loadComponent: () =>
-    //       import('./pages/review-management/review-management').then(m => m.ReviewManagementComponent),
-    //   },
+      {
+        path: 'reviews',
+        loadComponent: () =>
+          import('./pages/review-management/review-management').then(m => m.ReviewManagementComponent),
+      },
     //   {
     //     path: 'settings',
     //     loadComponent: () =>

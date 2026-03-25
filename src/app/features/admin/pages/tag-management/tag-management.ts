@@ -85,6 +85,11 @@ export class TagManagementComponent {
   selectedTag = signal<TagRow | null>(null);
   showPanel = signal(false);
 
+  // Add Modal
+  showAddModal = signal(false);
+  newTagName = signal('');
+  newTagSlug = signal('');
+
   // Pagination
   currentPage = signal(1);
   totalItems = signal(18);
@@ -166,6 +171,34 @@ export class TagManagementComponent {
   }
 
 
+  // Add Modal Actions
+  openAddModal() {
+    this.newTagName.set('');
+    this.newTagSlug.set('');
+    this.showAddModal.set(true);
+  }
+
+  closeAddModal() {
+    this.showAddModal.set(false);
+  }
+
+  addTag() {
+    const name = this.newTagName().trim();
+    const slug = this.newTagSlug().trim();
+    if (!name || !slug) return;
+    const newId = Math.max(...this.tags().map(t => t.id), 0) + 1;
+    this.tags.update(list => [
+      ...list,
+      {
+        id: newId,
+        name,
+        slug: '/' + slug,
+        movieCount: 0,
+        createdAt: new Date().toLocaleDateString('vi-VN'),
+      },
+    ]);
+    this.closeAddModal();
+  }
 
   deleteTag(tag: TagRow) {
     if (confirm(`Xóa tag "${tag.name}"?`)) {

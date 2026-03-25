@@ -84,6 +84,11 @@ export class GenreManagementComponent {
   selectedGenre = signal<GenreRow | null>(null);
   showPanel = signal(false);
 
+  // Add Modal
+  showAddModal = signal(false);
+  newGenreName = signal('');
+  newGenreSlug = signal('');
+
   // Pagination
   currentPage = signal(1);
   totalItems = signal(12);
@@ -160,6 +165,35 @@ export class GenreManagementComponent {
   closePanel() {
     this.showPanel.set(false);
     this.selectedGenre.set(null);
+  }
+
+  // Add Modal Actions
+  openAddModal() {
+    this.newGenreName.set('');
+    this.newGenreSlug.set('');
+    this.showAddModal.set(true);
+  }
+
+  closeAddModal() {
+    this.showAddModal.set(false);
+  }
+
+  addGenre() {
+    const name = this.newGenreName().trim();
+    const slug = this.newGenreSlug().trim();
+    if (!name || !slug) return;
+    const newId = Math.max(...this.genres().map(g => g.id), 0) + 1;
+    this.genres.update(list => [
+      ...list,
+      {
+        id: newId,
+        name,
+        slug: '/' + slug,
+        movieCount: 0,
+        createdAt: new Date().toLocaleDateString('vi-VN'),
+      },
+    ]);
+    this.closeAddModal();
   }
 
   deleteGenre(genre: GenreRow) {

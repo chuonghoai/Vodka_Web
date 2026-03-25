@@ -62,6 +62,7 @@
       </select>
       <div class="h-8 w-px bg-zinc-800 mx-1"></div>
       <button
+        (click)="openAddModal()"
         class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95"
       >
         <span class="material-symbols-outlined text-sm">add</span>
@@ -273,4 +274,54 @@
       </button>
     </div>
   </aside>
+}
+
+<!--  ADD GENRE MODAL  -->
+@if (showAddModal()) {
+  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div class="bg-zinc-900 w-full max-w-md p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="text-xl font-bold text-white tracking-tight">Thêm thể loại mới</h3>
+        <button (click)="closeAddModal()" class="text-zinc-500 hover:text-white transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form class="space-y-6" (ngSubmit)="addGenre()">
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Tên thể loại</label>
+          <input
+            [(ngModel)]="newGenreName"
+            name="genreName"
+            class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-red-600/50 focus:border-red-600 outline-none transition-all"
+            placeholder="Ví dụ: Hành động"
+            type="text"
+          />
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Slug</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">vodka.tv/</span>
+            <input
+              [(ngModel)]="newGenreSlug"
+              name="genreSlug"
+              class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-20 pr-4 py-3 text-sm text-white focus:ring-1 focus:ring-red-600/50 focus:border-red-600 outline-none transition-all"
+              placeholder="hanh-dong"
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="pt-4 flex items-center gap-3">
+          <button
+            (click)="closeAddModal()"
+            class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-all"
+            type="button"
+          >Hủy</button>
+          <button
+            class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-600/20 transition-all"
+            type="submit"
+          >Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
 }
