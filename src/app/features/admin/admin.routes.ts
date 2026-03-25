@@ -22,11 +22,16 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/user-management/user-management').then(m => m.UserManagementComponent),
       },
-    //   {
-    //     path: 'genres',
-    //     loadComponent: () =>
-    //       import('./pages/genre-tag/genre-tag').then(m => m.GenreTagComponent),
-    //   },
+      {
+        path: 'genres',
+        loadComponent: () =>
+          import('./pages/genre-management/genre-management').then(m => m.GenreManagementComponent),
+      },
+      {
+        path: 'tags',
+        loadComponent: () =>
+          import('./pages/tag-management/tag-management').then(m => m.TagManagementComponent),
+      },
     //   {
     //     path: 'reviews',
     //     loadComponent: () =>

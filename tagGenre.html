@@ -1,0 +1,799 @@
+<!doctype html>
+
+<html class="dark" lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Quản lý Thể loại &amp; Tag | Vodka Web Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-bright': '#39393b',
+              primary: '#ffb4ab',
+              'on-secondary': '#660709',
+              'on-secondary-fixed-variant': '#86211c',
+              'tertiary-fixed-dim': '#90cdff',
+              'primary-fixed': '#ffdad6',
+              'inverse-primary': '#bf0715',
+              'primary-fixed-dim': '#ffb4ab',
+              'on-background': '#e5e1e4',
+              background: '#131315',
+              'on-primary': '#690005',
+              'on-primary-fixed-variant': '#93000b',
+              surface: '#131315',
+              'surface-dim': '#131315',
+              'secondary-fixed': '#ffdad6',
+              'on-tertiary-fixed': '#001e30',
+              'surface-variant': '#353437',
+              'outline-variant': '#5c403c',
+              'inverse-on-surface': '#313032',
+              'tertiary-container': '#0078b2',
+              'surface-container-lowest': '#0e0e10',
+              'surface-container-low': '#1c1b1d',
+              'secondary-container': '#89231e',
+              'surface-container-highest': '#353437',
+              'surface-container-high': '#2a2a2c',
+              'on-surface-variant': '#e6bdb8',
+              tertiary: '#90cdff',
+              secondary: '#ffb4ab',
+              'primary-container': '#dc2626',
+              'on-tertiary-container': '#f3f8ff',
+              'on-primary-fixed': '#410002',
+              'on-tertiary-fixed-variant': '#004b71',
+              'on-primary-container': '#fff6f5',
+              'inverse-surface': '#e5e1e4',
+              'surface-container': '#201f22',
+              'tertiary-fixed': '#cbe6ff',
+              'on-error-container': '#ffdad6',
+              'on-secondary-container': '#ff9f94',
+              'on-error': '#690005',
+              'error-container': '#93000a',
+              error: '#ffb4ab',
+              outline: '#ac8884',
+              'on-surface': '#e5e1e4',
+              'surface-tint': '#ffb4ab',
+              'on-tertiary': '#003450',
+              'secondary-fixed-dim': '#ffb4ab',
+              'on-secondary-fixed': '#410002',
+            },
+            fontFamily: {
+              headline: ['Inter'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface selection:bg-primary-container selection:text-white overflow-hidden"
+  >
+    <!-- SideNavBar Shell -->
+    <aside
+      class="fixed left-0 top-0 h-full w-[240px] z-50 bg-zinc-950 flex flex-col overflow-y-auto"
+    >
+      <div class="p-6">
+        <div class="flex items-center gap-2 mb-8">
+          <div class="w-8 h-8 bg-primary-container rounded flex items-center justify-center">
+            <span
+              class="material-symbols-outlined text-white"
+              style="font-variation-settings: 'FILL' 1"
+              >movie</span
+            >
+          </div>
+          <div>
+            <h1 class="text-xl font-black tracking-tighter text-red-600">Vodka Web Admin</h1>
+            <p class="text-[10px] uppercase tracking-widest font-semibold text-zinc-500">
+              Phòng quản trị nội dung
+            </p>
+          </div>
+        </div>
+        <nav class="space-y-1">
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-sm font-medium">Dashboard</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="movie">movie</span>
+            <span class="text-sm font-medium">Phim &amp; Media</span>
+          </a>
+          <!-- ACTIVE TAB -->
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-white border-l-4 border-red-600 bg-zinc-900 font-bold transition-all scale-95 duration-150"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-red-600" data-icon="label">label</span>
+            <span class="text-sm">Thể loại &amp; Tag</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="text-sm font-medium">Người dùng</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            <span class="text-sm font-medium">Cài đặt hệ thống</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+            <span class="text-sm font-medium">Báo cáo</span>
+          </a>
+        </nav>
+      </div>
+      <div class="mt-auto p-6 space-y-4">
+        <button
+          class="w-full py-3 bg-primary-container hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+        >
+          <span class="material-symbols-outlined text-sm">add_circle</span>
+          Thêm nội dung mới
+        </button>
+        <a
+          class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 transition-colors"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="logout">logout</span>
+          <span class="text-sm font-medium">Đăng xuất</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content Area -->
+    <main class="ml-[240px] h-screen flex flex-col overflow-hidden bg-surface">
+      <!-- TopAppBar -->
+      <header
+        class="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-xl flex justify-between items-center w-full px-8 py-4"
+      >
+        <div class="flex flex-col">
+          <nav
+            class="flex items-center gap-2 text-[11px] text-zinc-500 uppercase tracking-widest font-semibold mb-1"
+          >
+            <span>Dashboard</span>
+            <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+            <span class="text-zinc-300">Thể loại &amp; Tag</span>
+          </nav>
+          <h2 class="text-xl font-bold text-white tracking-tight">Quản lý Phân loại</h2>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="relative group">
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500 text-lg"
+              >search</span
+            >
+            <input
+              class="bg-zinc-900 border-none rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-300 w-64 focus:ring-1 focus:ring-red-600/50 transition-all outline-none"
+              placeholder="Tìm kiếm nhanh..."
+              type="text"
+            />
+          </div>
+          <div class="flex items-center gap-4 border-l border-zinc-800 pl-6">
+            <button class="text-zinc-400 hover:text-red-500 transition-colors relative">
+              <span class="material-symbols-outlined">notifications</span>
+              <span
+                class="absolute top-0 right-0 w-2 h-2 bg-red-600 rounded-full border-2 border-zinc-950"
+              ></span>
+            </button>
+            <button class="text-zinc-400 hover:text-red-500 transition-colors">
+              <span class="material-symbols-outlined">help_outline</span>
+            </button>
+            <div class="flex items-center gap-3">
+              <div class="text-right hidden xl:block">
+                <p class="text-xs font-bold text-white">Admin Vodka</p>
+                <p class="text-[10px] text-zinc-500">Super Admin</p>
+              </div>
+              <img
+                alt="Admin Avatar"
+                class="w-10 h-10 rounded-xl object-cover border border-zinc-800"
+                data-alt="Headshot of a male administrator smiling"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7tDs0d4TyIjDQ4ar9gr1I30tCrnV74f6ZHtOefHIS2U_Ypybxyc_3hoRe4oW4le2dQNZkq5AmWYA_LPTPOMY46ejFgwsvEXNI-KY_s0coQ9yXCdDuVx5-5Jd2YuqgknG36zG6FQpS9sW8VQfWKgXkPnrIXWidZmD0G55T7mrgZ0BuVH-0M1tv_NeprPRtZG-VCT-yLGDNqSQoj75lUzcdz1cweGmShHywlzCitApcLP8hb6uaUbcEg7acVtRnI0IIh3t58CX5Gw"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- Page Canvas -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-8">
+        <div class="grid grid-cols-12 gap-8">
+          <!-- LEFT SECTION: QUẢN LÝ THỂ LOẠI -->
+          <section class="col-span-12 lg:col-span-8 space-y-6">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-3">
+                <span class="w-1.5 h-6 bg-red-600 rounded-full"></span>
+                Quản lý Thể loại
+              </h3>
+              <button
+                class="px-4 py-2 bg-primary-container text-white text-sm font-bold rounded-xl flex items-center gap-2 hover:bg-red-700 transition-all active:scale-95"
+              >
+                <span class="material-symbols-outlined text-sm">add</span>
+                Thêm thể loại
+              </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <!-- Genre Cards -->
+              <!-- 1. Hành động -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Hành động</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >234 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/hanh-dong</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 2. Kinh dị -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Kinh dị</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >156 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/kinh-di</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 3. Hài hước -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Hài hước</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >189 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/hai-huoc</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 4. Tình cảm -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Tình cảm</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >145 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/tinh-cam</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 5. Khoa học viễn tưởng -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Khoa học viễn tưởng</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >98 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/khoa-hoc-vien-tuong</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 6. Phiêu lưu -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Phiêu lưu</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >167 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/phieu-luu</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 7. Hoạt hình -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Hoạt hình</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >112 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/hoat-hinh</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 8. Tài liệu -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Tài liệu</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >67 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/tai-lieu</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 9. Tâm lý -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-red-600 bg-zinc-900 shadow-xl transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Tâm lý</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >278 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/tam-ly</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 10. Chiến tranh -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Chiến tranh</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >45 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/chien-tranh</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 11. Âm nhạc -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Âm nhạc</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >34 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/am-nhac</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+              <!-- 12. Gia đình -->
+              <div
+                class="group relative bg-zinc-900 p-5 rounded-xl border-l-2 border-transparent hover:border-red-600 transition-all duration-300"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-bold text-white">Gia đình</h4>
+                  <span
+                    class="px-2 py-0.5 bg-red-600/10 text-red-600 text-[10px] font-bold rounded uppercase tracking-tighter"
+                    >89 phim</span
+                  >
+                </div>
+                <p class="text-xs text-zinc-500 font-mono">/gia-dinh</p>
+                <div
+                  class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 flex items-center gap-2 transition-opacity"
+                >
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-lg">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button class="p-1.5 bg-zinc-800 text-zinc-400 hover:text-red-500 rounded-lg">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- RIGHT SECTION: QUẢN LÝ TAG -->
+          <section class="col-span-12 lg:col-span-4 space-y-6">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-3">
+                <span class="w-1.5 h-6 bg-red-600 rounded-full"></span>
+                Quản lý Tag
+              </h3>
+              <button
+                class="w-8 h-8 bg-zinc-900 text-white rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors"
+              >
+                <span class="material-symbols-outlined text-sm">add</span>
+              </button>
+            </div>
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800/50">
+              <div class="flex flex-wrap gap-2">
+                <!-- Tags Pills -->
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group hover:border-red-600/50 transition-colors"
+                >
+                  <span class="text-xs font-medium text-white">Top IMDb</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Phim bộ</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Phim lẻ</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 border border-red-600/40 rounded-full group"
+                >
+                  <span class="text-xs font-bold text-red-500">Hot</span>
+                  <button class="text-red-500/60 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Mới cập nhật</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Thuyết minh</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Vietsub</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Phụ đề</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Full HD</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">4K</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Đề cử Oscar</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Bom tấn</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Kinh điển</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Netflix Original</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Chiếu rạp</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Anime</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Marvel</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">DC</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full group"
+                >
+                  <span class="text-xs font-medium text-white">Disney</span>
+                  <button class="text-zinc-500 hover:text-red-500">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Quick Add Tag Input -->
+            <div class="bg-zinc-900/50 p-4 rounded-xl border border-dashed border-zinc-800">
+              <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-3">
+                Thêm nhanh tag
+              </p>
+              <div class="flex gap-2">
+                <input
+                  class="flex-1 bg-zinc-950 border-zinc-800 rounded-lg text-xs text-white focus:ring-red-600 focus:border-red-600"
+                  placeholder="Nhập tên tag..."
+                  type="text"
+                />
+                <button
+                  class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold rounded-lg transition-colors"
+                >
+                  Lưu
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <!-- Bottom Stats Footer -->
+      <footer
+        class="bg-zinc-950 border-t border-zinc-900 px-8 py-4 flex items-center justify-between text-[11px] font-semibold tracking-wide uppercase text-zinc-500"
+      >
+        <div class="flex items-center gap-8">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-red-600"></span>
+            <span>Tổng thể loại: <span class="text-white">12</span></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span>Tổng tag: <span class="text-white">18</span></span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 bg-zinc-900 px-4 py-1.5 rounded-full">
+          <span class="material-symbols-outlined text-xs text-red-600">trending_up</span>
+          <span>Thể loại phổ biến nhất: <span class="text-white">Tâm lý (278 phim)</span></span>
+        </div>
+      </footer>
+    </main>
+    <!-- Modal Overlay (Simulated) -->
+    <div
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+    >
+      <div class="bg-zinc-900 w-full max-w-md p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+        <div class="flex items-center justify-between mb-8">
+          <h3 class="text-xl font-bold text-white tracking-tight">Thêm thể loại mới</h3>
+          <button class="text-zinc-500 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form class="space-y-6">
+          <div class="space-y-2">
+            <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-500"
+              >Tên thể loại</label
+            >
+            <input
+              class="w-full bg-zinc-950 border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-red-600/50 focus:border-red-600 outline-none transition-all"
+              placeholder="Ví dụ: Hành động"
+              type="text"
+            />
+          </div>
+          <div class="space-y-2">
+            <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-500"
+              >Slug</label
+            >
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 text-sm"
+                >vodka.tv/</span
+              >
+              <input
+                class="w-full bg-zinc-950 border-zinc-800 rounded-xl pl-20 pr-4 py-3 text-sm text-white focus:ring-1 focus:ring-red-600/50 focus:border-red-600 outline-none transition-all"
+                placeholder="hanh-dong"
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="pt-4 flex items-center gap-3">
+            <button
+              class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-all"
+              type="button"
+            >
+              Hủy
+            </button>
+            <button
+              class="flex-1 py-3 bg-primary-container hover:bg-red-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-600/20 transition-all"
+              type="button"
+            >
+              Thêm
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

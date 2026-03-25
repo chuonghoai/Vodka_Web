@@ -75,7 +75,7 @@ export class DashboardComponent {
     { icon: 'movie', label: 'Thêm phim', route: '/admin/movies' },
     { icon: 'fact_check', label: 'Duyệt review', route: '/admin/reviews' },
     { icon: 'manage_accounts', label: 'Quản lý user', route: '/admin/users' },
-    { icon: 'tag', label: 'Thêm tag', route: '/admin/genres' },
+    { icon: 'tag', label: 'Thêm tag', route: '/admin/tags' },
     { icon: 'cloud_upload', label: 'Backup dữ liệu', route: '/admin/settings' },
     { icon: 'settings_applications', label: 'Cài đặt hệ thống', route: '/admin/settings' },
   ];
