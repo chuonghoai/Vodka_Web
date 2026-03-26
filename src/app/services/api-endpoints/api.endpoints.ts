@@ -26,6 +26,12 @@ export const API_ENDPOINTS = {
     GENRE_BY_ID: (id: number) => `/api/admin/genres/${id}`,
     GENRE_STATS: '/api/admin/genres/stats',
 
+    // CRUD TAG
+    TAGS: '/api/admin/tags',
+    TAG_BY_ID: (id: number) => `/api/admin/tags/${id}`,
+    TAG_STATS: '/api/admin/tags/stats',
+    
+
   },
   USER: {
     PROFILE: '/api/users/me/profile',

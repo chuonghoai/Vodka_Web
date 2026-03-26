@@ -257,7 +257,7 @@
         </div>
         <div class="text-center border-l border-white/5">
           <p class="text-[10px] text-zinc-400 uppercase font-bold">Lượt xem</p>
-          <p class="text-xl font-black mt-1 text-white">--</p>
+          <p class="text-xl font-black mt-1 text-white">{{ selectedGenre()!.viewCount | number }}</p>
         </div>
       </div>
 
@@ -269,7 +269,7 @@
         </div>
         <div class="flex justify-between text-[10px]">
           <span class="text-zinc-400 font-bold uppercase tracking-tight">Cập nhật lần cuối:</span>
-          <span class="text-white font-medium">--</span>
+          <span class="text-white font-medium">{{ selectedGenre()!.updatedAt || '--' }}</span>
         </div>
       </div>
     </div>

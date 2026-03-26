@@ -1,89 +1,35 @@
-import { Component, computed, signal } from '@angular/core';
+import { DecimalPipe, NgClass } from '@angular/common';
+import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
-
-interface TagRow {
-  id: number;
-  name: string;
-  slug: string;
-  movieCount: number;
-  createdAt: string;
-}
-
-interface TagStat {
-  icon: string;
-  label: string;
-  value: string;
-  description: string;
-  badgeText: string;
-  badgeColor: string;
-}
+import { TagService } from '../../../../services/tag.service';
+import { UpdateTagRequest } from '../../../../models/tag.model';
 
 @Component({
   selector: 'app-tag-management',
   standalone: true,
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, DecimalPipe],
   templateUrl: './tag-management.html',
 })
 export class TagManagementComponent {
+
+  private tagService = inject(TagService)
+
+  isLoading = signal(false);
+  errorMessage = signal('');
+
   // Filters
   searchQuery = signal('');
-
   selectedSort = signal('Sắp xếp: Tên A-Z');
 
-  // Summary Stats
-  tagStats = signal<TagStat[]>([
-    {
-      icon: 'label',
-      label: 'Tổng số Tag',
-      value: '18',
-      description: 'Tổng số tag nội dung',
-      badgeText: 'Total',
-      badgeColor: 'blue',
-    },
-    {
-      icon: 'trending_up',
-      label: 'Phổ biến nhất',
-      value: 'Phim bộ',
-      description: '567 phim liên kết',
-      badgeText: 'Top',
-      badgeColor: 'blue',
-    },
-    {
-      icon: 'local_fire_department',
-      label: 'Tag Hot',
-      value: 'Hot',
-      description: '312 phim đang hot',
-      badgeText: 'Trending',
-      badgeColor: 'red',
-    },
-    {
-      icon: 'new_releases',
-      label: 'Mới nhất',
-      value: 'Marvel',
-      description: '2 ngày trước',
-      badgeText: 'New',
-      badgeColor: 'emerald',
-    },
-  ]);
+  // Data
+  tagStats = signal<TagStat[]>([]);
+  tags = signal<TagRow[]>([]);
 
-  // Tag data
-  tags = signal<TagRow[]>([
-    { id: 1, name: 'Top IMDb', slug: '/top-imdb', movieCount: 145, createdAt: '01/02/2024' },
-    { id: 2, name: 'Hot', slug: '/hot', movieCount: 312, createdAt: '01/02/2024' },
-    { id: 3, name: 'Phim bộ', slug: '/phim-bo', movieCount: 567, createdAt: '05/02/2024' },
-    { id: 4, name: 'Phim lẻ', slug: '/phim-le', movieCount: 423, createdAt: '05/02/2024' },
-    { id: 5, name: 'Mới cập nhật', slug: '/moi-cap-nhat', movieCount: 89, createdAt: '10/02/2024' },
-    { id: 6, name: 'Netflix Original', slug: '/netflix-original', movieCount: 89, createdAt: '10/02/2024' },
-    { id: 7, name: 'Bom tấn', slug: '/bom-tan', movieCount: 201, createdAt: '15/02/2024' },
-    { id: 8, name: 'Vietsub', slug: '/vietsub', movieCount: 345, createdAt: '15/02/2024' },
-    { id: 9, name: 'Thuyết minh', slug: '/thuyet-minh', movieCount: 234, createdAt: '18/02/2024' },
-    { id: 10, name: 'Marvel', slug: '/marvel', movieCount: 56, createdAt: '20/02/2024' },
-  ]);
-
-  // Side Panel
+  // Side panel
   selectedTag = signal<TagRow | null>(null);
   showPanel = signal(false);
+  editName = signal('');
+  editSlug = signal('');
 
   // Add Modal
   showAddModal = signal(false);
@@ -92,8 +38,66 @@ export class TagManagementComponent {
 
   // Pagination
   currentPage = signal(1);
-  totalItems = signal(18);
+  totalItems = signal(0);
   pageSize = signal(10);
+
+  // SortMap
+  private sortMap: Record<string, string> = {
+    'Sắp xếp: Tên A-Z': 'name_asc',
+    'Sắp xếp: Số phim giảm dần': 'movieCount_desc',
+    'Sắp xếp: Ngày tạo': 'createdAt_desc',
+  };
+
+  constructor(){
+    afterNextRender(() =>{
+      this.loadTags();
+      this.loadStats();
+    })
+  }
+
+  loadTags(){
+    this.isLoading.set(true);
+    this.tagService.getTags({
+      page: this.currentPage(),
+      pageSize: this.pageSize(),
+      search: this.searchQuery(),
+      sort: this.sortMap[this.selectedSort()] || 'name_asc',
+
+    }).subscribe({
+      next: (res) =>{
+        if(res.success){
+          this.tags.set(res.data);
+          this.totalItems.set(res.pagination?.totalItems ?? 0);
+        }
+        this.isLoading.set(false);
+      },
+      error: () =>{
+        this.errorMessage.set('Không thể tải danh sách thể loại');
+        this.isLoading.set(false);
+      }
+    })
+
+  }
+
+  loadStats() {
+    this.tagService.getTagStats().subscribe({
+      next: (res) => {
+        if (res.success) {
+          const d = res.data;
+          this.tagStats.set([
+            { icon: 'label', label: 'Tổng số Tag', value: String(d.totalTags),
+              description: 'Tổng số tag nội dung', badgeText: 'Total', badgeColor: 'blue' },
+            { icon: 'trending_up', label: 'Phổ biến nhất', value: d.mostPopularTag.name,
+              description: `${d.mostPopularTag.movieCount} phim liên kết`, badgeText: 'Top', badgeColor: 'blue' },
+            { icon: 'local_fire_department', label: 'Tag Hot', value: d.hotTag.name,
+              description: `${d.hotTag.movieCount} phim đang hot`, badgeText: 'Trending', badgeColor: 'red' },
+            { icon: 'new_releases', label: 'Mới nhất', value: d.latestTag.name,
+              description: d.latestTag.createdAt, badgeText: 'New', badgeColor: 'emerald' },
+          ]);
+        }
+      }
+    });
+  }
 
   totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
 
@@ -151,17 +155,30 @@ export class TagManagementComponent {
     }
   }
 
+  // Search and Sort
+  onSearchChange(){
+    this.currentPage.set(1);
+    this.loadTags();
+  }
+
+  onSortChange(){
+    this.currentPage.set(1);
+    this.loadTags();
+  }
 
 
   // Actions
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
+      this.loadTags();
     }
   }
 
   viewTag(tag: TagRow) {
     this.selectedTag.set(tag);
+    this.editName.set(tag.name);
+    this.editSlug.set(tag.slug);
     this.showPanel.set(true);
   }
 
@@ -182,30 +199,63 @@ export class TagManagementComponent {
     this.showAddModal.set(false);
   }
 
+
   addTag() {
     const name = this.newTagName().trim();
     const slug = this.newTagSlug().trim();
     if (!name || !slug) return;
-    const newId = Math.max(...this.tags().map(t => t.id), 0) + 1;
-    this.tags.update(list => [
-      ...list,
-      {
-        id: newId,
-        name,
-        slug: '/' + slug,
-        movieCount: 0,
-        createdAt: new Date().toLocaleDateString('vi-VN'),
+    this.tagService.createTag({ name, slug }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.closeAddModal();
+          this.loadTags();
+          this.loadStats();
+        }
       },
-    ]);
-    this.closeAddModal();
+      error: () => {
+        this.errorMessage.set('Không thể tạo tag');
+      }
+    });
+  }
+
+  updateTag(){
+    const tag = this.selectedTag();
+    if(!tag) return;
+
+    const payload: UpdateTagRequest = {};
+    if (this.editName().trim() !== tag.name) payload.name = this.editName().trim();
+    if (this.editSlug().trim() !== tag.slug) payload.slug = this.editSlug().trim();
+
+    if(!payload.name && !payload.slug){
+      this.closePanel();
+      return;
+    }
+
+    this.tagService.updateTag(tag.id, payload).subscribe({
+      next: () => {
+        this.loadTags();
+        this.closePanel();
+      },
+      error: () => {
+        this.errorMessage.set('Không thể cập nhật tag');
+      }
+    })
+
   }
 
   deleteTag(tag: TagRow) {
     if (confirm(`Xóa tag "${tag.name}"?`)) {
-      this.tags.update(list => list.filter(t => t.id !== tag.id));
-      if (this.selectedTag()?.id === tag.id) {
-        this.closePanel();
-      }
+      this.tagService.deleteTag(tag.id).subscribe({
+        next: () => {
+          this.loadTags();
+          this.loadStats();
+        },
+        error: () => {
+          this.errorMessage.set('Không thể xóa tag');
+        }
+      });
     }
   }
+
+  dismissError() { this.errorMessage.set(''); }
 }

@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GenreService } from '../../../../services/genre.service';
@@ -8,7 +8,7 @@ import { GenreRow, GenreStat } from '../../models/genre.model';
 @Component({
   selector: 'app-genre-management',
   standalone: true,
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, DecimalPipe],
   templateUrl: './genre-management.html',
 })
 
