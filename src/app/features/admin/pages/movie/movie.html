@@ -84,11 +84,12 @@
       <div
         class="relative flex items-center bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 hover:bg-zinc-800 transition-colors focus-within:ring-1 focus-within:ring-red-600/50">
         <span class="text-zinc-500 text-xs font-bold mr-2 pointer-events-none whitespace-nowrap">Thể loại:</span>
+        <span class="text-zinc-300 text-xs font-medium pr-6 min-w-[90px] pointer-events-none">{{ selectedGenreName() }}</span>
         <select [(ngModel)]="selectedGenre" (change)="onFilterChange()"
-          class="appearance-none bg-transparent text-zinc-300 text-xs font-medium focus:outline-none w-full cursor-pointer pr-6 min-w-[90px]">
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
           <option value="">Tất cả</option>
           @for (genre of genreOptions(); track genre.id) {
-          <option [value]="genre.id">{{ genre.name }}</option>
+          <option [value]="genre.slug">{{ genre.name }}</option>
           }
         </select>
         <span
@@ -98,8 +99,9 @@
       <div
         class="relative flex items-center bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 hover:bg-zinc-800 transition-colors focus-within:ring-1 focus-within:ring-red-600/50">
         <span class="text-zinc-500 text-xs font-bold mr-2 pointer-events-none whitespace-nowrap">Năm:</span>
+        <span class="text-zinc-300 text-xs font-medium pr-6 min-w-[60px] pointer-events-none">{{ selectedYear() || 'Tất cả' }}</span>
         <select [(ngModel)]="selectedYear" (change)="onFilterChange()"
-          class="appearance-none bg-transparent text-zinc-300 text-xs font-medium focus:outline-none w-full cursor-pointer pr-6 min-w-[60px]">
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
           <option value="">Tất cả</option>
           @for (year of yearOptions; track year) {
           <option [value]="year">{{ year }}</option>
@@ -112,32 +114,40 @@
       <div
         class="relative flex items-center bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 hover:bg-zinc-800 transition-colors focus-within:ring-1 focus-within:ring-red-600/50">
         <span class="text-zinc-500 text-xs font-bold mr-2 pointer-events-none whitespace-nowrap">Rating:</span>
+        <span class="text-zinc-300 text-xs font-medium pr-6 min-w-[70px] pointer-events-none">{{ selectedRatingName() }}</span>
         <select [(ngModel)]="selectedRating" (change)="onFilterChange()"
-          class="appearance-none bg-transparent text-zinc-300 text-xs font-medium focus:outline-none w-full cursor-pointer pr-6 min-w-[70px]">
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
           <option value="">Tất cả</option>
-          @for (rating of ratingOptions; track rating) {
-          <option [value]="rating">{{ rating }}</option>
+          @for (rating of ratingOptions; track rating.value) {
+          <option [value]="rating.value">{{ rating.label }}</option>
           }
         </select>
         <span
           class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm pointer-events-none">expand_more</span>
       </div>
+
+      <button (click)="resetFilters()"
+        class="flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl px-3 hover:bg-zinc-800 hover:border-red-600/50 hover:text-red-500 transition-all text-zinc-500 group"
+        title="Xóa bộ lọc">
+        <span class="material-symbols-outlined text-lg transition-transform duration-300 group-hover:-rotate-180">refresh</span>
+      </button>
     </div>
 
     <div class="flex items-center gap-6">
       <div class="flex items-center gap-2">
         <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Sort:</span>
-        <div class="relative">
+        <div class="relative flex items-center">
+          <span class="text-zinc-300 text-xs font-bold py-1 pl-1 pr-6 pointer-events-none">{{ selectedSortName() }}</span>
           <select [(ngModel)]="selectedSort" (change)="onFilterChange()"
-            class="appearance-none bg-transparent text-zinc-300 text-xs font-bold py-1 pl-1 pr-6 focus:outline-none cursor-pointer">
-            @for (sort of sortOptions; track sort) {
-            <option [value]="sort">{{ sort }}</option>
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+            @for (sort of sortOptions; track sort.value) {
+            <option [value]="sort.value">{{ sort.label }}</option>
             }
           </select>
-          <span
-            class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-zinc-500 text-sm pointer-events-none">sort</span>
+          <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-zinc-500 text-sm pointer-events-none">sort</span>
         </div>
       </div>
+
       <div class="h-6 w-[1px] bg-zinc-800"></div>
 
       <div class="flex bg-zinc-950 p-1 rounded-lg border border-zinc-800">

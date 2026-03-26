@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MovieRow, SummaryStats } from '../../models/movie.model';
 import { AdminMovieService } from '../../../../services/admin/movie.service';
 
@@ -12,22 +12,48 @@ import { AdminMovieService } from '../../../../services/admin/movie.service';
 })
 export class MovieManagementComponent implements OnInit {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private adminMovieService = inject(AdminMovieService);
 
   // Filters
   selectedYear = signal<string>('');
   selectedRating = signal<string>('');
   selectedGenre = signal<string>('');
-  selectedSort = signal<string>('Mới nhất');
+  selectedSort = signal<string>('moi-nhat');
   searchQuery = signal('');
   viewMode = signal<'grid' | 'list'>('list');
 
-  // Drop down filter
+  // Drop down option
   currentYear = new Date().getFullYear();
   yearOptions = Array.from({ length: this.currentYear - 1900 + 1 }, (_, i) => (this.currentYear - i).toString());
-  ratingOptions = ['> 4.0', '> 3.0', '> 2.0'];
-  sortOptions = ['Mới nhất', 'Rating cao nhất', 'Lượt xem nhiều nhất', 'A-Z', 'Z-A'];
+  ratingOptions = [
+    { label: '> 4.0', value: '4' },
+    { label: '> 3.0', value: '3' },
+    { label: '> 2.0', value: '2' }
+  ];
+  sortOptions = [
+    { label: 'Mới nhất', value: 'moi-nhat' },
+    { label: 'Rating cao nhất', value: 'rating-cao-nhat' },
+    { label: 'Lượt xem nhiều nhất', value: 'luot-xem-nhieu-nhat' },
+    { label: 'A-Z', value: 'a-z' },
+    { label: 'Z-A', value: 'z-a' }
+  ];
   genreOptions = signal<any[]>([]);
+
+  // Drop down selected
+  selectedGenreName = computed(() => {
+    const genre = this.genreOptions().find(g => g.slug === this.selectedGenre());
+    return genre ? genre.name : 'Tất cả';
+  });
+  selectedRatingName = computed(() => {
+    const r = this.ratingOptions.find(o => o.value === this.selectedRating());
+    return r ? r.label : 'Tất cả';
+  });
+
+  selectedSortName = computed(() => {
+    const s = this.sortOptions.find(o => o.value === this.selectedSort());
+    return s ? s.label : 'Mới nhất';
+  });
 
   // Data signal
   summaryStats = signal<SummaryStats | null>(null);
@@ -46,8 +72,8 @@ export class MovieManagementComponent implements OnInit {
     const total = this.totalPages();
     const current = this.currentPage();
     const pages: { label: string; value: number | null }[] = [];
-
     pages.push({ label: '1', value: 1 });
+
     if (current > 3) pages.push({ label: '...', value: null });
 
     for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
@@ -64,7 +90,14 @@ export class MovieManagementComponent implements OnInit {
   ngOnInit() {
     this.loadGenres();
     this.loadStats();
-    this.loadMovies();
+    this.route.queryParams.subscribe(params => {
+      this.selectedGenre.set(params['genre'] || '');
+      this.selectedYear.set(params['year'] || '');
+      this.selectedRating.set(params['rating'] || '');
+      this.selectedSort.set(params['sort'] || 'moi-nhat');
+      this.currentPage.set(Number(params['page']) || 1);
+      this.loadMovies();
+    });
   }
 
   // Apis Call: Load tags 
@@ -99,8 +132,9 @@ export class MovieManagementComponent implements OnInit {
     const params = {
       page: this.currentPage(),
       limit: this.pageSize(),
-      year: this.selectedYear() !== 'Tất cả' ? this.selectedYear() : null,
-      tag: this.selectedGenre() !== 'Tất cả' ? this.selectedGenre() : null,
+      year: this.selectedYear() || null,
+      genre: this.selectedGenre() || null,
+      rating: this.selectedRating() || null,
       sort: this.selectedSort()
     };
 
@@ -119,7 +153,6 @@ export class MovieManagementComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading.set(false);
-        console.log(err);
       }
     });
   }
@@ -127,15 +160,26 @@ export class MovieManagementComponent implements OnInit {
   // Actions: filter movie
   onFilterChange() {
     this.currentPage.set(1);
-    this.loadMovies();
+    this.updateUrl(); // Thay vì loadMovies() thẳng, ta update URL
   }
 
   // Actions: go to page
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
       this.currentPage.set(page);
-      this.loadMovies();
+      this.updateUrl(); // Update URL, subscribe sẽ lo gọi API
     }
+  }
+
+  // Actions: reset filter
+  resetFilters() {
+    this.selectedGenre.set('');
+    this.selectedYear.set('');
+    this.selectedRating.set('');
+    this.selectedSort.set('moi-nhat');
+    this.currentPage.set(1);
+
+    this.updateUrl();
   }
 
   // Format: number
@@ -173,5 +217,20 @@ export class MovieManagementComponent implements OnInit {
     if (num === undefined || num === null || num === 0) return isRating ? '0.0' : '0';
     const prefix = num > 0 ? '+' : '';
     return prefix + this.formatKpi(num, isRating);
+  }
+
+  // Helper: update query in URL
+  updateUrl() {
+    const queryParams: any = {};
+    if (this.selectedGenre()) queryParams.genre = this.selectedGenre();
+    if (this.selectedYear()) queryParams.year = this.selectedYear();
+    if (this.selectedRating()) queryParams.rating = this.selectedRating();
+    if (this.selectedSort() !== 'moi-nhat') queryParams.sort = this.selectedSort();
+    if (this.currentPage() > 1) queryParams.page = this.currentPage();
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams
+    });
   }
 }
