@@ -30,7 +30,7 @@ export class MovieManagementComponent implements OnInit {
   genreOptions = signal<any[]>([]);
 
   // Data signal
-  summaryStats = signal<SummaryStats[]>([]);
+  summaryStats = signal<SummaryStats | null>(null);
   movies = signal<MovieRow[]>([]);
   isLoading = signal<boolean>(false);
 
@@ -80,6 +80,7 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
+  // Apis Call: Load stats
   loadStats() {
     this.adminMovieService.getMovieStats().subscribe({
       next: (res) => {
@@ -92,6 +93,7 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
+  // Apis Call: Load movies
   loadMovies() {
     this.isLoading.set(true);
     const params = {
@@ -122,12 +124,13 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
-  // ─── Actions ───
+  // Actions: filter movie
   onFilterChange() {
-    this.currentPage.set(1); // Reset về trang 1 khi đổi filter
+    this.currentPage.set(1);
     this.loadMovies();
   }
 
+  // Actions: go to page
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
       this.currentPage.set(page);
@@ -135,15 +138,40 @@ export class MovieManagementComponent implements OnInit {
     }
   }
 
+  // Format: number
   formatNumber(num: number): string { return num ? num.toLocaleString() : '0'; }
 
+  // Actions: add new movie
   addNewMovie() { console.log('Add new movie'); }
+
+  // Actions: edit movie
   editMovie(movie: MovieRow) { console.log('Edit movie:', movie.id); }
 
+  // Actions: delete movie
   deleteMovie(movie: MovieRow) {
     if (confirm(`Xóa phim "${movie.title}"?`)) {
       // Gọi API Delete ở đây, sau đó load lại danh sách
       this.movies.update(list => list.filter(m => m.id !== movie.id));
     }
+  }
+
+  // Format value: kpi
+  formatKpi(num: number | undefined | null, isRating: boolean = false): string {
+    if (num === undefined || num === null) return '0';
+
+    const sign = num < 0 ? '-' : '';
+    const absNum = Math.abs(num);
+
+    if (isRating) return sign + absNum.toFixed(1);
+    if (absNum >= 1000000) return sign + (absNum / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (absNum >= 10000) return sign + (absNum / 1000).toFixed(0) + 'K';
+    return sign + absNum.toLocaleString('en-US');
+  }
+
+  // Format value: trend
+  formatTrend(num: number | undefined | null, isRating: boolean = false): string {
+    if (num === undefined || num === null || num === 0) return isRating ? '0.0' : '0';
+    const prefix = num > 0 ? '+' : '';
+    return prefix + this.formatKpi(num, isRating);
   }
 }

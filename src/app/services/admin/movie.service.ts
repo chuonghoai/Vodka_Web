@@ -25,8 +25,8 @@ export class AdminMovieService {
   }
 
   // Get movie stats
-  getMovieStats(): Observable<ApiResponse<SummaryStats[]>> {
-    return this.http.get<ApiResponse<SummaryStats[]>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIE_STATS}`);
+  getMovieStats(): Observable<ApiResponse<SummaryStats>> {
+    return this.http.get<ApiResponse<SummaryStats>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIE_STATS}`);
   }
 
   // Get tags for Dropdown

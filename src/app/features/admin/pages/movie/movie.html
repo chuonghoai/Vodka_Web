@@ -16,18 +16,63 @@
   </section>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-    @for (stat of summaryStats(); track stat.label; let i = $index) {
+    @if (summaryStats(); as stats) {
+
     <div
       class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/20 hover:border-red-600/20 transition-all duration-300">
       <div class="flex justify-between items-start mb-4">
-        <span class="material-symbols-outlined text-red-600"
-          [style]="(i === 1 || i === 3) ? 'font-variation-settings: \'FILL\' 1' : ''">
-          {{ i === 0 ? 'movie' : i === 1 ? 'star' : i === 2 ? 'visibility' : 'favorite' }}
+        <span class="material-symbols-outlined text-red-600">movie</span>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em]" [class.text-green-500]="stats.movie.trend"
+          [class.text-red-500]="stats.movie.trend < 0">
+          {{ formatTrend(stats.movie.trend) }}
         </span>
-        <span class="text-[10px] font-black text-red-400 uppercase tracking-[0.2em]">{{ stat.trend }}</span>
       </div>
-      <h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">{{ stat.label }}</h3>
-      <p class="text-3xl font-black text-white tracking-tighter">{{ stat.value }}</p>
+      <h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Movies</h3>
+      <p class="text-3xl font-black text-white tracking-tighter">{{ formatKpi(stats.movie.value) }}</p>
+    </div>
+
+    <div
+      class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/20 hover:border-red-600/20 transition-all duration-300">
+      <div class="flex justify-between items-start mb-4">
+        <span class="material-symbols-outlined text-red-600" style="font-variation-settings: 'FILL' 1">star</span>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em]" [class.text-green-500]="stats.rating.trend"
+          [class.text-red-500]="stats.rating.trend < 0">
+          {{ formatTrend(stats.rating.trend, true) }}
+        </span>
+      </div>
+      <h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Average Rating</h3>
+      <p class="text-3xl font-black text-white tracking-tighter">{{ formatKpi(stats.rating.value) }}</p>
+    </div>
+
+    <div
+      class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/20 hover:border-red-600/20 transition-all duration-300">
+      <div class="flex justify-between items-start mb-4">
+        <span class="material-symbols-outlined text-red-600">visibility</span>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em]" [class.text-green-500]="stats.views.trend"
+          [class.text-red-500]="stats.views.trend < 0">
+          {{ formatTrend(stats.views.trend) }}
+        </span>
+      </div>
+      <h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Views</h3>
+      <p class="text-3xl font-black text-white tracking-tighter">{{ formatKpi(stats.views.value) }}</p>
+    </div>
+
+    <div
+      class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/20 hover:border-red-600/20 transition-all duration-300">
+      <div class="flex justify-between items-start mb-4">
+        <span class="material-symbols-outlined text-red-600" style="font-variation-settings: 'FILL' 1">favorite</span>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em]" [class.text-green-500]="stats.favorites.trend"
+          [class.text-red-500]="stats.favorites.trend < 0">
+          {{ formatTrend(stats.favorites.trend) }}
+        </span>
+      </div>
+      <h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total Favorites</h3>
+      <p class="text-3xl font-black text-white tracking-tighter">{{ formatKpi(stats.favorites.value) }}</p>
+    </div>
+
+    } @else {
+    <div class="col-span-1 md:col-span-2 lg:col-span-4 py-8 flex justify-center items-center">
+      <div class="w-8 h-8 border-4 border-zinc-800 border-t-red-600 rounded-full animate-spin"></div>
     </div>
     }
   </div>

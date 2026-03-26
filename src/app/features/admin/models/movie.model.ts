@@ -12,7 +12,20 @@ export interface MovieRow {
 }
 
 export interface SummaryStats {
-    label: string;
-    value: string;
-    trend: string;
+    movie: {
+        value: number;
+        trend: number;
+    },
+    rating: {
+        value: number;
+        trend: number;
+    },
+    views: {
+        value: number;
+        trend: number;
+    },
+    favorites: {
+        value: number;
+        trend: number;
+    }
 }
