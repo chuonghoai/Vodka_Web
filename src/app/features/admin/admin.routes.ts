@@ -15,7 +15,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'movies',
         loadComponent: () =>
-          import('./pages/movie-management/movie-management').then(m => m.MovieManagementComponent),
+          import('./pages/movie/movie').then(m => m.MovieManagementComponent),
       },
       {
         path: 'users',
