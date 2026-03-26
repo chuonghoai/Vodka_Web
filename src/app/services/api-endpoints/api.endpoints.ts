@@ -13,6 +13,13 @@ export const API_ENDPOINTS = {
     MOVIES: '/api/admin/movies',               // GET: danh sách + pagination
     MOVIE_BY_ID: (id: number) => `/api/admin/movies/${id}`,  // GET/PUT/DELETE
     MOVIE_STATS: '/api/admin/movies/stats',     // GET: summary stats
+
+
+
+    // CRUD GENRE
+    GENRES: '/api/admin/genres',
+    GENRE_BY_ID: (id: number) => `/api/admin/genres/${id}`,
+    GENRE_STATS: '/api/admin/genres/stats',
   },
   USER: {
     PROFILE: '/api/users/me/profile',

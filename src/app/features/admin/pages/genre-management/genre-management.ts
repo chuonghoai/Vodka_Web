@@ -1,6 +1,9 @@
-import { Component, computed, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { GenreService } from '../../../../services/genre.service';
+import { UpdateGenreRequest } from '../../../../models/genre.model';
+
 
 interface GenreRow {
   id: number;
@@ -25,64 +28,30 @@ interface GenreStat {
   imports: [FormsModule, NgClass],
   templateUrl: './genre-management.html',
 })
+
 export class GenreManagementComponent {
+
+  private genreService = inject(GenreService);
+
+  isLoading = signal(false);
+  errorMessage = signal('');
+
   // Filters
   searchQuery = signal('');
   selectedSort = signal('Sắp xếp: Tên A-Z');
 
   // Summary Stats
-  genreStats = signal<GenreStat[]>([
-    {
-      icon: 'category',
-      label: 'Tổng thể loại',
-      value: '12',
-      description: 'Tổng số thể loại phim',
-      badgeText: 'Total',
-      badgeColor: 'zinc',
-    },
-    {
-      icon: 'trending_up',
-      label: 'Phổ biến nhất',
-      value: 'Tâm lý',
-      description: '278 phim liên kết',
-      badgeText: 'Top',
-      badgeColor: 'red',
-    },
-    {
-      icon: 'warning',
-      label: 'Chưa phân loại',
-      value: '23',
-      description: 'Phim chưa gắn thể loại',
-      badgeText: 'Warning',
-      badgeColor: 'amber',
-    },
-    {
-      icon: 'schedule',
-      label: 'Thêm gần đây',
-      value: 'Âm nhạc',
-      description: '2 ngày trước',
-      badgeText: 'New',
-      badgeColor: 'blue',
-    },
-  ]);
+  genreStats = signal<GenreStat[]>([]);
 
   // Genre data
-  genres = signal<GenreRow[]>([
-    { id: 1, name: 'Hành động', slug: '/hanh-dong',movieCount: 234, createdAt: '15/01/2024' },
-    { id: 2, name: 'Kinh dị', slug: '/kinh-di', movieCount: 156, createdAt: '15/01/2024' },
-    { id: 3, name: 'Tâm lý', slug: '/tam-ly', movieCount: 278, createdAt: '15/01/2024' },
-    { id: 4, name: 'Hài hước', slug: '/hai-huoc', movieCount: 189, createdAt: '20/01/2024' },
-    { id: 5, name: 'Tình cảm', slug: '/tinh-cam', movieCount: 145, createdAt: '20/01/2024' },
-    { id: 6, name: 'Khoa học viễn tưởng', slug: '/khoa-hoc-vien-tuong', movieCount: 98, createdAt: '22/01/2024' },
-    { id: 7, name: 'Phiêu lưu', slug: '/phieu-luu', movieCount: 167, createdAt: '22/01/2024' },
-    { id: 8, name: 'Hoạt hình', slug: '/hoat-hinh', movieCount: 112, createdAt: '25/01/2024' },
-    { id: 9, name: 'Tài liệu', slug: '/tai-lieu', movieCount: 67, createdAt: '28/01/2024' },
-    { id: 10, name: 'Âm nhạc', slug: '/am-nhac', movieCount: 34, createdAt: '01/02/2024' },
-  ]);
+  genres = signal<GenreRow[]>([]);
 
   // Side Panel
   selectedGenre = signal<GenreRow | null>(null);
   showPanel = signal(false);
+  isEditing = signal(false);
+  editName = signal('');
+  editSlug = signal('');
 
   // Add Modal
   showAddModal = signal(false);
@@ -91,7 +60,7 @@ export class GenreManagementComponent {
 
   // Pagination
   currentPage = signal(1);
-  totalItems = signal(12);
+  totalItems = signal(0);
   pageSize = signal(10);
 
   totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
@@ -112,6 +81,101 @@ export class GenreManagementComponent {
 
   showingFrom = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
   showingTo = computed(() => Math.min(this.currentPage() * this.pageSize(), this.totalItems()));
+
+  // SortMapping
+  private sortMap: Record<string, string> = {
+    'Sắp xếp: Tên A-Z': 'name_asc',
+    'Sắp xếp: Số phim giảm dần': 'movieCount_desc',
+    'Sắp xếp: Ngày tạo': 'createdAt_desc',
+  }
+
+  constructor() {
+    afterNextRender(() => {
+      this.loadGenres();
+      this.loadStats();
+    });
+  }
+
+  loadGenres(){
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+    this.genreService.getGenres({
+      page: this.currentPage(),
+      pageSize: this.pageSize(),
+      search: this.searchQuery() || undefined,
+      sort: this.sortMap[this.selectedSort()] || 'name_asc',
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.genres.set(res.data);
+          this.totalItems.set(res.pagination?.totalItems ?? 0);
+        }
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set('Không thể tải dữ liệu thể loại');
+        this.isLoading.set(false);
+      }
+    })
+  }
+
+  loadStats() {
+    this.genreService.getGenreStats().subscribe({
+      next: (res) => {
+        if (res.success) {
+          const d = res.data;
+          this.genreStats.set([
+            {
+              icon: 'category',
+              label: 'Tổng thể loại',
+              value: String(d.totalGenres),
+              description: 'Tổng số thể loại phim',
+              badgeText: 'Total',
+              badgeColor: 'zinc',
+            },
+            {
+              icon: 'trending_up',
+              label: 'Phổ biến nhất',
+              value: d.mostPopularGenre.name,
+              description: `${d.mostPopularGenre.movieCount} phim liên kết`,
+              badgeText: 'Top',
+              badgeColor: 'red',
+            },
+            {
+              icon: 'warning',
+              label: 'Chưa phân loại',
+              value: String(d.unclassifiedMovies),
+              description: 'Phim chưa gắn thể loại',
+              badgeText: 'Warning',
+              badgeColor: 'amber',
+            },
+            {
+              icon: 'schedule',
+              label: 'Thêm gần đây',
+              value: d.latestGenre.name,
+              description: d.latestGenre.createdAt,
+              badgeText: 'New',
+              badgeColor: 'blue',
+            },
+          ]);
+        }
+      },
+      error: () => {
+        this.errorMessage.set('Không thể tải thống kê');
+      }
+    });
+  }
+
+  // Search and sort
+  onSearchChange() {
+    this.currentPage.set(1);
+    this.loadGenres();
+  }
+  onSortChange() {
+    this.currentPage.set(1);
+    this.loadGenres();
+  }
+
 
   // Helpers
   getBadgeClasses(color: string): string {
@@ -154,19 +218,58 @@ export class GenreManagementComponent {
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
+      this.loadGenres();
     }
   }
 
   viewGenre(genre: GenreRow) {
     this.selectedGenre.set(genre);
+    this.editName.set(genre.name);
+    this.editSlug.set(genre.slug);
+    this.isEditing.set(false);
     this.showPanel.set(true);
   }
 
   closePanel() {
     this.showPanel.set(false);
     this.selectedGenre.set(null);
+    this.isEditing.set(false);
   }
 
+  toggleEdit() {
+    this.isEditing.update(v => !v);
+  }
+
+  updateGenre(){
+    const genre = this.selectedGenre();
+    if (!genre) return;
+
+    const payload: UpdateGenreRequest = {};
+    const newName = this.editName().trim();
+    const newSlug = this.editSlug().trim();
+
+    if (newName && newName !== genre.name) payload.name = newName;
+    if (newSlug && newSlug !== genre.slug) payload.slug = newSlug;
+
+    if (!payload.name && !payload.slug) {
+      this.closePanel();
+      return;
+    }
+
+    this.genreService.updateGenre(genre.id, payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.closePanel();
+          this.loadGenres();
+          this.loadStats();
+        }
+      },
+      error: () => {
+        this.errorMessage.set('Không thể cập nhật thể loại');
+      }
+    });
+
+  }
   // Add Modal Actions
   openAddModal() {
     this.newGenreName.set('');
@@ -182,26 +285,39 @@ export class GenreManagementComponent {
     const name = this.newGenreName().trim();
     const slug = this.newGenreSlug().trim();
     if (!name || !slug) return;
-    const newId = Math.max(...this.genres().map(g => g.id), 0) + 1;
-    this.genres.update(list => [
-      ...list,
-      {
-        id: newId,
-        name,
-        slug: '/' + slug,
-        movieCount: 0,
-        createdAt: new Date().toLocaleDateString('vi-VN'),
+    this.genreService.createGenre({ name, slug }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.closeAddModal();
+          this.loadGenres();
+          this.loadStats();
+        }
       },
-    ]);
-    this.closeAddModal();
+      error: () => {
+        this.errorMessage.set('Không thể tạo thể loại');
+      }
+    });
   }
 
-  deleteGenre(genre: GenreRow) {
-    if (confirm(`Xóa thể loại "${genre.name}"?`)) {
-      this.genres.update(list => list.filter(g => g.id !== genre.id));
-      if (this.selectedGenre()?.id === genre.id) {
-        this.closePanel();
+ deleteGenre(genre: GenreRow) {
+    if (!confirm(`Xóa thể loại "${genre.name}"?`)) return;
+    this.genreService.deleteGenre(genre.id).subscribe({
+      next: (res) => {
+        if (res.success) {
+          if (this.selectedGenre()?.id === genre.id) {
+            this.closePanel();
+          }
+          this.loadGenres();
+          this.loadStats();
+        }
+      },
+      error: () => {
+        this.errorMessage.set('Không thể xóa thể loại');
       }
-    }
+    });
+  }
+  
+  dismissError() {
+    this.errorMessage.set('');
   }
 }
