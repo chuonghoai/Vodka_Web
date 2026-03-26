@@ -3,24 +3,7 @@ import { afterNextRender, Component, computed, inject, signal } from '@angular/c
 import { FormsModule } from '@angular/forms';
 import { GenreService } from '../../../../services/genre.service';
 import { UpdateGenreRequest } from '../../../../models/genre.model';
-
-
-interface GenreRow {
-  id: number;
-  name: string;
-  slug: string;
-  movieCount: number;
-  createdAt: string;
-}
-
-interface GenreStat {
-  icon: string;
-  label: string;
-  value: string;
-  description: string;
-  badgeText: string;
-  badgeColor: string;
-}
+import { GenreRow, GenreStat } from '../../models/genre.model';
 
 @Component({
   selector: 'app-genre-management',
@@ -96,7 +79,7 @@ export class GenreManagementComponent {
     });
   }
 
-  loadGenres(){
+  loadGenres() {
     this.isLoading.set(true);
     this.errorMessage.set('');
     this.genreService.getGenres({
@@ -240,7 +223,7 @@ export class GenreManagementComponent {
     this.isEditing.update(v => !v);
   }
 
-  updateGenre(){
+  updateGenre() {
     const genre = this.selectedGenre();
     if (!genre) return;
 
@@ -299,7 +282,7 @@ export class GenreManagementComponent {
     });
   }
 
- deleteGenre(genre: GenreRow) {
+  deleteGenre(genre: GenreRow) {
     if (!confirm(`Xóa thể loại "${genre.name}"?`)) return;
     this.genreService.deleteGenre(genre.id).subscribe({
       next: (res) => {
@@ -316,7 +299,7 @@ export class GenreManagementComponent {
       }
     });
   }
-  
+
   dismissError() {
     this.errorMessage.set('');
   }
