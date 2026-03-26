@@ -21,7 +21,8 @@ export class App {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.isAuthPage.set(event.urlAfterRedirects.includes('/auth'));
+      const url = event.urlAfterRedirects;
+      this.isAuthPage.set(url.includes('/auth') || url.startsWith('/admin'));
     });
   }
 }

@@ -1,9 +1,9 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import {
-  SocialAuthServiceConfig,
   GoogleLoginProvider,
   SocialLoginModule,
+  SocialAuthServiceConfig,
 } from '@abacritt/angularx-social-login';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
