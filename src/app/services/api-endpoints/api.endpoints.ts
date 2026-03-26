@@ -14,12 +14,18 @@ export const API_ENDPOINTS = {
     MOVIE_BY_ID: (id: number) => `/api/admin/movies/${id}`,  // GET/PUT/DELETE
     MOVIE_STATS: '/api/admin/movies/stats',     // GET: summary stats
 
-
+    // CRUD USER
+    USERS: '/api/admin/users',
+    USER_BY_ID: (id: number) => `/api/admin/users/${id}`,
+    USER_STATS: '/api/admin/users/stats',
+    USER_LOCK: (id: number) => `/api/admin/users/${id}/lock`,
+    USER_RESET_PASSWORD: (id: number) => `/api/admin/users/${id}/reset-password`,
 
     // CRUD GENRE
     GENRES: '/api/admin/genres',
     GENRE_BY_ID: (id: number) => `/api/admin/genres/${id}`,
     GENRE_STATS: '/api/admin/genres/stats',
+
   },
   USER: {
     PROFILE: '/api/users/me/profile',
