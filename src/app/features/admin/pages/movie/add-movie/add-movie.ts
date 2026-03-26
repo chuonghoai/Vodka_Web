@@ -286,12 +286,21 @@ export class AddMovieComponent implements OnInit, OnDestroy {
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
         const thumbnail = canvas.toDataURL('image/jpeg', 0.6); 
-        const durationMin = Math.ceil(video.duration / 60);
+        const durationSec = Math.round(video.duration);
         URL.revokeObjectURL(video.src);
-        resolve({ duration: durationMin, thumbnail });
+        resolve({ duration: durationSec, thumbnail });
       };
       video.onerror = (e) => reject(e);
     });
+  }
+
+  formatDuration(seconds: number | undefined): string {
+    if (!seconds) return '00:00';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    const pad = (num: number) => num.toString().padStart(2, '0');
+    return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
   }
 
   saveMovie() {

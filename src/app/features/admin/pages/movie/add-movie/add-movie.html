@@ -263,7 +263,7 @@
                                     }
                                     <div
                                         class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-                                        <span class="text-white font-bold">{{ ep.duration }} Phút</span>
+                                        <span class="text-white font-bold">{{ formatDuration(ep.duration) }}</span>
                                     </div>
                                     <button (click)="removeVideo(ep)"
                                         class="absolute top-3 right-3 bg-red-600/90 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-lg">
@@ -362,8 +362,7 @@
                         <img [src]="movieForm().posterUrl" class="w-full h-full object-cover opacity-80">
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
-                            <span class="text-white font-bold text-xl">Thời lượng: {{ movieForm().duration }}
-                                Phút</span>
+                            <span class="text-white font-bold text-xl">Thời lượng: {{ formatDuration(movieForm().duration) }}</span>
                         </div>
                         <button (click)="removeVideo()"
                             class="absolute top-4 right-4 bg-red-600/90 text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-xl">
