@@ -186,10 +186,14 @@ export class MovieManagementComponent implements OnInit {
   formatNumber(num: number): string { return num ? num.toLocaleString() : '0'; }
 
   // Actions: add new movie
-  addNewMovie() { console.log('Add new movie'); }
+  addNewMovie() { 
+    this.router.navigate(['/admin/movies/new']); 
+  }
 
   // Actions: edit movie
-  editMovie(movie: MovieRow) { console.log('Edit movie:', movie.id); }
+  editMovie(movie: MovieRow) { 
+    this.router.navigate(['/admin/movies/edit', movie.id]); 
+  }
 
   // Actions: delete movie
   deleteMovie(movie: MovieRow) {
