@@ -185,20 +185,28 @@ export class MovieManagementComponent implements OnInit {
   formatNumber(num: number): string { return num ? num.toLocaleString() : '0'; }
 
   // Actions: add new movie
-  addNewMovie() { 
-    this.router.navigate(['/admin/movies/new']); 
+  addNewMovie() {
+    this.router.navigate(['/admin/movies/new']);
   }
 
   // Actions: edit movie
-  editMovie(movie: MovieRow) { 
-    this.router.navigate(['/admin/movies/edit', movie.id]); 
+  editMovie(movie: MovieRow) {
+    this.router.navigate(['/admin/movies/edit', movie.id]);
   }
 
   // Actions: delete movie
   deleteMovie(movie: MovieRow) {
     if (confirm(`Xóa phim "${movie.title}"?`)) {
-      // Gọi API Delete ở đây, sau đó load lại danh sách
-      this.movies.update(list => list.filter(m => m.id !== movie.id));
+      this.adminMovieService.deleteMovie(movie.id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.movies.update(list => list.filter(m => m.id !== movie.id));
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
     }
   }
 

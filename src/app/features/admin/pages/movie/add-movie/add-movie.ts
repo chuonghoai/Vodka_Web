@@ -91,12 +91,42 @@ export class AddMovieComponent implements OnInit, OnDestroy {
     this.adminMovieService.getMovieById(id).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.movieForm.set(res.data);
+          const movieData = res.data;
+
+          // 1. PHỤC HỒI DATA CHO PHIM LẺ (SINGLE)
+          // Do lúc save ta nhét video vào seasons[0].episodes[0], giờ lấy về phải gỡ ra
+          if (movieData.movieType === 'SINGLE' && movieData.seasons && movieData.seasons.length > 0) {
+            const firstEp = movieData.seasons[0].episodes[0];
+            if (firstEp) {
+              movieData.videoUrl = firstEp.videoUrl;
+              movieData.duration = firstEp.duration;
+              // Tự động gen ảnh thumbnail từ Cloudinary Video URL
+              movieData.thumbnailUrl = this.getThumbnailFromCloudinary(firstEp.videoUrl);
+            }
+            movieData.seasons = []; // Reset lại seasons để form không bị lỗi logic
+          }
+
+          // 2. PHỤC HỒI THUMBNAIL CHO PHIM BỘ (SERIES)
+          if (movieData.movieType === 'SERIES' && movieData.seasons) {
+            movieData.seasons.forEach((season: any) => {
+              if (season.episodes) {
+                season.episodes.forEach((ep: any) => {
+                  if (ep.videoUrl) {
+                    ep.thumbnailUrl = this.getThumbnailFromCloudinary(ep.videoUrl);
+                  }
+                });
+              }
+            });
+          }
+
+          // Gán lại dữ liệu chuẩn xác vào Form
+          this.movieForm.set(movieData);
         }
       },
       error: (err) => console.error('Lỗi khi tải chi tiết phim:', err)
     });
   }
+
   // 3.3 Khối hàm Upload Media qua Cloudinary
   async processMediaUploads(): Promise<void> {
     const form = this.movieForm();
@@ -318,13 +348,24 @@ export class AddMovieComponent implements OnInit, OnDestroy {
 
     this.queueVideoProcessing(file, (res) => {
       const objectUrl = URL.createObjectURL(file);
+
       if (episode) {
-        // Bổ sung thumbnailUrl: res.thumbnail
-        episode.videoFile = file; episode.videoUrl = objectUrl; episode.duration = res.duration; episode.thumbnailUrl = res.thumbnail;
-        this.movieForm.update(f => ({ ...f }));
+        // FIX: Cập nhật Immutable Sâu (Deep Update) để Angular Signal render lại UI lập tức
+        this.movieForm.update(f => ({
+          ...f,
+          seasons: f.seasons.map(s => ({
+            ...s,
+            episodes: s.episodes.map(e =>
+              e === episode
+                ? { ...e, videoFile: file, videoUrl: objectUrl, duration: res.duration, thumbnailUrl: res.thumbnail }
+                : e
+            )
+          }))
+        }));
       } else {
-        // Bổ sung thumbnailUrl: res.thumbnail
-        this.movieForm.update(f => ({ ...f, videoFile: file, videoUrl: objectUrl, duration: res.duration, thumbnailUrl: res.thumbnail }));
+        this.movieForm.update(f => ({
+          ...f, videoFile: file, videoUrl: objectUrl, duration: res.duration, thumbnailUrl: res.thumbnail
+        }));
       }
     });
   }
@@ -333,9 +374,19 @@ export class AddMovieComponent implements OnInit, OnDestroy {
   removeBanner(event: Event) { event.stopPropagation(); this.movieForm.update(f => ({ ...f, bannerUrl: '', bannerFile: undefined })); }
   removeVideo(episode?: EpisodeForm) {
     if (episode) {
-      episode.videoFile = undefined; episode.videoUrl = ''; episode.duration = 0; episode.thumbnailUrl = '';
-    }
-    else {
+      // FIX: Cập nhật Immutable Sâu khi xóa
+      this.movieForm.update(f => ({
+        ...f,
+        seasons: f.seasons.map(s => ({
+          ...s,
+          episodes: s.episodes.map(e =>
+            e === episode
+              ? { ...e, videoFile: undefined, videoUrl: '', duration: 0, thumbnailUrl: '' }
+              : e
+          )
+        }))
+      }));
+    } else {
       this.movieForm.update(f => ({ ...f, videoFile: undefined, videoUrl: '', duration: 0, thumbnailUrl: '' }));
     }
   }
@@ -410,5 +461,14 @@ export class AddMovieComponent implements OnInit, OnDestroy {
 
       video.onerror = (e) => reject(e);
     });
+  }
+
+  private getThumbnailFromCloudinary(videoUrl: string): string {
+    if (!videoUrl) return '';
+    // Cloudinary hỗ trợ tự động cắt ảnh frame giữa của video chỉ bằng cách đổi đuôi file thành .jpg
+    if (videoUrl.includes('cloudinary.com/')) {
+      return videoUrl.replace(/\.[^/.]+$/, '.jpg');
+    }
+    return '';
   }
 }

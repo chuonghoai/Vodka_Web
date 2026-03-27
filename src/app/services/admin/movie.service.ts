@@ -48,4 +48,9 @@ export class AdminMovieService {
   updateMovie(id: number, payload: any): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIES}/${id}`, payload);
   }
+  
+  // Delete movie
+  deleteMovie(id: number): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIES}/${id}`);
+  }
 }

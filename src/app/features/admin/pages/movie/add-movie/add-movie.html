@@ -258,6 +258,8 @@
                                     <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-700 group max-h-64 object-contain mx-auto">
                                     @if(ep.thumbnailUrl) {
                                         <img [src]="ep.thumbnailUrl" class="w-full h-full object-cover opacity-80">
+                                    } @else if (movieForm().posterUrl) {
+                                        <img [src]="movieForm().posterUrl" class="w-full h-full object-cover opacity-80">
                                     } @else {
                                         <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
                                             <span class="material-symbols-outlined text-4xl">videocam</span>
