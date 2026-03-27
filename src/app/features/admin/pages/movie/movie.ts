@@ -49,7 +49,6 @@ export class MovieManagementComponent implements OnInit {
     const r = this.ratingOptions.find(o => o.value === this.selectedRating());
     return r ? r.label : 'Tất cả';
   });
-
   selectedSortName = computed(() => {
     const s = this.sortOptions.find(o => o.value === this.selectedSort());
     return s ? s.label : 'Mới nhất';
@@ -100,7 +99,7 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
-  // Apis Call: Load tags 
+  // Apis Call: Load genres 
   loadGenres() {
     this.adminMovieService.getGenres().subscribe({
       next: (res) => {

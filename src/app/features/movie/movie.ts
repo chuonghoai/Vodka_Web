@@ -46,14 +46,6 @@ export class MovieComponent implements OnInit {
     return season ? season.episodes : [];
   });
 
-  // Get thumbnail of current season
-  currentSeasonThumbnail = computed(() => {
-    const data = this.movie();
-    if (!data || !data.episodes) return null;
-    const season = data.episodes.find(s => s.id === this.selectedSeasonId());
-    return season?.thumbnailUrl || null;
-  });
-
   // Auto compute first episode
   firstEpisodeId = computed(() => {
     const data = this.movie();

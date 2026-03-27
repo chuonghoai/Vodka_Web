@@ -34,7 +34,6 @@ export interface Episode {
 export interface Season {
   id: number;
   title: string;
-  thumbnailUrl?: string;
   episodes: Episode[];
 }
 

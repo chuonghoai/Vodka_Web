@@ -33,4 +33,19 @@ export class AdminMovieService {
   getGenres(): Observable<ApiResponse<any[]>> {
     return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}${API_ENDPOINTS.GENRES.GET_ALL}`);
   }
+
+  // Get movie by id
+  getMovieById(id: number): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIES}/${id}`);
+  }
+
+  // New movie
+  createMovie(payload: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIES}`, payload);
+  }
+
+  // Update movie
+  updateMovie(id: number, payload: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.ADMIN.MOVIES}/${id}`, payload);
+  }
 }

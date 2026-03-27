@@ -255,15 +255,25 @@
                                 } @else {
                                 <div
                                     class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-700 group max-h-64 object-contain mx-auto">
+                                    <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-700 group max-h-64 object-contain mx-auto">
                                     @if(ep.thumbnailUrl) {
-                                    <img [src]="ep.thumbnailUrl" class="w-full h-full object-cover opacity-80">
+                                        <img [src]="ep.thumbnailUrl" class="w-full h-full object-cover opacity-80">
                                     } @else {
-                                    <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">Đã
-                                        liên kết Video URL ngoài</div>
+                                        <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
+                                            <span class="material-symbols-outlined text-4xl">videocam</span>
+                                        </div>
                                     }
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
+                                        <span class="text-white font-bold">{{ ep.duration | duration }}</span>
+                                    </div>
+                                    <button (click)="removeVideo(ep)"
+                                        class="absolute top-3 right-3 bg-red-600/90 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-lg">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
                                     <div
                                         class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-4">
-                                        <span class="text-white font-bold">{{ formatDuration(ep.duration) }}</span>
+                                        <span class="text-white font-bold">{{ ep.duration | duration }}</span>
                                     </div>
                                     <button (click)="removeVideo(ep)"
                                         class="absolute top-3 right-3 bg-red-600/90 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-lg">
@@ -359,10 +369,29 @@
                     } @else {
                     <div
                         class="relative w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-700 group">
-                        <img [src]="movieForm().posterUrl" class="w-full h-full object-cover opacity-80">
+                        <div class="relative w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-700 group">
+                        
+                            @if(movieForm().thumbnailUrl) {
+                                <img [src]="movieForm().thumbnailUrl" class="w-full h-full object-cover opacity-80">
+                            } @else if (movieForm().posterUrl) {
+                                <img [src]="movieForm().posterUrl" class="w-full h-full object-cover opacity-80">
+                            } @else {
+                                <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
+                                    <span class="material-symbols-outlined text-4xl">videocam</span>
+                                </div>
+                            }
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
+                                <span class="text-white font-bold text-xl">Thời lượng: {{ movieForm().duration | duration }}</span>
+                            </div>
+                            <button (click)="removeVideo()"
+                                class="absolute top-4 right-4 bg-red-600/90 text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-xl">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6">
-                            <span class="text-white font-bold text-xl">Thời lượng: {{ formatDuration(movieForm().duration) }}</span>
+                            <span class="text-white font-bold text-xl">Thời lượng: {{ movieForm().duration | duration }}</span>
                         </div>
                         <button (click)="removeVideo()"
                             class="absolute top-4 right-4 bg-red-600/90 text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 shadow-xl">
