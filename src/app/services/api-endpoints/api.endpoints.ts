@@ -10,6 +10,8 @@ export const API_ENDPOINTS = {
   },
 
   ADMIN: {
+
+    // CRUD MOVIES
     MOVIES: '/api/admin/movies',               // GET: danh sách + pagination
     MOVIE_BY_ID: (id: number) => `/api/admin/movies/${id}`,  // GET/PUT/DELETE
     MOVIE_STATS: '/api/admin/movies/stats',     // GET: summary stats
@@ -30,6 +32,16 @@ export const API_ENDPOINTS = {
     TAGS: '/api/admin/tags',
     TAG_BY_ID: (id: number) => `/api/admin/tags/${id}`,
     TAG_STATS: '/api/admin/tags/stats',
+
+
+    // CRUD REVIEW
+    REVIEWS: `/api/admin/reviews`,
+    REVIEW_BY_ID: (id: number) => `/api/admin/reviews/${id}`,
+    REVIEW_STATS: `/api/admin/reviews/stats`,
+    REVIEW_REPLY: (id: number) => `/api/admin/reviews/${id}/reply`,
+    REPLY_BY_ID: (id: number) => `/api/admin/reviews/replies/${id}`,
+    CREATE_REVIEW: '/api/admin/reviews', 
+
     
 
   },

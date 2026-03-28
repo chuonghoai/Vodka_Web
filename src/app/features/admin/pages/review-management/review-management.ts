@@ -1,133 +1,47 @@
-import { Component, computed, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
-import { Review, ReplyReview } from '../../../../models/movie.model';
-
-interface ReviewStat {
-  icon: string;
-  label: string;
-  value: string;
-  description: string;
-  badgeText: string;
-  badgeColor: string;
-}
-
-interface ReviewWithMovie extends Review {
-  movieTitle: string;
-}
+import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { UserState } from '../../../../core/states/user.state';
+import { AdminReply, AdminReview } from '../../../../models/admin-review.modal';
+import { AdminReviewService } from '../../../../services/admin/review.service';
+import { AddReviewComponent } from './add-review/add-review';
 
 @Component({
   selector: 'app-review-management',
   standalone: true,
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, AddReviewComponent],
   templateUrl: './review-management.html',
 })
 export class ReviewManagementComponent {
+
+  private reviewService = inject(AdminReviewService)
+  protected userState = inject(UserState);
+
+  // Loading/ Error
+  isLoading = signal(false);
+  errorMessage = signal('');
+
   // Filters
   searchQuery = signal('');
   selectedRating = signal('all');
-  selectedTime = signal('30days');
+  selectedSort = signal('createdAt_desc');
+
+  // Sort options
+  sortOptions = [
+    { label: 'Mới nhất', value: 'createdAt_desc' },
+    { label: 'Cũ nhất', value: 'createdAt_asc' },
+    { label: 'Rating cao → thấp', value: 'rating_desc' },
+    { label: 'Rating thấp → cao', value: 'rating_asc' },
+  ];
 
   // Summary Stats
-  reviewStats = signal<ReviewStat[]>([
-    {
-      icon: 'rate_review',
-      label: 'Tổng số review',
-      value: '890',
-      description: 'Tổng số review',
-      badgeText: '+12%',
-      badgeColor: 'green',
-    },
-    {
-      icon: 'star',
-      label: 'Điểm đánh giá',
-      value: '4.2',
-      description: 'Điểm đánh giá trung bình',
-      badgeText: 'Trung bình',
-      badgeColor: 'zinc',
-    },
-    {
-      icon: 'movie',
-      label: 'Phim được review',
-      value: '156',
-      description: 'Phim được review',
-      badgeText: 'Active',
-      badgeColor: 'green-dot',
-    },
-    {
-      icon: 'reply',
-      label: 'Tổng phản hồi',
-      value: '342',
-      description: 'Tổng phản hồi',
-      badgeText: '+8%',
-      badgeColor: 'green',
-    },
-  ]);
-
-  // Review data with movie info
-  reviews = signal<ReviewWithMovie[]>([
-    {
-      id: 1,
-      userName: 'NguyenVanA',
-      avatarUrl: '',
-      rating: 5,
-      content: 'Tuyệt phẩm điện ảnh! Hình ảnh và âm thanh của phim thực sự đưa người xem vào một thế giới hoàn toàn khác. Arrakis chưa bao giờ chân thực đến thế.',
-      createdAt: '23/03/2026',
-      movieTitle: 'Dune: Part Two',
-      replied: [
-        { id: 101, userName: 'Admin', content: 'Cảm ơn bạn đã chia sẻ cảm nhận, rất vui khi bạn hài lòng với trải nghiệm này.', createdAt: '23/03/2026' },
-        { id: 102, userName: 'NguyenVanA', content: 'Cảm ơn admin đã phản hồi, mình sẽ tiếp tục ủng hộ!', createdAt: '24/03/2026' },
-      ],
-    },
-    {
-      id: 2,
-      userName: 'TranThiB',
-      avatarUrl: '',
-      rating: 4,
-      content: 'Phim rất sâu sắc và kịch tính dù chủ yếu là các màn đối thoại. Tuy nhiên thời lượng hơi dài khiến mình đôi chỗ thấy mệt mỏi.',
-      createdAt: '23/03/2026',
-      movieTitle: 'Oppenheimer',
-      replied: [
-        { id: 103, userName: 'Admin', content: 'Cảm ơn bạn, ý kiến của bạn rất có giá trị với cộng đồng yêu phim.', createdAt: '23/03/2026' },
-      ],
-    },
-    {
-      id: 3,
-      userName: 'LeVanC',
-      avatarUrl: '',
-      rating: 2,
-      content: 'Hơi thất vọng so với phần 1. Cảm giác nhịp phim bị rời rạc và không tạo được ấn tượng mạnh mẽ như kỳ vọng ban đầu.',
-      createdAt: '22/03/2026',
-      movieTitle: 'Joker 2',
-      replied: [],
-    },
-    {
-      id: 4,
-      userName: 'PhamMinhD',
-      avatarUrl: '',
-      rating: 1,
-      content: 'Không thích phong cách phim lần này. Quá tối và nặng nề, không phù hợp với sở thích cá nhân của tôi về dòng phim siêu anh hùng.',
-      createdAt: '22/03/2026',
-      movieTitle: 'The Batman',
-      replied: [],
-    },
-    {
-      id: 5,
-      userName: 'HoangThiE',
-      avatarUrl: '',
-      rating: 5,
-      content: 'Một cái kết hào hùng và mãn nhãn! Sự kiện crossover lớn nhất lịch sử điện ảnh. Xứng đáng chờ đợi bao lâu nay.',
-      createdAt: '21/03/2026',
-      movieTitle: 'Avengers: Secret Wars',
-      replied: [],
-    },
-  ]);
+  reviewStats = signal<ReviewStat[]>([]);
+  reviews = signal<AdminReview[]>([]);
 
   // Pagination
   currentPage = signal(1);
-  totalItems = signal(890);
+  totalItems = signal(0);
   pageSize = signal(5);
-
 
   totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
 
@@ -145,23 +59,214 @@ export class ReviewManagementComponent {
     return pages;
   });
 
-  // Filtered reviews
-  filteredReviews = computed(() => {
-    let result = this.reviews();
-    const query = this.searchQuery().toLowerCase();
-    if (query) {
-      result = result.filter(
-        r => r.movieTitle.toLowerCase().includes(query) ||
-             r.userName.toLowerCase().includes(query) ||
-             r.content.toLowerCase().includes(query)
-      );
+  // Form Reply
+  replyingToId = signal<number | null>(null);
+  replyContent = signal('');
+  isSubmittingReply = signal(false);
+
+  // Add Review Modal
+  showAddModal = signal(false);
+
+  openAddModal(): void {
+    this.showAddModal.set(true);
+  }
+
+  closeAddModal(): void {
+    this.showAddModal.set(false);
+  }
+
+  onReviewCreated(): void {
+    this.showAddModal.set(false);
+    this.loadReviews();
+    this.loadReviewStats();
+  }
+
+  constructor(){
+    afterNextRender(() =>{
+      this.loadReviews();
+      this.loadReviewStats();
+    })
+  }
+
+  loadReviews(){
+    this.isLoading.set(true);
+    this.reviewService.getReviews({
+      page: this.currentPage(),
+      pageSize: this.pageSize(),
+      search: this.searchQuery(),
+      rating: this.selectedRating(),
+      sort: this.selectedSort()
+    }).subscribe({
+      next: (res) => {
+        if(res.success){
+          this.reviews.set(res.data);
+          if (res.pagination) {
+            this.totalItems.set(res.pagination.totalItems);
+            this.currentPage.set(res.pagination.currentPage);
+            this.pageSize.set(res.pagination.pageSize);
+          }
+        }
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set("Không thể tải danh sách review");
+        this.isLoading.set(false);
+      }
+    })
+  }
+  
+  loadReviewStats(): void {
+    this.reviewService.getReviewStats().subscribe({
+      next: (res) => {
+        if (res.success) {
+          const d = res.data;
+          this.reviewStats.set([
+            {
+              icon: 'rate_review', label: 'Tổng số review',
+              value: new Intl.NumberFormat('en-US').format(d.totalReviews),
+              description: 'Tổng số review',
+              badgeText: d.trends.reviewsTrendPercent > 0
+                ? `+${d.trends.reviewsTrendPercent}%`
+                : `${d.trends.reviewsTrendPercent}%`,
+              badgeColor: d.trends.reviewsTrendPercent >= 0 ? 'green' : 'red',
+            },
+            {
+              icon: 'star', label: 'Điểm đánh giá',
+              value: d.averageRating.toFixed(1),
+              description: 'Điểm đánh giá trung bình',
+              badgeText: 'Trung bình', badgeColor: 'zinc',
+            },
+            {
+              icon: 'movie', label: 'Phim được review',
+              value: new Intl.NumberFormat('en-US').format(d.moviesWithReviews),
+              description: 'Phim được review',
+              badgeText: 'Active', badgeColor: 'green-dot',
+            },
+            {
+              icon: 'reply', label: 'Tổng phản hồi',
+              value: new Intl.NumberFormat('en-US').format(d.totalReplies),
+              description: 'Tổng phản hồi',
+              badgeText: d.trends.repliesTrendPercent > 0
+                ? `+${d.trends.repliesTrendPercent}%`
+                : `${d.trends.repliesTrendPercent}%`,
+              badgeColor: d.trends.repliesTrendPercent >= 0 ? 'green' : 'red',
+            },
+          ]);
+        }
+      },
+    });
+  }
+
+  // Filter
+  onSearchChange(): void {
+    this.currentPage.set(1);
+    this.loadReviews();
+  }
+  onRatingChange(): void {
+    this.currentPage.set(1);
+    this.loadReviews();
+  }
+  
+  onSortChange(): void {
+    this.currentPage.set(1);
+    this.loadReviews();
+  }
+
+  // ACTION
+
+  goToPage(page: number | null): void {
+    if (page !== null && page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      this.loadReviews();
     }
-    const rating = this.selectedRating();
-    if (rating !== 'all') {
-      result = result.filter(r => r.rating === Number(rating));
+  }
+
+  // Delete Review
+  deleteReview(review: AdminReview) {
+    if (!confirm(`Xóa review của "${review.userName}" về phim "${review.movieTitle}"?`)) return;
+
+    // Optimistic: xóa khỏi UI trước
+    this.reviews.update(list => list.filter(r => r.id !== review.id));
+    this.totalItems.update(n => Math.max(0, n - 1));
+
+    this.reviewService.deleteReview(review.id).subscribe({
+      next: () => {
+        this.loadReviewStats();
+      },
+      error: () => {
+        this.errorMessage.set("Không thể xóa review");
+        this.loadReviews(); // rollback
+      }
+    })
+  }
+
+  // Xóa Reply (Optimistic Update)
+  deleteReply(review: AdminReview, reply: AdminReply){
+    if (!confirm(`Xóa reply của "${reply.userName}" về review của "${review.userName}"?`)) return;
+
+    // Optimistic: xóa reply khỏi UI trước
+    this.reviews.update(list =>
+      list.map(r => r.id === review.id
+        ? { ...r, replied: (r.replied || []).filter(rp => rp.id !== reply.id) }
+        : r
+      )
+    );
+
+    this.reviewService.deleteReply(reply.id).subscribe({
+      next: () => {
+        this.loadReviewStats();
+      },
+      error: () => {
+        this.errorMessage.set("Không thể xóa reply");
+        this.loadReviews(); // rollback
+      }
+    })
+  }
+
+  // ADMIN REPLY
+  openReplyForm(reviewId: number){
+    this.replyingToId.set(reviewId);
+    this.replyContent.set('');
+  }
+
+  cancelReply(): void {
+    this.replyingToId.set(null);
+    this.replyContent.set('');
+  }
+
+  // Submit Reply
+  submitReply(){
+    const reviewId = this.replyingToId();
+    const content = this.replyContent().trim();
+
+    if(!reviewId || !content){
+      return;
     }
-    return result;
-  });
+
+    this.isSubmittingReply.set(true);
+
+    this.reviewService.replyToReview(reviewId, {content}).subscribe({
+      next: (res) =>{
+        if(res.success){
+          // Optimistic: thêm reply vào UI ngay
+          const newReply: AdminReply = res.data;
+          this.reviews.update(list =>
+            list.map(r => r.id === reviewId
+              ? { ...r, replied: [...(r.replied || []), newReply] }
+              : r
+            )
+          );
+          this.cancelReply();
+          this.loadReviewStats();
+        }
+        this.isSubmittingReply.set(false);
+      },
+      error: () =>{
+        this.errorMessage.set("Không thể gửi phản hồi");
+        this.isSubmittingReply.set(false);
+      }
+    })
+  }
 
   // Helpers
   getBadgeClasses(color: string): string {
@@ -195,36 +300,12 @@ export class ReviewManagementComponent {
   }
 
   getStarArray(rating: number): boolean[] {
-    return Array.from({ length: 5 }, (_, i) => i < rating);
+    return Array.from({ length: 10 }, (_, i) => i < rating);
   }
-
   getInitial(name: string): string {
     return name.charAt(0).toUpperCase();
   }
-
-  // Actions
-  goToPage(page: number | null) {
-    if (page !== null && page >= 1 && page <= this.totalPages()) {
-      this.currentPage.set(page);
-    }
-  }
-
-  deleteReview(review: ReviewWithMovie) {
-    if (confirm(`Xóa review của "${review.userName}" về "${review.movieTitle}"?`)) {
-      this.reviews.update(list => list.filter(r => r.id !== review.id));
-    }
-  }
-
-  deleteReply(review: ReviewWithMovie, reply: ReplyReview) {
-    if (confirm(`Xóa phản hồi của "${reply.userName}"?`)) {
-      this.reviews.update(list =>
-        list.map(r => {
-          if (r.id === review.id) {
-            return { ...r, replied: (r.replied || []).filter(rp => rp.id !== reply.id) };
-          }
-          return r;
-        })
-      );
-    }
+  dismissError(): void {
+    this.errorMessage.set('');
   }
 }

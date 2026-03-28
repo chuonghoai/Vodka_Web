@@ -1,0 +1,384 @@
+<!doctype html>
+
+<html class="dark" lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-surface': '#e5e1e4',
+              secondary: '#ffb4ab',
+              background: '#131315',
+              'on-primary-container': '#fff6f5',
+              'on-tertiary': '#003450',
+              'tertiary-fixed-dim': '#90cdff',
+              'surface-tint': '#ffb4ab',
+              'surface-container-low': '#1b1b1d',
+              'secondary-fixed': '#ffdad6',
+              'secondary-fixed-dim': '#ffb4ab',
+              'on-surface-variant': '#e6bdb8',
+              'on-secondary': '#660709',
+              'primary-fixed-dim': '#ffb4ab',
+              'on-error': '#690005',
+              'on-secondary-container': '#ff9f94',
+              'on-error-container': '#ffdad6',
+              'on-tertiary-container': '#f3f8ff',
+              'inverse-surface': '#e5e1e4',
+              'primary-fixed': '#ffdad6',
+              'surface-variant': '#353437',
+              tertiary: '#90cdff',
+              'secondary-container': '#89231e',
+              'surface-bright': '#39393b',
+              'surface-container-lowest': '#0e0e10',
+              'tertiary-container': '#0078b2',
+              'on-background': '#e5e1e4',
+              'on-secondary-fixed': '#410002',
+              'surface-dim': '#131315',
+              'surface-container': '#201f21',
+              'inverse-primary': '#bf0715',
+              outline: '#ac8884',
+              'on-tertiary-fixed': '#001e30',
+              error: '#ffb4ab',
+              'error-container': '#93000a',
+              surface: '#131315',
+              'surface-container-highest': '#353437',
+              'on-primary-fixed-variant': '#93000b',
+              'surface-container-high': '#2a2a2c',
+              'on-tertiary-fixed-variant': '#004b71',
+              'on-primary': '#690005',
+              'primary-container': '#dc2626',
+              'outline-variant': '#5c403c',
+              'on-primary-fixed': '#410002',
+              'inverse-on-surface': '#313032',
+              'tertiary-fixed': '#cbe6ff',
+              primary: '#ffb4ab',
+              'on-secondary-fixed-variant': '#86211c',
+            },
+            fontFamily: {
+              headline: ['Inter'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      .star-filled {
+        font-variation-settings: 'FILL' 1;
+      }
+    </style>
+  </head>
+  <body class="bg-surface-container-lowest font-body text-on-surface antialiased min-h-screen">
+    <!-- Sidebar Navigation Shell -->
+    <aside
+      class="h-screen w-64 fixed left-0 top-0 z-40 flex flex-col border-r border-zinc-800/20 bg-zinc-950 shadow-[48px_0_48px_-20px_rgba(220,38,38,0.08)]"
+    >
+      <div class="p-8">
+        <h1 class="text-2xl font-black tracking-tighter text-red-600 uppercase">OBSIDIAN</h1>
+        <p class="text-[10px] tracking-[0.2em] text-zinc-500 font-bold uppercase mt-1">
+          Cinematic Control
+        </p>
+      </div>
+      <nav class="flex-1 px-4 space-y-1">
+        <a
+          class="flex items-center gap-3 px-6 py-4 text-zinc-500 hover:text-zinc-200 transition-colors font-medium text-sm"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+          Dashboard
+        </a>
+        <a
+          class="flex items-center gap-3 px-6 py-4 text-zinc-500 hover:text-zinc-200 transition-colors font-medium text-sm"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="movie">movie</span>
+          Movies
+        </a>
+        <a
+          class="flex items-center gap-3 px-6 py-4 text-red-600 bg-zinc-900/80 border-r-2 border-red-600 transition-all duration-300 font-medium text-sm"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="rate_review">rate_review</span>
+          Reviews
+        </a>
+        <a
+          class="flex items-center gap-3 px-6 py-4 text-zinc-500 hover:text-zinc-200 transition-colors font-medium text-sm"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="group">group</span>
+          Users
+        </a>
+        <a
+          class="flex items-center gap-3 px-6 py-4 text-zinc-500 hover:text-zinc-200 transition-colors font-medium text-sm"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+          Analytics
+        </a>
+      </nav>
+      <div class="p-6 mt-auto">
+        <button
+          class="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-primary-container to-secondary-container text-on-primary-container py-3 rounded-xl font-bold text-sm shadow-lg shadow-red-900/20 active:scale-95 transition-all"
+        >
+          <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+          Add New Review
+        </button>
+      </div>
+    </aside>
+    <!-- Top Navigation Shell -->
+    <header
+      class="fixed top-0 right-0 left-64 h-20 z-30 flex justify-between items-center px-10 bg-zinc-950/80 backdrop-blur-xl"
+    >
+      <div
+        class="flex items-center gap-4 bg-zinc-900/50 px-4 py-2 rounded-full border border-white/5 w-96"
+      >
+        <span class="material-symbols-outlined text-zinc-500" data-icon="search">search</span>
+        <input
+          class="bg-transparent border-none focus:ring-0 text-sm w-full text-on-surface placeholder-zinc-600"
+          placeholder="Tìm kiếm nội dung..."
+          type="text"
+        />
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4">
+          <button
+            class="text-zinc-400 hover:text-red-500 transition-colors cursor-pointer transition-transform active:scale-90"
+          >
+            <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+          </button>
+          <button
+            class="text-zinc-400 hover:text-red-500 transition-colors cursor-pointer transition-transform active:scale-90"
+          >
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+          </button>
+        </div>
+        <div class="h-8 w-[1px] bg-zinc-800"></div>
+        <div class="flex items-center gap-3">
+          <div class="text-right hidden sm:block">
+            <p class="text-xs font-bold text-zinc-200">Admin User</p>
+            <p class="text-[10px] text-zinc-500 uppercase tracking-wider">Super Administrator</p>
+          </div>
+          <img
+            alt="Admin Avatar"
+            class="w-10 h-10 rounded-full border border-red-600/30"
+            data-alt="Close up portrait of a professional man in a dark studio setting with cinematic rim lighting"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBttBwRI5QNYlBnls_rXunximwiyNTltcSFcNJkiK_YflImd8Gg3W1BCXAL3ItZ0UfGUxnkCkgBvVN4ryCuQkkpjr53n56wlgAmJYfS6ej-Xdn2BFYqA0J-S5GHAVMnfs8UKjqxq-kOn60Rm596DuHuZu1njy0qNf3hyuYhIouPAwgiDvqCviICMBU3WgnjFsoUN7qb8fiaeBETlI0GbHVVZgVvIbrujNFj_OPJiIhZjbMsxapgrwop6SU-Yag9iRaEw5IBU3vG1Q"
+          />
+        </div>
+      </div>
+    </header>
+    <!-- Main Content Area -->
+    <main class="ml-64 pt-24 px-10 pb-10 min-h-screen">
+      <div class="mb-10 flex justify-between items-end">
+        <div>
+          <h2 class="text-4xl font-black tracking-tight text-white mb-2">Reviews</h2>
+          <p class="text-zinc-500">Quản lý và biên tập các đánh giá từ người dùng hệ thống.</p>
+        </div>
+      </div>
+      <!-- Placeholder Content to show dashboard behind modal -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-40">
+        <div class="bg-surface-container-low p-6 rounded-xl h-48 border border-white/5"></div>
+        <div class="bg-surface-container-low p-6 rounded-xl h-48 border border-white/5"></div>
+        <div class="bg-surface-container-low p-6 rounded-xl h-48 border border-white/5"></div>
+        <div class="bg-surface-container-low p-6 rounded-xl h-48 border border-white/5"></div>
+        <div class="bg-surface-container-low p-6 rounded-xl h-48 border border-white/5"></div>
+        <div class="bg-surface-container-low p-6 rounded-xl h-48 border border-white/5"></div>
+      </div>
+    </main>
+    <!-- Modal Overlay -->
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+    >
+      <!-- Modal Card -->
+      <div
+        class="w-full max-w-[640px] bg-zinc-900 rounded-xl overflow-hidden shadow-2xl shadow-red-900/10 border border-white/5"
+      >
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-8 py-6 border-b border-white/5">
+          <h3 class="text-xl font-bold tracking-tight text-white">Thêm Review</h3>
+          <button class="p-2 hover:bg-white/10 rounded-full transition-colors group">
+            <span
+              class="material-symbols-outlined text-zinc-400 group-hover:text-white"
+              data-icon="close"
+              >close</span
+            >
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-8 space-y-8">
+          <!-- Searchable Dropdown: Chọn Phim -->
+          <div class="space-y-3">
+            <label class="text-xs font-bold uppercase tracking-widest text-zinc-500"
+              >Chọn phim</label
+            >
+            <div class="relative group">
+              <div
+                class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl border-b-2 border-transparent focus-within:border-primary-container transition-all cursor-pointer"
+              >
+                <img
+                  alt="Dune: Part Two Poster"
+                  class="w-12 h-16 rounded-md object-cover shadow-lg shadow-black"
+                  data-alt="Cinematic movie poster visual showing a vast desert planet with two figures in futuristic suits under a massive orange sun"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2hKuwDEkjRtTb328rW-As04OeCwuAIKuwx3OUSRBT5VzYC2IBdNoIetYt2MJ6B6uyXAYhrpC6Pf0LWBmLi5MMkRoRIBnA7F1DKAFamwM3fSvT-u2gZyXQXONDtCtVoPMYzQuqpSL_havC8ciFPAN55SGZg4vFXFne6OVdr8RvNI399IfHXCyAfjR7YpT53TO-OHRPaJiEi4Aar8ZNvz6_ZUajEUgkDUPqvRGLIPJ-FiFzK0NlgxBIkRXK9zDhFxNOtT4yI2m2Fw"
+                />
+                <div class="flex-1">
+                  <p class="text-on-surface font-semibold">Dune: Part Two</p>
+                  <p class="text-zinc-500 text-xs">Denis Villeneuve • Sci-Fi / Adventure</p>
+                </div>
+                <span class="material-symbols-outlined text-zinc-600" data-icon="expand_more"
+                  >expand_more</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Searchable Dropdown: Người đánh giá -->
+          <div class="space-y-3">
+            <label class="text-xs font-bold uppercase tracking-widest text-zinc-500"
+              >Người đánh giá</label
+            >
+            <div class="relative group">
+              <div
+                class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl border-b-2 border-transparent focus-within:border-primary-container transition-all cursor-pointer"
+              >
+                <img
+                  alt="NguyenVanA Avatar"
+                  class="w-10 h-10 rounded-full object-cover"
+                  data-alt="Professional profile headshot of a smiling man with spectacles in soft studio lighting against a dark neutral background"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf8mqcGzIX3ebLLMD9Bi3gSKJqbZMupZsB5DLpPRLfaigO1tuvNEqy8b-S7cPHMtcJ3cjooDjI1I_XyOh4e1mKLA2uNlqNgC_UXO_NiN-J2qngvZoEHtpmVUqTKHBWpbz1h48FbJN05FAzfz92gjqZ3WoTJy7RJKhb_99As2AY56Dg5pW7jxzQU_hBKmSCVeNHpljcR-KUyeFuQuC_iVV7WUx7Lf2uNJjzDmGHqAucWBa4lKk2rQXV0Vr6X2WtDBmo7P5RXttE1Q"
+                />
+                <div class="flex-1">
+                  <p class="text-on-surface font-semibold">NguyenVanA</p>
+                  <p class="text-zinc-500 text-xs">Verified Critic • 124 reviews</p>
+                </div>
+                <span class="material-symbols-outlined text-zinc-600" data-icon="search"
+                  >search</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Star Rating Selector -->
+          <div class="space-y-3">
+            <div class="flex justify-between items-end">
+              <label class="text-xs font-bold uppercase tracking-widest text-zinc-500"
+                >Đánh giá</label
+              >
+              <span class="text-2xl font-black text-primary-container italic tracking-tighter"
+                >8/10</span
+              >
+            </div>
+            <div class="flex items-center gap-2 py-2">
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-red-600 star-filled cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                style="font-variation-settings: 'FILL' 1"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-zinc-600 cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                >star</span
+              >
+              <span
+                class="material-symbols-outlined text-zinc-600 cursor-pointer text-3xl transition-transform hover:scale-110 active:scale-90"
+                data-icon="star"
+                >star</span
+              >
+            </div>
+          </div>
+          <!-- Textarea: Nội dung đánh giá -->
+          <div class="space-y-3">
+            <label class="text-xs font-bold uppercase tracking-widest text-zinc-500"
+              >Nội dung đánh giá</label
+            >
+            <textarea
+              class="w-full bg-surface-container-lowest border-none border-b-2 border-transparent focus:border-primary-container focus:ring-0 rounded-xl p-4 text-on-surface placeholder-zinc-700 resize-none transition-all"
+              placeholder="Nhập cảm nhận về bộ phim tại đây..."
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+        <!-- Modal Footer -->
+        <div class="px-8 py-6 bg-zinc-950/50 flex justify-end items-center gap-4">
+          <button
+            class="px-6 py-3 text-zinc-500 hover:text-white font-bold transition-colors text-sm"
+          >
+            Hủy
+          </button>
+          <button
+            class="px-8 py-3 bg-gradient-to-br from-primary-container to-secondary-container text-on-primary-container rounded-xl font-bold text-sm shadow-xl shadow-red-900/20 active:scale-95 transition-all"
+          >
+            Tạo Review
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
