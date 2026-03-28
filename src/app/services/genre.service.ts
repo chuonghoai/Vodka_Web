@@ -8,17 +8,17 @@ import { API_ENDPOINTS } from "./api-endpoints/api.endpoints";
 
 
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class GenreService {
 
-    private http = inject(HttpClient);
-    private baseUrl = environment.apiUrl;
+  private http = inject(HttpClient);
+  private baseUrl = environment.apiUrl;
 
-    /**
-   * GET /api/admin/genres?page=&pageSize=&search=&sort=
-   * Lấy danh sách genre cho admin với phân trang
-   */
-  getGenres(params:{
+  /**
+ * GET /api/admin/genres?page=&pageSize=&search=&sort=
+ * Lấy danh sách genre cho admin với phân trang
+ */
+  getGenres(params: {
     page?: number;
     pageSize?: number;
     search?: string;
@@ -31,8 +31,8 @@ export class GenreService {
     if (params.sort) httpParams = httpParams.set('sort', params.sort);
 
     return this.http.get<ApiResponse<GenreDetail[]>>(
-        `${this.baseUrl}${API_ENDPOINTS.ADMIN.GENRES}`,
-        {params: httpParams}
+      `${this.baseUrl}${API_ENDPOINTS.ADMIN.GENRES}`,
+      { params: httpParams }
     )
 
   }
@@ -53,9 +53,9 @@ export class GenreService {
    * GET /api/admin/genres/:id
    * Lấy chi tiết 1 genre
    */
-  getGenreById(id: number) :Observable<ApiResponse<GenreDetail>> {
+  getGenreById(id: number): Observable<ApiResponse<GenreDetail>> {
     return this.http.get<ApiResponse<GenreDetail>>(
-         `${this.baseUrl}${API_ENDPOINTS.ADMIN.GENRE_BY_ID(id)}`
+      `${this.baseUrl}${API_ENDPOINTS.ADMIN.GENRE_BY_ID(id)}`
     )
   }
 
@@ -91,5 +91,5 @@ export class GenreService {
     )
   }
 
-    
+
 }

@@ -10,7 +10,7 @@
       <div class="relative z-10 w-full max-w-400 mx-auto px-4 md:px-10 lg:px-16 h-full flex flex-col md:flex-row items-center md:items-end pb-12 md:pb-16 gap-8 lg:gap-12">
 
         <div class="w-48 md:w-72 lg:w-[320px] shrink-0 rounded-2xl overflow-hidden shadow-[0_15px_50px_rgba(0,0,0,0.8)] border-4 border-zinc-800/50 hidden md:block transition-all duration-500 group">
-          <img [src]="currentSeasonThumbnail() || data.movie?.posterUrl" [alt]="data.movie?.title" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700">
+          <img [src]="data.movie?.posterUrl" [alt]="data.movie?.title" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700">
         </div>
 
         <div class="flex-1 text-center md:text-left mb-4 md:mb-0">
