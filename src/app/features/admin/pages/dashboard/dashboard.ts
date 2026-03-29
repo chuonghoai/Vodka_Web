@@ -46,7 +46,6 @@ export class DashboardComponent {
     { icon: 'rate_review', label: 'Review mới', value: '89', trend: '-5', direction: 'down' },
     { icon: 'label', label: 'Thể loại', value: '24' },
     { icon: 'visibility', label: 'Lượt xem hôm nay', value: '15.2K', trend: '+18%', direction: 'up' },
-    { icon: 'warning', label: 'Cảnh báo', value: '2', iconColor: 'text-amber-500' },
   ]);
 
   // ─── Chart Data (7 ngày, giá trị % height) ───

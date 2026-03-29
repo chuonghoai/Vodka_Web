@@ -1,8 +1,8 @@
 import { DecimalPipe, NgClass } from '@angular/common';
 import { afterNextRender, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TagService } from '../../../../services/tag.service';
 import { UpdateTagRequest } from '../../../../models/tag.model';
+import { TagService } from '../../../../services/tag.service';
 
 @Component({
   selector: 'app-tag-management',
@@ -89,8 +89,8 @@ export class TagManagementComponent {
               description: 'Tổng số tag nội dung', badgeText: 'Total', badgeColor: 'blue' },
             { icon: 'trending_up', label: 'Phổ biến nhất', value: d.mostPopularTag.name,
               description: `${d.mostPopularTag.movieCount} phim liên kết`, badgeText: 'Top', badgeColor: 'blue' },
-            { icon: 'local_fire_department', label: 'Tag Hot', value: d.hotTag.name,
-              description: `${d.hotTag.movieCount} phim đang hot`, badgeText: 'Trending', badgeColor: 'red' },
+            { icon: 'local_fire_department', label: 'Phim chưa gắn Tag', value: String(d.unclassifiedMovies),
+              description: `${d.unclassifiedMovies} phim chưa gắn Tag`, badgeText: 'Unclassified', badgeColor: 'red' },
             { icon: 'new_releases', label: 'Mới nhất', value: d.latestTag.name,
               description: d.latestTag.createdAt, badgeText: 'New', badgeColor: 'emerald' },
           ]);

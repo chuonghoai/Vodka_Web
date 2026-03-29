@@ -5,7 +5,7 @@ interface TagRow {
   movieCount: number;
   viewCount: number;
   createdAt: string;
-  updateAt?: string;
+  updatedAt?: string;
 }
 
 interface TagStat {

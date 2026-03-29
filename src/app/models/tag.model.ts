@@ -10,13 +10,13 @@ export interface TagDetail extends Tag {
   movieCount: number;
   viewCount: number;
   createdAt: string;
-  updateAt?: string;
+  updatedAt?: string;
 }
 
 export interface TagStats {
   totalTags: number;
   mostPopularTag: {name: string; movieCount: number};
-  hotTag: {name: string; movieCount: number};
+  unclassifiedMovies: number;
   latestTag: {name: string; createdAt: string};
 }
 
