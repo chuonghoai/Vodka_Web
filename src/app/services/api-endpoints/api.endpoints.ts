@@ -10,6 +10,9 @@ export const API_ENDPOINTS = {
   },
 
   ADMIN: {
+    // DASHBOARD
+    DASHBOARD_STATS: '/api/admin/dashboard/stats',
+    DASHBOARD_ACTIVITIES: '/api/admin/dashboard/activities',
 
     // CRUD MOVIES
     MOVIES: '/api/admin/movies',               // GET: danh sách + pagination

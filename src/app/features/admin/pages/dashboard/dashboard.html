@@ -1,168 +1,185 @@
-<div class="p-8 space-y-12">
-  <!--  HERO ADMIN BANNER  -->
-  <section
-    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 p-10 flex flex-col md:flex-row items-center justify-between"
-  >
-    <div class="relative z-10 max-w-2xl">
-      <h2 class="text-[52px] font-black italic tracking-tighter leading-tight text-white mb-4">
-        Điều khiển toàn bộ hệ thống Vodka Web
-      </h2>
-      <p class="text-zinc-400 text-lg mb-8 max-w-xl">
-        Quản lý phim, người dùng, review và cấu hình hệ thống trên một giao diện tối ưu cho vận
-        hành.
-      </p>
-      <div class="flex gap-4">
-        <button
-          (click)="navigateTo('/admin/movies')"
-          class="px-8 py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all flex items-center gap-2"
-        >
-          <span class="material-symbols-outlined">add_circle</span>
-          Thêm phim mới
-        </button>
-        <button
-          class="px-8 py-4 border border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-all"
-        >
-          Xem báo cáo
-        </button>
-      </div>
+@if (isLoading()) {
+  <div class="flex items-center justify-center min-h-[60vh]">
+    <div class="text-center space-y-4">
+      <span class="material-symbols-outlined animate-spin text-5xl text-red-500"
+        >progress_activity</span
+      >
+      <p class="text-sm text-zinc-500 font-medium">Đang tải dữ liệu dashboard...</p>
     </div>
-    <!-- Background decoration -->
-    <div class="absolute right-0 top-0 h-full w-1/3 opacity-20 pointer-events-none">
-      <div class="absolute inset-0 bg-gradient-to-l from-red-600/30 to-transparent"></div>
-    </div>
-  </section>
-
-  <!--  KPI CARDS ROW  -->
-  <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5">
-    @for (kpi of kpiData(); track kpi.label) {
-      <app-kpi-card
-        [icon]="kpi.icon"
-        [label]="kpi.label"
-        [value]="kpi.value"
-        [trend]="kpi.trend ?? ''"
-        [trendDirection]="kpi.direction"
-        [iconColor]="kpi.iconColor ?? 'text-red-600'"
-      />
-    }
-  </section>
-
-  <!--  QUICK ACTIONS  -->
-  <section class="space-y-4">
-    <h4 class="text-sm font-bold uppercase tracking-widest text-zinc-500">Thao tác nhanh</h4>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      @for (action of quickActions; track action.label) {
-        <button
-          (click)="navigateTo(action.route)"
-          class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex items-center gap-3 hover:border-red-600 transition-all text-sm font-medium"
-        >
-          <span class="material-symbols-outlined text-red-600">{{ action.icon }}</span>
-          {{ action.label }}
-        </button>
-      }
-    </div>
-  </section>
-
-  <!--  CHARTS SECTION  -->
-  <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Bar Chart: Lượt xem theo thời gian -->
-    <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h4 class="text-lg font-bold text-white">Lượt xem theo thời gian</h4>
-          <p class="text-xs text-zinc-500">Dữ liệu thống kê 7 ngày gần nhất</p>
-        </div>
-        <select
-          class="bg-zinc-800 border-none rounded-lg text-xs font-bold px-3 py-1 text-zinc-300"
-        >
-          <option>Tuần này</option>
-          <option>Tháng này</option>
-        </select>
-      </div>
-      <div class="h-64 flex items-end justify-between gap-2 px-4 relative">
-        <!-- Grid lines -->
-        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8 pt-2">
-          <div class="border-t border-zinc-800/50 w-full"></div>
-          <div class="border-t border-zinc-800/50 w-full"></div>
-          <div class="border-t border-zinc-800/50 w-full"></div>
-          <div class="border-t border-zinc-800/50 w-full"></div>
-        </div>
-        <!-- Bars -->
-        @for (bar of chartData(); track $index) {
-          <div
-            class="flex-1 bg-red-600/20 rounded-t-sm hover:bg-red-600/40 transition-all relative group"
-            [style.height.%]="bar.height"
+  </div>
+} @else {
+  <div class="p-8 space-y-12">
+    <!--  HERO ADMIN BANNER  -->
+    <section
+      class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 p-10 flex flex-col md:flex-row items-center justify-between"
+    >
+      <div class="relative z-10 max-w-2xl">
+        <h2 class="text-[52px] font-black italic tracking-tighter leading-tight text-white mb-4">
+          Điều khiển toàn bộ hệ thống Vodka Web
+        </h2>
+        <p class="text-zinc-400 text-lg mb-8 max-w-xl">
+          Quản lý phim, người dùng, review và cấu hình hệ thống trên một giao diện tối ưu cho vận
+          hành.
+        </p>
+        <div class="flex gap-4">
+          <button
+            (click)="navigateTo('/admin/movies')"
+            class="px-8 py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all flex items-center gap-2"
           >
-            <div
-              class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white text-zinc-950 text-[10px] font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-            >
-              {{ bar.value }}
-            </div>
-          </div>
-        }
+            <span class="material-symbols-outlined">add_circle</span>
+            Thêm phim mới
+          </button>
+          <button
+            class="px-8 py-4 border border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-all"
+          >
+            Xem báo cáo
+          </button>
+        </div>
       </div>
-      <div class="flex justify-between mt-4 px-4 text-[10px] font-bold text-zinc-500 uppercase">
-        @for (day of chartDays; track day) {
-          <span>{{ day }}</span>
-        }
+      <div class="absolute right-0 top-0 h-full w-1/3 opacity-20 pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-l from-red-600/30 to-transparent"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Top 5 phim nổi bật -->
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-      <h4 class="text-lg font-bold text-white mb-6">Top 5 phim nổi bật</h4>
-      <div class="space-y-6">
-        @for (movie of topMovies(); track movie.title) {
-          <div class="space-y-2">
-            <div class="flex justify-between text-xs mb-1">
-              <span class="text-zinc-300 font-medium">{{ movie.title }}</span>
-              <span class="text-red-500 font-bold">{{ movie.views }}</span>
-            </div>
-            <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+    <!--  KPI CARDS ROW  -->
+    <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5">
+      @for (kpi of kpiData(); track kpi.label) {
+        <app-kpi-card
+          [icon]="kpi.icon"
+          [label]="kpi.label"
+          [value]="kpi.value"
+          [trend]="kpi.trend ?? ''"
+          [trendDirection]="kpi.direction"
+          [iconColor]="kpi.iconColor ?? 'text-red-600'"
+        />
+      }
+    </section>
+
+    <!--  QUICK ACTIONS  -->
+    <section class="space-y-4">
+      <h4 class="text-sm font-bold uppercase tracking-widest text-zinc-500">Thao tác nhanh</h4>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        @for (action of quickActions; track action.label) {
+          <button
+            (click)="navigateTo(action.route)"
+            class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex items-center gap-3 hover:border-red-600 transition-all text-sm font-medium"
+          >
+            <span class="material-symbols-outlined text-red-600">{{ action.icon }}</span>
+            {{ action.label }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <!--  CHARTS SECTION  -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h4 class="text-lg font-bold text-white">Lượt xem theo thời gian</h4>
+            <p class="text-xs text-zinc-500">Dữ liệu thống kê 7 ngày gần nhất</p>
+          </div>
+          <select
+            class="bg-zinc-800 border-none rounded-lg text-xs font-bold px-3 py-1 text-zinc-300"
+          >
+            <option>Tuần này</option>
+            <option>Tháng này</option>
+          </select>
+        </div>
+        <div class="h-64 flex items-end justify-between gap-2 px-4 relative">
+          <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8 pt-2">
+            <div class="border-t border-zinc-800/50 w-full"></div>
+            <div class="border-t border-zinc-800/50 w-full"></div>
+            <div class="border-t border-zinc-800/50 w-full"></div>
+            <div class="border-t border-zinc-800/50 w-full"></div>
+          </div>
+          @for (bar of chartData(); track $index) {
+            <div
+              class="flex-1 bg-red-600/20 rounded-t-sm hover:bg-red-600/40 transition-all relative group"
+              [style.height.%]="bar.height"
+            >
               <div
-                class="bg-red-600 h-full rounded-full transition-all duration-500"
-                [style.width.%]="movie.percent"
-              ></div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  </section>
-
-  <!--  ACTIVITY LOG  -->
-  <section class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-    <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-      <h4 class="text-lg font-bold text-white">Hoạt động gần đây</h4>
-      <button class="text-xs text-red-500 font-bold hover:underline">Xem tất cả</button>
-    </div>
-    <div class="divide-y divide-zinc-800/50">
-      @for (activity of activities(); track activity.time) {
-        <div class="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/30 transition-colors">
-          <!-- Avatar hoặc Icon -->
-          @if (activity.type === 'avatar') {
-            <img [src]="activity.avatarUrl" class="w-10 h-10 rounded-full object-cover" alt="" />
-          } @else {
-            <div
-              class="w-10 h-10 rounded-full flex items-center justify-center"
-              [class]="activity.iconBgColor"
-            >
-              <span class="material-symbols-outlined" [class]="activity.iconTextColor">
-                {{ activity.iconName }}
-              </span>
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white text-zinc-950 text-[10px] font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+              >
+                {{ bar.value }}
+              </div>
             </div>
           }
-          <!-- Content -->
-          <div class="flex-1">
-            <p class="text-sm">
-              <span class="font-bold text-white">{{ activity.actor }}</span>
-              {{ activity.action }}
-              <span [class]="activity.targetClass">{{ activity.target }}</span>
-            </p>
-            <p class="text-xs text-zinc-500">{{ activity.time }}</p>
-          </div>
-          <span class="material-symbols-outlined text-zinc-600">chevron_right</span>
         </div>
-      }
-    </div>
-  </section>
-</div>
+        <div class="flex justify-between mt-4 px-4 text-[10px] font-bold text-zinc-500 uppercase">
+          @for (day of chartDays(); track day) {
+            <span>{{ day }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+        <h4 class="text-lg font-bold text-white mb-6">Top 5 phim nổi bật</h4>
+        <div class="space-y-6">
+          @for (movie of topMovies(); track movie.title) {
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-zinc-300 font-medium">{{ movie.title }}</span>
+                <span class="text-red-500 font-bold">{{ movie.views }}</span>
+              </div>
+              <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+                <div
+                  class="bg-red-600 h-full rounded-full transition-all duration-500"
+                  [style.width.%]="movie.percent"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!--  ACTIVITY LOG  -->
+    <section class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+        <h4 class="text-lg font-bold text-white">Hoạt động gần đây</h4>
+        <button class="text-xs text-red-500 font-bold hover:underline">Xem tất cả</button>
+      </div>
+      <div class="divide-y divide-zinc-800/50">
+        @for (activity of activities(); track activity.time) {
+          <div class="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/30 transition-colors">
+            @if (activity.type === 'avatar') {
+              <img [src]="activity.avatarUrl" class="w-10 h-10 rounded-full object-cover" alt="" />
+            } @else {
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center"
+                [class]="activity.iconBgColor"
+              >
+                <span class="material-symbols-outlined" [class]="activity.iconTextColor">
+                  {{ activity.iconName }}
+                </span>
+              </div>
+            }
+            <div class="flex-1">
+              <p class="text-sm">
+                <span class="font-bold text-white">{{ activity.actor }}</span>
+                {{ activity.action }}
+                <span [class]="activity.targetClass">{{ activity.target }}</span>
+              </p>
+              <p class="text-xs text-zinc-500">{{ activity.time }}</p>
+            </div>
+            <span class="material-symbols-outlined text-zinc-600">chevron_right</span>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+}
+
+<!-- ERROR BANNER -->
+@if (errorMessage()) {
+  <div
+    class="fixed bottom-6 right-6 bg-red-600/90 text-white px-6 py-3 rounded-xl shadow-2xl z-[200] flex items-center gap-3"
+  >
+    <span class="material-symbols-outlined text-sm">error</span>
+    {{ errorMessage() }}
+    <button (click)="dismissError()" class="ml-2 hover:text-zinc-300">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
+  </div>
+}
