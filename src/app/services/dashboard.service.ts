@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment.development";
@@ -26,9 +26,21 @@ export class DashboardService {
    * Admin Dashboard Activities
    * GET /api/admin/dashboard/activities
    */
-  getActivities(): Observable<ApiResponse<ActivityDto[]>> {
+  getActivities(params?: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    entityType?: string;
+  }): Observable<ApiResponse<ActivityDto[]>> {
+    let httpParams = new HttpParams();
+    if (params?.page) httpParams = httpParams.set('page', params.page.toString());
+    if (params?.pageSize) httpParams = httpParams.set('pageSize', params.pageSize.toString());
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.entityType) httpParams = httpParams.set('entityType', params.entityType);
+
     return this.http.get<ApiResponse<ActivityDto[]>>(
-      `${this.baseUrl}${API_ENDPOINTS.ADMIN.DASHBOARD_ACTIVITIES}`
-    )
+      `${this.baseUrl}${API_ENDPOINTS.ADMIN.DASHBOARD_ACTIVITIES}`,
+      { params: httpParams }
+    );
   }
 }
