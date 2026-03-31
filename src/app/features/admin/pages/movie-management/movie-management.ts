@@ -1,6 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { buildPageItems } from '../../utils/pagination.utils';
 
 interface MovieRow {
   id: number;
@@ -98,34 +99,7 @@ export class MovieManagementComponent {
 
   totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
 
-  pages = computed(() => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const pages: { label: string; value: number | null }[] = [];
-
-    // Luôn hiển thị trang 1
-    pages.push({ label: '1', value: 1 });
-
-    if (current > 3) {
-      pages.push({ label: '...', value: null });
-    }
-
-    // Các trang quanh current
-    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
-      pages.push({ label: String(i), value: i });
-    }
-
-    if (current < total - 2) {
-      pages.push({ label: '...', value: null });
-    }
-
-    // Luôn hiển thị trang cuối
-    if (total > 1) {
-      pages.push({ label: String(total), value: total });
-    }
-
-    return pages;
-  });
+  pages = computed(() => buildPageItems(this.currentPage(), this.totalPages()));
 
   showingFrom = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
   showingTo = computed(() => Math.min(this.currentPage() * this.pageSize(), this.totalItems()));

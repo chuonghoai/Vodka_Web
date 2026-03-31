@@ -11,10 +11,9 @@ export class AdminUserService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
 
-
   /**
-   *   Admin Get All Users
-  GET /api/admin/users?page=&pageSize=&search=&status=&provider=&gender=&sort=
+   * Admin Get All Users
+   * GET /api/admin/users?page=&pageSize=&search=&status=&provider=&gender=&sort=
    */
   getUsers(params: {
     page?: number;
@@ -44,10 +43,10 @@ export class AdminUserService {
    * Admin Get User Stats
    * GET /api/admin/users/stats
    */
-  getUserStats(): Observable<ApiResponse<UserStats>>{
+  getUserStats(): Observable<ApiResponse<UserStats>> {
     return this.http.get<ApiResponse<UserStats>>(
       `${this.baseUrl}${API_ENDPOINTS.ADMIN.USER_STATS}`
-    );  
+    );
   }
 
   /**
@@ -71,8 +70,14 @@ export class AdminUserService {
     );
   }
 
-
-
-
-
+  /**
+   * Admin Reset Password → gửi mật khẩu ngẫu nhiên qua email
+   * POST /api/admin/users/:id/reset-password
+   */
+  resetPassword(id: number): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(
+      `${this.baseUrl}${API_ENDPOINTS.ADMIN.USER_RESET_PASSWORD(id)}`,
+      null
+    );
+  }
 }

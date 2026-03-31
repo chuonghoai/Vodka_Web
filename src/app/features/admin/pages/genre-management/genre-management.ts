@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { GenreService } from '../../../../services/genre.service';
 import { UpdateGenreRequest } from '../../../../models/genre.model';
 import { GenreRow, GenreStat } from '../../models/genre.model';
+import { buildPageItems } from '../../utils/pagination.utils';
 
 @Component({
   selector: 'app-genre-management',
@@ -48,19 +49,7 @@ export class GenreManagementComponent {
 
   totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
 
-  pages = computed(() => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const pages: { label: string; value: number | null }[] = [];
-    pages.push({ label: '1', value: 1 });
-    if (current > 3) pages.push({ label: '...', value: null });
-    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
-      pages.push({ label: String(i), value: i });
-    }
-    if (current < total - 2) pages.push({ label: '...', value: null });
-    if (total > 1) pages.push({ label: String(total), value: total });
-    return pages;
-  });
+  pages = computed(() => buildPageItems(this.currentPage(), this.totalPages()));
 
   showingFrom = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
   showingTo = computed(() => Math.min(this.currentPage() * this.pageSize(), this.totalItems()));
