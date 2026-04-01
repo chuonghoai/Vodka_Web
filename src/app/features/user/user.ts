@@ -13,6 +13,7 @@ import { handleHttpError } from '../../shared/util/exception.handle';
 import { UserState } from '../../core/states/user.state';
 import { AvatarCropperComponent } from './components/avatar-cropper/avatar-cropper';
 import { FormsModule } from '@angular/forms';
+import { MediaService } from '../../services/admin/media.service';
 
 @Component({
   selector: 'app-user',
@@ -26,6 +27,7 @@ export class UserComponent implements OnInit {
   private userService = inject(UserService);
   private notiService = inject(NotificationService)
   private userState = inject(UserState)
+  private mediaService = inject(MediaService);
 
   activeTab = signal<'history' | 'favorites' | 'reviews'>('history');
 
@@ -117,8 +119,21 @@ export class UserComponent implements OnInit {
     this.imageChangedEvent.set(null);
   }
 
+  // Convert base64 to File
+  private base64ToFile(dataurl: string, filename: string): File {
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)![1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
+
   // Handle edit profile
-  handleSaveProfile(profileInfoData: any) {
+  async handleSaveProfile(profileInfoData: any) {
     const payload = {
       displayName: this.editFullName(),
       avatarUrl: this.editAvatarUrl(),
@@ -131,8 +146,16 @@ export class UserComponent implements OnInit {
 
     const avatarUrl = payload.avatarUrl;
     if (avatarUrl && avatarUrl.startsWith('data:image/')) {
-      console.log('Phát hiện ảnh mới, đang chờ cấu hình MediaService...');
-      this.callUpdateProfileApi(payload);
+      console.log('Phát hiện ảnh mới, đang upload qua MediaService...');
+      try {
+        const file = this.base64ToFile(avatarUrl, `avatar_${Date.now()}.png`);
+        const res = await this.mediaService.uploadToCloudinary(file, 'image');
+        payload.avatarUrl = res.secure_url;
+        this.callUpdateProfileApi(payload);
+      } catch (err) {
+        console.error(err);
+        this.notiService.show(NotificationType.ERROR, 'Lỗi khi upload ảnh đại diện!');
+      }
     } else {
       this.callUpdateProfileApi(payload);
     }
@@ -203,7 +226,7 @@ export class UserComponent implements OnInit {
         if (showLoading) this.isLoadingProfile.set(false);
       },
       error: (err) => {
-        console.error('Lỗi khi tải thông tin cá nhân:', err.error.message);
+        console.error('Lỗi khi tải thông tin cá nhân:', err?.error?.message || err.message || err);
         if (showLoading) this.isLoadingProfile.set(false);
         this.userProfile.set(null);
         this.notiService.show(NotificationType.ERROR, `Lỗi: ${err}`);

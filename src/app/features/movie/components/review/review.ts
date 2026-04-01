@@ -124,7 +124,6 @@ export class ReviewComponent {
             parentReview.replied.push(res.data);
             this.reviewsList.set([...currentList]);
           }
-          this.reviewAdded.emit(res.data);
           this.replyingToId.set(null);
           this.replyContent.set('');
         }

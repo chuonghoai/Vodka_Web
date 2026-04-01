@@ -22,7 +22,7 @@ export class App {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects;
-      this.isAuthPage.set(url.includes('/auth') || url.startsWith('/admin'));
+      this.isAuthPage.set(url.includes('/auth') || url.startsWith('/admin') || url.includes('/forbidden'));
     });
   }
 }

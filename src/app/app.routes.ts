@@ -6,6 +6,8 @@ import { MovieComponent } from './features/movie/movie';
 import { WatchComponent } from './features/watch/watch';
 import { SearchComponent } from './features/search/search';
 import { UserComponent } from './features/user/user';
+import { ForbiddenComponent } from './features/forbidden/forbidden';
+import { adminGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent},
@@ -15,9 +17,12 @@ export const routes: Routes = [
   { path: 'watch/:id', component: WatchComponent },
   { path: 'search', component: SearchComponent},
   { path: 'profile', component: UserComponent },
+  { path: 'forbidden', component: ForbiddenComponent },
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadChildren: () =>
       import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
   },
 ];
+
