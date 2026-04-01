@@ -29,12 +29,14 @@ export class FilterService {
       this.http.get<any>(`${this.baseUrl}${API_ENDPOINTS.GENRES.GET_ALL}`).subscribe(res => {
         if (res.success) {
           this.genres.set(res.data);
+          console.log(this.genres());
           localStorage.setItem('genres', JSON.stringify(res.data));
         }
       });
       this.http.get<any>(`${this.baseUrl}${API_ENDPOINTS.TAGS.GET_ALL}`).subscribe(res => {
         if (res.success) {
           this.tags.set(res.data);
+          console.log(this.tags());
           localStorage.setItem('tags', JSON.stringify(res.data));
         }
       });
