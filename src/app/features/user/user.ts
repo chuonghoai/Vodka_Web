@@ -313,4 +313,8 @@ export class UserComponent implements OnInit {
       queryParamsHandling: 'merge'
     });
   }
+
+  navigateToAdmin() {
+    this.router.navigate(['/admin']);
+  }
 }
