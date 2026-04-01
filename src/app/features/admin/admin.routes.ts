@@ -47,11 +47,16 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/review-management/review-management').then(m => m.ReviewManagementComponent),
       },
-    //   {
-    //     path: 'settings',
-    //     loadComponent: () =>
-    //       import('./pages/settings/settings').then(m => m.SettingsComponent),
-    //   },
+      {
+        path: 'activities',
+        loadComponent: () =>
+          import('./pages/activity-log/activity-log').then(m => m.ActivityLogComponent),
+      },
+      //   {
+      //     path: 'settings',
+      //     loadComponent: () =>
+      //       import('./pages/settings/settings').then(m => m.SettingsComponent),
+      //   },
     ],
   },
 ];

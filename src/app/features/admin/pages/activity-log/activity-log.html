@@ -1,0 +1,110 @@
+<div class="p-8 space-y-8">
+  <!-- HEADER -->
+  <div>
+    <h2 class="text-3xl font-black text-white">Nhật ký hoạt động</h2>
+    <p class="text-sm text-zinc-500 mt-1">Theo dõi toàn bộ hoạt động trong hệ thống</p>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="flex flex-wrap gap-3 items-center">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      (input)="onSearch()"
+      placeholder="Tìm theo tên người dùng, đối tượng..."
+      class="flex-1 min-w-[250px] bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-600 transition-colors"
+    />
+    <select
+      [(ngModel)]="selectedEntityType"
+      (ngModelChange)="onSearch()"
+      class="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-600 transition-colors"
+    >
+      <option value="">Tất cả loại</option>
+      <option value="Movie">Movie</option>
+      <option value="Review">Review</option>
+      <option value="Genre">Genre</option>
+      <option value="Tag">Tag</option>
+      <option value="User">User</option>
+    </select>
+  </div>
+
+  <!-- LOADING -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <span class="material-symbols-outlined animate-spin text-4xl text-red-500"
+        >progress_activity</span
+      >
+    </div>
+  } @else {
+    <!-- ACTIVITY LIST -->
+    <section class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+      <div class="divide-y divide-zinc-800/50">
+        @for (activity of activities(); track activity.time) {
+          <div class="px-6 py-4 flex items-center gap-4 hover:bg-zinc-800/30 transition-colors">
+            @if (activity.type === 'avatar') {
+              <img [src]="activity.avatarUrl" class="w-10 h-10 rounded-full object-cover" alt="" />
+            } @else {
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center"
+                [class]="activity.iconBgColor"
+              >
+                <span class="material-symbols-outlined" [class]="activity.iconTextColor">
+                  {{ activity.iconName }}
+                </span>
+              </div>
+            }
+            <div class="flex-1">
+              <p class="text-sm">
+                <span class="font-bold text-white">{{ activity.actor }}</span>
+                {{ activity.action }}
+                <span [class]="activity.targetClass">{{ activity.target }}</span>
+              </p>
+              <p class="text-xs text-zinc-500">{{ activity.time }}</p>
+            </div>
+            <span class="material-symbols-outlined text-zinc-600">chevron_right</span>
+          </div>
+        } @empty {
+          <div class="text-center py-16 text-zinc-500">
+            <span class="material-symbols-outlined text-4xl mb-2">inbox</span>
+            <p class="text-sm">Không có hoạt động nào</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- PAGINATION -->
+    @if (totalPages() > 1) {
+      <div class="flex justify-center items-center gap-2">
+        <button
+          (click)="goToPage(currentPage() - 1)"
+          [disabled]="currentPage() === 1"
+          class="px-4 py-2 text-sm font-bold rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          Trước
+        </button>
+
+        @for (page of [].constructor(totalPages()); track $index) {
+          <button
+            (click)="goToPage($index + 1)"
+            class="w-9 h-9 text-sm font-bold rounded-lg transition-all"
+            [class]="
+              currentPage() === $index + 1
+                ? 'bg-red-600 text-white'
+                : 'text-zinc-400 hover:bg-zinc-800 border border-zinc-800'
+            "
+          >
+            {{ $index + 1 }}
+          </button>
+        }
+
+        <button
+          (click)="goToPage(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages()"
+          class="px-4 py-2 text-sm font-bold rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          Sau
+        </button>
+      </div>
+    }
+  }
+</div>

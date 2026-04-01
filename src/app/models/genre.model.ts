@@ -7,6 +7,7 @@ export interface Genre {
 // Interface mở rộng cho admin management
 export interface GenreDetail extends Genre {
   movieCount: number;
+  viewCount: number;
   createdAt: string;   
   updatedAt?: string;
 }

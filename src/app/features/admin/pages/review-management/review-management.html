@@ -36,7 +36,9 @@
           }
         </div>
         <h3 class="text-3xl font-black text-white">{{ stat.value }}</h3>
-        <p class="text-xs text-zinc-500 mt-2 uppercase tracking-wider font-medium">{{ stat.description }}</p>
+        <p class="text-xs text-zinc-500 mt-2 uppercase tracking-wider font-medium">
+          {{ stat.description }}
+        </p>
       </div>
     }
   </section>
@@ -50,6 +52,7 @@
       >
       <input
         [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
         type="text"
         placeholder="Tìm kiếm phim..."
         class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-zinc-300 focus:ring-1 focus:ring-red-600/50 outline-none transition-all"
@@ -59,22 +62,35 @@
     <div class="flex flex-wrap items-center gap-3">
       <select
         [(ngModel)]="selectedRating"
+        (change)="onRatingChange()"
         class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
         style="color: #a1a1aa"
       >
         <option value="all">Rating: Tất cả</option>
+        <option value="10">10 sao</option>
+        <option value="9">9 sao</option>
+        <option value="8">8 sao</option>
+        <option value="7">7 sao</option>
+        <option value="6">6 sao</option>
         <option value="5">5 sao</option>
         <option value="4">4 sao</option>
         <option value="3">3 sao</option>
         <option value="2">2 sao</option>
         <option value="1">1 sao</option>
       </select>
-      <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 cursor-pointer hover:border-zinc-700 transition-colors">
-        <span class="material-symbols-outlined text-sm">calendar_today</span>
-        <span>30 ngày qua</span>
-      </div>
+      <select
+        [(ngModel)]="selectedSort"
+        (change)="onSortChange()"
+        class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
+        style="color: #a1a1aa"
+      >
+        @for (opt of sortOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
       <button
-        class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all"
+        (click)="openAddModal()"
+        class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all active:scale-95"
       >
         <span class="material-symbols-outlined text-sm">add</span>
         Thêm review
@@ -82,104 +98,198 @@
     </div>
   </section>
 
+  @if (errorMessage()) {
+    <div
+      class="mb-6 bg-red-900/20 border border-red-800 rounded-xl p-4 flex items-center gap-3 text-red-400 text-sm"
+    >
+      <span class="material-symbols-outlined">error</span>
+      {{ errorMessage() }}
+      <button (click)="dismissError()" class="ml-auto text-red-500 font-bold hover:underline">
+        Đóng
+      </button>
+    </div>
+  }
+
   <!--  REVIEW LIST  -->
   <section class="space-y-6 mb-8">
-    @for (review of filteredReviews(); track review.id) {
-      <div class="bg-zinc-900/80 rounded-xl p-6 border border-zinc-800/20 hover:border-zinc-700/30 transition-all group/card">
-        <!-- Review Header -->
-        <div class="flex items-start justify-between">
-          <div class="flex gap-4">
-            <!-- Avatar -->
-            @if (review.avatarUrl) {
-              <img
-                [src]="review.avatarUrl"
-                [alt]="review.userName"
-                class="w-12 h-12 rounded-full object-cover border border-zinc-700/50"
-              />
-            } @else {
-              <div class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold text-lg border border-zinc-700/50">
-                {{ getInitial(review.userName) }}
-              </div>
-            }
-            <div>
-              <div class="flex items-center gap-2">
-                <h4 class="font-bold text-white">{{ review.userName }}</h4>
-                <span class="text-xs text-zinc-500">•</span>
-                <p class="text-xs text-red-500 font-semibold">{{ review.movieTitle }}</p>
-              </div>
-              <div class="flex items-center gap-2 mt-1">
-                <div class="flex gap-0.5">
-                  @for (filled of getStarArray(review.rating); track $index) {
-                    @if (filled) {
-                      <span class="material-symbols-outlined text-sm text-red-600" style="font-variation-settings: 'FILL' 1;">star</span>
-                    } @else {
-                      <span class="material-symbols-outlined text-sm text-zinc-600">star</span>
-                    }
-                  }
-                </div>
-                <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">{{ review.createdAt }}</span>
-              </div>
+    <!-- Loading skeleton -->
+    @if (isLoading()) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="bg-zinc-900/80 rounded-xl p-6 border border-zinc-800/20 animate-pulse">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-zinc-800 rounded-full"></div>
+            <div class="flex-1 space-y-2">
+              <div class="w-40 h-4 bg-zinc-800 rounded"></div>
+              <div class="w-24 h-3 bg-zinc-800 rounded"></div>
+              <div class="w-full h-3 bg-zinc-800 rounded mt-4"></div>
+              <div class="w-3/4 h-3 bg-zinc-800 rounded"></div>
             </div>
           </div>
-          <!-- Actions -->
-          <div class="flex gap-1">
-            <button class="p-2 text-zinc-500 hover:text-white transition-colors rounded-lg hover:bg-zinc-800/50">
-              <span class="material-symbols-outlined text-[20px]">reply</span>
-            </button>
-            <button
-              (click)="deleteReview(review)"
-              class="p-2 text-zinc-500 hover:text-red-500 transition-colors rounded-lg hover:bg-red-950/30"
-            >
-              <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
-          </div>
         </div>
-
-        <!-- Review Content -->
-        <div class="mt-4 text-sm text-zinc-400 leading-relaxed pl-16">
-          <p>{{ review.content }}</p>
-
-          <!-- Nested Replies -->
-          @if (review.replied && review.replied.length > 0) {
-            <div class="mt-6 space-y-4 border-l-2 border-zinc-800 pl-6">
-              @for (reply of review.replied; track reply.id) {
-                <div class="flex justify-between group/reply">
-                  <div class="flex gap-3">
-                    @if (reply.avatarUrl) {
-                      <img
-                        [src]="reply.avatarUrl"
-                        [alt]="reply.userName"
-                        class="w-8 h-8 rounded-full object-cover border border-zinc-700/50"
-                      />
-                    } @else {
-                      <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500 font-bold text-xs border border-zinc-700/50">
-                        {{ getInitial(reply.userName) }}
-                      </div>
-                    }
-                    <div>
-                      <p class="text-xs font-bold text-white">
-                        {{ reply.userName }}
-                        <span class="ml-2 font-normal text-zinc-500">{{ reply.createdAt }}</span>
-                      </p>
-                      <p class="text-xs text-zinc-400 mt-1">{{ reply.content }}</p>
-                    </div>
-                  </div>
-                  <button
-                    (click)="deleteReply(review, reply)"
-                    class="text-zinc-600 hover:text-red-500 opacity-0 group-hover/reply:opacity-100 transition-all"
-                  >
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                  </button>
+      }
+    } @else {
+      @for (review of reviews(); track review.id) {
+        <div
+          class="bg-zinc-900/80 rounded-xl p-6 border border-zinc-800/20 hover:border-zinc-700/30 transition-all group/card"
+        >
+          <!-- Review Header -->
+          <div class="flex items-start justify-between">
+            <div class="flex gap-4">
+              <!-- Avatar -->
+              @if (review.avatarUrl) {
+                <img
+                  [src]="review.avatarUrl"
+                  [alt]="review.userName"
+                  class="w-12 h-12 rounded-full object-cover border border-zinc-700/50"
+                />
+              } @else {
+                <div
+                  class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold text-lg border border-zinc-700/50"
+                >
+                  {{ getInitial(review.userName) }}
                 </div>
               }
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-bold text-white">{{ review.userName }}</h4>
+                  <span class="text-xs text-zinc-500">•</span>
+                  <p class="text-xs text-red-500 font-semibold">{{ review.movieTitle }}</p>
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="flex gap-0.5">
+                    @for (filled of getStarArray(review.rating); track $index) {
+                      @if (filled) {
+                        <span
+                          class="material-symbols-outlined text-sm text-red-600"
+                          style="font-variation-settings: 'FILL' 1"
+                          >star</span
+                        >
+                      } @else {
+                        <span class="material-symbols-outlined text-sm text-zinc-600">star</span>
+                      }
+                    }
+                  </div>
+                  <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">{{
+                    review.createdAt
+                  }}</span>
+                </div>
+              </div>
             </div>
-          }
+            <!-- Actions -->
+            <div class="flex gap-1">
+              <button
+                (click)="openReplyForm(review.id)"
+                class="p-2 text-zinc-500 hover:text-white transition-colors rounded-lg hover:bg-zinc-800/50"
+              >
+                <span class="material-symbols-outlined text-[20px]">reply</span>
+              </button>
+              <button
+                (click)="deleteReview(review)"
+                class="p-2 text-zinc-500 hover:text-red-500 transition-colors rounded-lg hover:bg-red-950/30"
+              >
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Review Content -->
+          <div class="mt-4 text-sm text-zinc-400 leading-relaxed pl-16">
+            <p>{{ review.content }}</p>
+
+            <!-- Nested Replies -->
+            @if (review.replied && review.replied.length > 0) {
+              <div class="mt-6 space-y-4 border-l-2 border-zinc-800 pl-6">
+                @for (reply of review.replied; track reply.id) {
+                  <div class="flex justify-between group/reply">
+                    <div class="flex gap-3">
+                      @if (reply.avatarUrl) {
+                        <img
+                          [src]="reply.avatarUrl"
+                          [alt]="reply.userName"
+                          class="w-8 h-8 rounded-full object-cover border border-zinc-700/50"
+                        />
+                      } @else {
+                        <div
+                          class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500 font-bold text-xs border border-zinc-700/50"
+                        >
+                          {{ getInitial(reply.userName) }}
+                        </div>
+                      }
+                      <div>
+                        <p class="text-xs font-bold text-white">
+                          {{ reply.userName }}
+                          <span class="ml-2 font-normal text-zinc-500">{{ reply.createdAt }}</span>
+                        </p>
+                        <p class="text-xs text-zinc-400 mt-1">{{ reply.content }}</p>
+                      </div>
+                    </div>
+                    <button
+                      (click)="deleteReply(review, reply)"
+                      class="text-zinc-600 hover:text-red-500 opacity-0 group-hover/reply:opacity-100 transition-all"
+                    >
+                      <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Inline Reply Form -->
+            @if (replyingToId() === review.id) {
+              <div class="mt-6 border-l-2 border-red-600/30 pl-6">
+                <div class="flex gap-3">
+                  @if (userState.currentUser()?.avatarUrl) {
+                    <img
+                      [src]="userState.currentUser().avatarUrl"
+                      alt="Admin"
+                      class="w-8 h-8 rounded-full object-cover border border-red-600/30"
+                    />
+                  } @else {
+                    <div
+                      class="w-8 h-8 rounded-full bg-red-600/20 flex items-center justify-center text-red-500 font-bold text-xs border border-red-600/30"
+                    >
+                      {{ getInitial(userState.currentUser()?.userName || 'Admin') }}
+                    </div>
+                  }
+                  <div class="flex-1">
+                    <textarea
+                      [(ngModel)]="replyContent"
+                      placeholder="Nhập phản hồi của admin..."
+                      rows="3"
+                      class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm text-zinc-300 focus:ring-1 focus:ring-red-600/50 outline-none resize-none"
+                      style="color: #d4d4d8"
+                    ></textarea>
+                    <div class="flex justify-end gap-2 mt-2">
+                      <button
+                        (click)="cancelReply()"
+                        class="px-4 py-2 text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        (click)="submitReply()"
+                        [disabled]="isSubmittingReply() || !replyContent().trim()"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-all disabled:opacity-50"
+                      >
+                        @if (isSubmittingReply()) {
+                          Đang gửi...
+                        } @else {
+                          Gửi phản hồi
+                        }
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
         </div>
-      </div>
+      }
     }
+    <!-- end @else (isLoading) -->
 
     <!-- Empty State -->
-    @if (filteredReviews().length === 0) {
+    @if (!isLoading() && reviews().length === 0) {
       <div class="text-center py-16">
         <span class="material-symbols-outlined text-5xl text-zinc-600 mb-4">rate_review</span>
         <p class="text-zinc-500 text-sm">Không tìm thấy review nào</p>
@@ -229,3 +339,7 @@
     </div>
   </section>
 </section>
+
+@if (showAddModal()) {
+  <app-add-review (reviewCreated)="onReviewCreated()" (closed)="closeAddModal()" />
+}

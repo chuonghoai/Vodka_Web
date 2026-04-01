@@ -3,7 +3,9 @@ export interface GenreRow {
     name: string;
     slug: string;
     movieCount: number;
+    viewCount: number;
     createdAt: string;
+    updatedAt?: string;
 }
 
 export interface GenreStat {

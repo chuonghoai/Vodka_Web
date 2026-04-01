@@ -44,6 +44,7 @@
       >
       <input
         [(ngModel)]="searchQuery"
+        (input)="onSearch()"
         type="text"
         placeholder="Tìm theo tên hoặc email..."
         class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-zinc-300 focus:ring-1 focus:ring-red-600/50 outline-none transition-all"
@@ -53,55 +54,58 @@
     <div class="flex flex-wrap items-center gap-3">
       <select
         [(ngModel)]="selectedStatus"
+        (ngModelChange)="onFilterChange()"
         class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
         style="color: #a1a1aa"
       >
-        <option>Trạng thái: All</option>
-        <option>Active</option>
-        <option>Locked</option>
+        <option value="">Trạng thái: All</option>
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Inactive</option>
       </select>
       <select
         [(ngModel)]="selectedProvider"
+        (ngModelChange)="onFilterChange()"
         class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
         style="color: #a1a1aa"
       >
-        <option>Provider: All</option>
-        <option>Email</option>
-        <option>Google</option>
+        <option value="">Provider: All</option>
+        <option value="LOCAL">Email</option>
+        <option value="GOOGLE">Google</option>
       </select>
       <select
         [(ngModel)]="selectedGender"
+        (ngModelChange)="onFilterChange()"
         class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
         style="color: #a1a1aa"
       >
-        <option>Giới tính: All</option>
-        <option>Nam</option>
-        <option>Nữ</option>
+        <option value="">Giới tính: All</option>
+        <option value="Nam">Nam</option>
+        <option value="Nữ">Nữ</option>
       </select>
       <div class="h-8 w-px bg-zinc-800 mx-1"></div>
       <select
         [(ngModel)]="selectedSort"
+        (ngModelChange)="onFilterChange()"
         class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
         style="color: #a1a1aa"
       >
-        <option>Sắp xếp: Mới nhất</option>
-        <option>Sắp xếp: Cũ nhất</option>
+        <option value="">Sắp xếp: Mới nhất</option>
+        <option value="oldest">Sắp xếp: Cũ nhất</option>
       </select>
     </div>
   </section>
 
   <!--  USER DATA TABLE  -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <span class="material-symbols-outlined animate-spin text-4xl text-red-500">progress_activity</span>
+    </div>
+  } @else {
   <div class="bg-zinc-900/50 rounded-xl overflow-hidden shadow-2xl">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-zinc-800/50">
-            <th class="py-5 px-6 text-left w-12">
-              <input
-                type="checkbox"
-                class="rounded bg-zinc-800 border-zinc-700 text-red-600 focus:ring-red-600/20"
-              />
-            </th>
             <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
               Avatar
             </th>
@@ -133,13 +137,7 @@
         <tbody class="divide-y divide-zinc-800/50">
           @for (user of users(); track user.id) {
             <tr class="hover:bg-zinc-800/30 transition-colors group cursor-pointer">
-              <!-- Checkbox -->
-              <td class="py-4 px-6 w-12">
-                <input
-                  type="checkbox"
-                  class="rounded bg-zinc-800 border-zinc-700 text-red-600 focus:ring-red-600/20"
-                />
-              </td>
+
               <!-- Avatar -->
               <td class="px-6 py-4">
                 <img
@@ -154,7 +152,7 @@
               <td class="px-6 py-4 text-sm text-zinc-400">{{ user.email }}</td>
               <!-- Provider -->
               <td class="px-6 py-4">
-                @if (user.provider === 'Google') {
+                @if (user.provider === 'GOOGLE') {
                   <div class="flex items-center gap-2">
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                       <path
@@ -186,7 +184,7 @@
               <td class="px-6 py-4 text-sm text-zinc-400">{{ user.dateOfBirth }}</td>
               <!-- Trạng thái -->
               <td class="px-6 py-4">
-                @if (user.status === 'Active') {
+                @if (user.status === 'ACTIVE') {
                   <span
                     class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-tighter"
                   >
@@ -196,7 +194,7 @@
                   <span
                     class="px-2.5 py-1 rounded-full bg-red-600/10 text-red-500 text-[10px] font-bold uppercase tracking-tighter"
                   >
-                    Locked
+                    Inactive
                   </span>
                 }
               </td>
@@ -214,15 +212,10 @@
                     class="w-8 h-8 rounded-lg hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition-all"
                   >
                     <span class="material-symbols-outlined text-sm">
-                      {{ user.status === 'Active' ? 'lock' : 'lock_open' }}
+                      {{ user.status === 'ACTIVE' ? 'lock' : 'lock_open' }}
                     </span>
                   </button>
-                  <button
-                    (click)="deleteUser(user)"
-                    class="w-8 h-8 rounded-lg hover:bg-red-900/20 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-all"
-                  >
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                  </button>
+
                 </div>
               </td>
             </tr>
@@ -231,6 +224,7 @@
       </table>
     </div>
   </div>
+  }
 
   <!--  PAGINATION  -->
   <section class="flex items-center justify-between pt-8 pb-12">
@@ -304,7 +298,7 @@
         />
         <div
           class="absolute bottom-0 right-0 w-6 h-6 rounded-full border-4 border-zinc-900"
-          [ngClass]="selectedUser()!.status === 'Active' ? 'bg-emerald-500' : 'bg-red-500'"
+          [ngClass]="selectedUser()!.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-red-500'"
         ></div>
       </div>
       <h4 class="text-xl font-bold text-white mb-1">{{ selectedUser()!.fullName }}</h4>
@@ -361,11 +355,11 @@
         </h4>
         <div class="grid grid-cols-2 gap-4">
           <div class="text-center p-4 bg-zinc-800/30 rounded-xl">
-            <p class="text-2xl font-black text-white">{{ selectedUser()!.moviesWatched || 0 }}</p>
+            <p class="text-2xl font-black text-white">{{ selectedUser()!.movieWatched || 0 }}</p>
             <p class="text-[10px] text-zinc-500 uppercase">Phim đã xem</p>
           </div>
           <div class="text-center p-4 bg-zinc-800/30 rounded-xl">
-            <p class="text-2xl font-black text-white">{{ selectedUser()!.reviewsCount || 0 }}</p>
+            <p class="text-2xl font-black text-white">{{ selectedUser()!.reviewCount || 0 }}</p>
             <p class="text-[10px] text-zinc-500 uppercase">Số review</p>
           </div>
         </div>
@@ -378,11 +372,12 @@
           class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
         >
           <span class="material-symbols-outlined text-sm">
-            {{ selectedUser()!.status === 'Active' ? 'block' : 'lock_open' }}
+            {{ selectedUser()!.status === 'ACTIVE' ? 'block' : 'lock_open' }}
           </span>
-          {{ selectedUser()!.status === 'Active' ? 'Khóa tài khoản' : 'Mở khóa tài khoản' }}
+          {{ selectedUser()!.status === 'ACTIVE' ? 'Vô hiệu hóa' : 'Kích hoạt tài khoản' }}
         </button>
         <button
+          (click)="resetPassword(selectedUser()!)"
           class="w-full py-3 border border-zinc-700 text-white font-bold rounded-xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-2"
         >
           <span class="material-symbols-outlined text-sm">lock_reset</span>
@@ -391,4 +386,17 @@
       </div>
     </div>
   </aside>
+}
+
+<!-- ERROR BANNER -->
+@if (errorMessage()) {
+  <div
+    class="fixed bottom-6 right-6 bg-red-600/90 text-white px-6 py-3 rounded-xl shadow-2xl z-[200] flex items-center gap-3"
+  >
+    <span class="material-symbols-outlined text-sm">error</span>
+    {{ errorMessage() }}
+    <button (click)="errorMessage.set('')" class="ml-2 hover:text-zinc-300">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
+  </div>
 }
