@@ -1,0 +1,346 @@
+<section class="pt-6 px-8 pb-12">
+  <!--  SUMMARY STATS  -->
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    @for (stat of tagStats(); track stat.label) {
+      <div
+        class="bg-zinc-900/80 p-6 rounded-xl border border-zinc-800/20 group transition-all"
+        [ngClass]="getHoverBorderClass(stat.badgeColor)"
+      >
+        <div class="flex justify-between items-start mb-4">
+          <div
+            class="w-12 h-12 bg-zinc-800 rounded-xl flex items-center justify-center transition-colors"
+            [ngClass]="getIconColorClass(stat.badgeColor)"
+          >
+            <span class="material-symbols-outlined">{{ stat.icon }}</span>
+          </div>
+          @if (stat.badgeColor === 'zinc') {
+            <span
+              class="text-[10px] font-bold tracking-widest text-zinc-400 uppercase bg-zinc-800 px-2 py-1 rounded"
+            >
+              {{ stat.badgeText }}
+            </span>
+          } @else {
+            <div
+              class="flex items-center gap-1.5 px-2 py-1 rounded-full"
+              [ngClass]="getBadgeClasses(stat.badgeColor)"
+            >
+              <span class="w-2 h-2 rounded-full" [ngClass]="getDotClasses(stat.badgeColor)"></span>
+              <span class="text-[10px] font-bold uppercase">{{ stat.badgeText }}</span>
+            </div>
+          }
+        </div>
+        <h3 class="text-3xl font-black text-white">{{ stat.value }}</h3>
+        <p class="text-xs text-zinc-500 mt-2">{{ stat.description }}</p>
+      </div>
+    }
+  </section>
+
+  <!--  FILTER BAR  -->
+  <section class="bg-zinc-900/80 p-4 rounded-xl flex flex-wrap items-center gap-4 mb-8">
+    <div class="flex-1 min-w-[300px] relative group">
+      <span
+        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"
+        >search</span
+      >
+      <input
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+        type="text"
+        placeholder="Tìm kiếm tag..."
+        class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-zinc-300 focus:ring-1 focus:ring-red-600/50 outline-none transition-all"
+        style="color: #d4d4d8"
+      />
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <select
+        [(ngModel)]="selectedSort"
+        (change)="onSortChange()"
+        class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
+        style="color: #a1a1aa"
+      >
+        <option>Sắp xếp: Tên A-Z</option>
+        <option>Sắp xếp: Số phim giảm dần</option>
+        <option>Sắp xếp: Ngày tạo</option>
+      </select>
+      <div class="h-8 w-px bg-zinc-800 mx-1"></div>
+      <button
+        (click)="openAddModal()"
+        class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95"
+      >
+        <span class="material-symbols-outlined text-sm">add</span>
+        Thêm tag mới
+      </button>
+    </div>
+  </section>
+
+  <!--  TAG DATA TABLE  -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-20">
+      <span class="material-symbols-outlined animate-spin text-4xl text-red-500">progress_activity</span>
+    </div>
+  } @else {
+  <div class="bg-zinc-900/50 rounded-xl overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-zinc-800/50">
+
+            <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+              Tên Tag
+            </th>
+            <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+              Slug
+            </th>
+
+            <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+              Số phim liên kết
+            </th>
+
+            <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+              Ngày tạo
+            </th>
+            <th
+              class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 text-right"
+            >
+              Hành động
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-800/50">
+          @for (tag of tags(); track tag.id) {
+            <tr
+              class="hover:bg-zinc-800/30 transition-colors group cursor-pointer"
+              [ngClass]="{ 'bg-zinc-800/20': selectedTag()?.id === tag.id }"
+              (click)="viewTag(tag)"
+            >
+
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-semibold text-white">{{ tag.name }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-zinc-500 font-mono">{{ tag.slug }}</td>
+
+              <td class="px-6 py-4">
+                <span
+                  class="px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-bold uppercase tracking-tighter"
+                >
+                  {{ tag.movieCount }} phim
+                </span>
+              </td>
+
+              <td class="px-6 py-4 text-sm text-zinc-400">{{ tag.createdAt }}</td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex justify-end gap-2">
+                  <button
+                    (click)="viewTag(tag); $event.stopPropagation()"
+                    class="w-8 h-8 rounded-lg hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white transition-all"
+                  >
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                  <button
+                    (click)="deleteTag(tag); $event.stopPropagation()"
+                    class="w-8 h-8 rounded-lg hover:bg-red-900/20 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-all"
+                  >
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+
+  <!--  PAGINATION  -->
+  <section class="flex items-center justify-between pt-8 pb-12">
+    <div class="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.2em]">
+      Trang {{ currentPage() }} / {{ totalPages() }}
+    </div>
+    <div class="flex gap-2">
+      <button
+        (click)="goToPage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-30"
+      >
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+
+      @for (page of pages(); track $index) {
+        @if (page.value === null) {
+          <span class="flex items-center px-2 text-zinc-600">...</span>
+        } @else {
+          <button
+            (click)="goToPage(page.value)"
+            class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all"
+            [class]="
+              currentPage() === page.value
+                ? 'bg-red-600 text-white shadow-lg shadow-red-900/20'
+                : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800'
+            "
+          >
+            {{ page.label }}
+          </button>
+        }
+      }
+
+      <button
+        (click)="goToPage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        class="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all disabled:opacity-30"
+      >
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+  </section>
+</section>
+
+<!--  SIDE PANEL  -->
+@if (showPanel() && selectedTag()) {
+  <div class="fixed inset-0 bg-black/50 z-50" (click)="closePanel()"></div>
+
+  <aside
+    class="fixed top-0 right-0 w-[380px] h-screen bg-[#1c1b1d] border-l border-white/5 z-[60] shadow-[-20px_0_60px_rgba(0,0,0,0.6)] flex flex-col overflow-y-auto"
+  >
+    <div class="p-6 space-y-6">
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-black tracking-tight text-white">Chi tiết Tag</h2>
+        <button (click)="closePanel()" class="text-zinc-400 hover:text-white transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Form Fields -->
+      <div class="space-y-4">
+        <div>
+          <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2 block"
+            >Tên tag</label
+          >
+          <input
+            [(ngModel)]="editName"
+            name="editName"
+            class="w-full bg-[#2a2a2c] border-none rounded-lg px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-red-600/50 outline-none"
+          />
+        </div>
+        <div>
+          <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2 block"
+            >Slug</label
+          >
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 text-sm"
+              >vodka.tv/</span
+            >
+            <input
+              [(ngModel)]="editSlug"
+              name="editSlug"
+              class="w-full bg-[#2a2a2c] border-none rounded-lg pl-20 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-red-600/50 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini Stats -->
+      <div class="grid grid-cols-2 gap-3 py-4 border-y border-white/5">
+        <div class="text-center">
+          <p class="text-[10px] text-zinc-400 uppercase font-bold">Phim liên kết</p>
+          <p class="text-xl font-black mt-1 text-white">{{ selectedTag()!.movieCount }}</p>
+        </div>
+        <div class="text-center border-l border-white/5">
+          <p class="text-[10px] text-zinc-400 uppercase font-bold">Lượt xem</p>
+          <p class="text-xl font-black mt-1 text-white">{{ selectedTag()!.viewCount | number }}</p>
+        </div>
+      </div>
+
+      <!-- Meta Data -->
+      <div class="space-y-2 opacity-60">
+        <div class="flex justify-between text-[10px]">
+          <span class="text-zinc-400 font-bold uppercase tracking-tight">Ngày tạo:</span>
+          <span class="text-white font-medium">{{ selectedTag()!.createdAt }}</span>
+        </div>
+        <div class="flex justify-between text-[10px]">
+          <span class="text-zinc-400 font-bold uppercase tracking-tight">Cập nhật lần cuối:</span>
+          <span class="text-white font-medium">{{ selectedTag()!.updatedAt || '--' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions (pinned bottom) -->
+    <div class="mt-auto p-6 border-t border-white/5 flex gap-3">
+      <button
+        (click)="updateTag()"
+        class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm transition-all active:scale-95"
+      >
+        Cập nhật
+      </button>
+      <button
+        (click)="deleteTag(selectedTag()!)"
+        class="px-4 border border-white/10 hover:border-red-600/50 hover:text-red-500 text-zinc-400 rounded-xl transition-all"
+      >
+        <span class="material-symbols-outlined text-xl">delete</span>
+      </button>
+    </div>
+  </aside>
+}
+
+<!--  ADD TAG MODAL  -->
+@if (showAddModal()) {
+  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div class="bg-zinc-900 w-full max-w-md p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="text-xl font-bold text-white tracking-tight">Thêm tag mới</h3>
+        <button (click)="closeAddModal()" class="text-zinc-500 hover:text-white transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <form class="space-y-6" (ngSubmit)="addTag()">
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Tên tag</label>
+          <input
+            [(ngModel)]="newTagName"
+            name="tagName"
+            class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-red-600/50 focus:border-red-600 outline-none transition-all"
+            placeholder="Ví dụ: Top IMDb"
+            type="text"
+          />
+        </div>
+        <div class="space-y-2">
+          <label class="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Slug</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">vodka.tv/</span>
+            <input
+              [(ngModel)]="newTagSlug"
+              name="tagSlug"
+              class="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-20 pr-4 py-3 text-sm text-white focus:ring-1 focus:ring-red-600/50 focus:border-red-600 outline-none transition-all"
+              placeholder="top-imdb"
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="pt-4 flex items-center gap-3">
+          <button
+            (click)="closeAddModal()"
+            class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-all"
+            type="button"
+          >Hủy</button>
+          <button
+            class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-600/20 transition-all"
+            type="submit"
+          >Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (errorMessage()) {
+  <div class="fixed bottom-6 right-6 bg-red-600/90 text-white px-6 py-3 rounded-xl shadow-2xl z-[200] flex items-center gap-3">
+    <span class="material-symbols-outlined text-sm">error</span>
+    {{ errorMessage() }}
+    <button (click)="dismissError()" class="ml-2 hover:text-zinc-300">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
+  </div>
+}

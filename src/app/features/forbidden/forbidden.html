@@ -1,0 +1,79 @@
+<div
+  class="min-h-screen bg-zinc-950 flex flex-col items-center justify-center relative overflow-hidden px-4"
+>
+  <!-- Decorative background elements -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <!-- Radial gradient glow -->
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-red-600/5 blur-3xl"
+    ></div>
+
+    <!-- Subtle grid pattern -->
+    <div
+      class="absolute inset-0 opacity-[0.03]"
+      style="
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+        background-size: 40px 40px;
+      "
+    ></div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex flex-col items-center text-center max-w-lg">
+    <!-- Brand -->
+    <a routerLink="/" class="mb-12 group">
+      <span
+        class="text-2xl font-black tracking-[0.3em] text-white group-hover:text-red-500 transition-colors duration-300"
+      >
+        VODKA
+      </span>
+    </a>
+
+    <!-- 403 Number -->
+    <h1
+      class="text-[10rem] md:text-[14rem] font-black leading-none select-none"
+      style="
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: none;
+        filter: drop-shadow(0 0 60px rgba(220, 38, 38, 0.15));
+      "
+    >
+      403
+    </h1>
+
+    <!-- Heading -->
+    <h2 class="text-2xl md:text-3xl font-black text-white mb-3 tracking-tight">
+      Truy cập bị từ chối
+    </h2>
+
+    <!-- Description -->
+    <p class="text-zinc-400 text-base leading-relaxed mb-10 max-w-sm">
+      Bạn không có quyền truy cập trang này. Nếu bạn cho rằng đây là lỗi, vui lòng liên hệ quản trị
+      viên.
+    </p>
+
+    <!-- Action buttons -->
+    <div class="flex items-center gap-4">
+      <a
+        routerLink="/"
+        class="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all duration-300 shadow-xl shadow-red-900/20 hover:shadow-red-900/40 active:scale-95"
+      >
+        Về trang chủ
+      </a>
+      <a
+        routerLink="/auth"
+        class="px-8 py-3.5 border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white font-bold rounded-xl transition-all duration-300 hover:bg-zinc-800/50 active:scale-95"
+      >
+        Đăng nhập lại
+      </a>
+    </div>
+  </div>
+
+  <!-- Bottom decoration line -->
+  <div
+    class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-600/30 to-transparent"
+  ></div>
+</div>

@@ -1,11 +1,62 @@
+import { Genre } from "./genre.model";
+import { Tag } from "./tag.model";
+
+// Movie card
 export interface Movie {
-  id: string;
+  id: number;
   title: string;
-  posterUrl: string;    // Ảnh dọc cho card phim
-  bannerUrl?: string;   // Ảnh ngang cho màn hình Hero Banner
   releaseYear: number;
-  genre: string;
+  genre: Genre[];
   rating: number;
-  tags: string[];       // Ví dụ: ['Full HD', 'Vietsub']
+  posterUrl?: string;
+  bannerUrl?: string;
+  tags: Tag[];
   description?: string;
+  watchedAt?: string | Date;
+}
+
+// Movie detail screen
+export interface MovieDetail {
+  movie: Movie;
+  episodes: Season[];
+  reviews: Review[];
+  relatedMovies: Movie[];
+  stats: MovieStats;
+}
+
+// util
+export interface Episode {
+  id: number;
+  title: string;
+  duration: number;
+}
+
+export interface Season {
+  id: number;
+  title: string;
+  episodes: Episode[];
+}
+
+export interface Review {
+  id: number;
+  userName: string;
+  avatarUrl?: string;
+  rating: number;
+  content: string;
+  createdAt: string;
+  replied?: ReplyReview[]
+}
+
+export interface ReplyReview {
+  id: number;
+  userName: string;
+  avatarUrl?: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface MovieStats {
+  totalReviews: number;
+  totalViews: number;
+  favorites: number;
 }

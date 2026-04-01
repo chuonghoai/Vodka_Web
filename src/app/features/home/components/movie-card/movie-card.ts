@@ -1,30 +1,43 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { Movie } from '../../../../models/movie.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  template: `
-    <div class="relative group cursor-pointer rounded-lg overflow-hidden bg-zinc-900 shadow-lg hover:scale-105 transition-transform duration-300">
-      <img [src]="movie().posterUrl" [alt]="movie().title" class="w-full h-64 object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-
-      <div class="absolute top-2 left-2 flex gap-1">
-        @for (tag of movie().tags; track tag) {
-          <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">{{ tag }}</span>
-        }
-      </div>
-
-      <div class="p-3">
-        <h3 class="text-white font-bold truncate text-sm">{{ movie().title }}</h3>
-        <div class="flex justify-between items-center mt-1 text-xs text-zinc-400">
-          <span>{{ movie().releaseYear }}</span>
-          <span class="flex items-center gap-1">⭐ {{ movie().rating }}</span>
-        </div>
-      </div>
-    </div>
-  `
+  imports: [RouterLink],
+  templateUrl: './movie-card.html'
 })
 export class MovieCardComponent {
-  // Angular 21: Sử dụng Signal Input thay cho @Input()
   movie = input.required<Movie>();
+
+  relativeWatchedTime = computed(() => {
+    const watchedAt = this.movie().watchedAt;
+    if (!watchedAt) return null;
+
+    const watchedDate = new Date(watchedAt);
+    const now = new Date();
+    const diffMs = now.getTime() - watchedDate.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 60) {
+      return null;
+    } else if (diffDays >= 30) {
+      const months = Math.floor(diffDays / 30);
+      return `${months} tháng trước`;
+    } else if (diffDays >= 7) {
+      const weeks = Math.floor(diffDays / 7);
+      return `${weeks} tuần trước`;
+    } else if (diffDays > 0) {
+      return `${diffDays} ngày trước`;
+    } else {
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      if (diffHours > 0) return `${diffHours} giờ trước`;
+
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      if (diffMinutes > 0) return `${diffMinutes} phút trước`;
+
+      return 'Vừa xong';
+    }
+  });
 }
