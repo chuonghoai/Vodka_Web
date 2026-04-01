@@ -44,9 +44,9 @@ export const API_ENDPOINTS = {
     REVIEW_STATS: `/api/admin/reviews/stats`,
     REVIEW_REPLY: (id: number) => `/api/admin/reviews/${id}/reply`,
     REPLY_BY_ID: (id: number) => `/api/admin/reviews/replies/${id}`,
-    CREATE_REVIEW: '/api/admin/reviews', 
+    CREATE_REVIEW: '/api/admin/reviews',
 
-    
+
 
   },
   USER: {
@@ -68,6 +68,7 @@ export const API_ENDPOINTS = {
     WATCH: (episodeId: number) => `/api/movies/watch/${episodeId}`,
     BY_FILTER: '/api/movies/filter',
     FAVORITE: (movieId: number) => `/api/movies/${movieId}/favorite`,
+    RECORD_HISTORY: (movieId: number) => `/api/movies/${movieId}/record-history`,
   },
   GENRES: {
     GET_ALL: '/api/genres',

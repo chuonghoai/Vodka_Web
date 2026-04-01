@@ -16,4 +16,12 @@ export class WatchService {
   getWatchDetail(episodeId: number): Observable<ApiResponse<WatchDetailData>> {
     return this.http.get<ApiResponse<WatchDetailData>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.WATCH(episodeId)}`);
   }
+
+  /**
+   * Record History
+   * POST: /api/movies/{movieId}/record-history
+   */
+  recordHistory(movieId: number): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.RECORD_HISTORY(movieId)}`, {});
+  }
 }

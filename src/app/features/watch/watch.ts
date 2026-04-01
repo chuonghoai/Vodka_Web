@@ -8,6 +8,7 @@ import { MovieSliderComponent } from '../home/components/movie-slider/movie-slid
 import { ReviewComponent } from '../movie/components/review/review';
 import { WatchService } from '../../services/watch.service';
 import { TotalViewsPipe } from '../../shared/pipes/total-views.pipe';
+import { UserState } from '../../core/states/user.state';
 
 @Component({
   selector: 'app-watch',
@@ -27,6 +28,8 @@ export class WatchComponent implements OnInit {
   private router = inject(Router);
   private watchService = inject(WatchService);
   private platformId = inject(PLATFORM_ID);
+  private userState = inject(UserState);
+
 
   episodeId = signal<number>(0);
   watchData = signal<WatchDetailData | null>(null);
@@ -62,6 +65,12 @@ export class WatchComponent implements OnInit {
           }
         }
 
+        // Record History
+        if (this.userState.currentUser()) {
+          this.watchService.recordHistory(res.data.movie.id).subscribe({
+            error: (err) => console.error('Record history failed:', err)
+          })
+        }
       }
     });
   }

@@ -10,6 +10,7 @@ import { TotalViewsPipe } from '../../shared/pipes/total-views.pipe';
 import { FavoritesPipe } from '../../shared/pipes/favorites.pipe';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationType } from '../../models/notification.model';
+import { UserState } from '../../core/states/user.state';
 
 @Component({
   selector: 'app-movie',
