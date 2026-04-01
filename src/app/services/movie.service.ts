@@ -66,4 +66,8 @@ export class MovieService {
   toggleFavorite(movieId: number): Observable<ApiResponse<{isFavorited: boolean}>> {
     return this.http.post<ApiResponse<{isFavorited: boolean}>>(`${this.baseUrl}${API_ENDPOINTS.MOVIES.FAVORITE(movieId)}`, {});
   }
+
+  checkFavoriteStatus(movieId: number): Observable<ApiResponse<boolean>> {
+    return this.http.get<ApiResponse<boolean>>(`${this.baseUrl}/api/movies/${movieId}/favorite-status`);
+  }
 }

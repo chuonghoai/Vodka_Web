@@ -86,6 +86,17 @@ export class MovieComponent implements OnInit {
           }
         }
       });
+
+      this.movieService.checkFavoriteStatus(id).subscribe({
+        next: (res) => {
+          if (res.success && res.data !== undefined) {
+            this.isFavorited.set(res.data);
+          }
+        },
+        error: () => {
+          this.isFavorited.set(false);
+        }
+      });
     });
   }
 
