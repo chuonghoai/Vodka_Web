@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
     MOVIE_BY_ID: (id: number) => `/api/admin/movies/${id}`,  // GET/PUT/DELETE
     MOVIE_STATS: '/api/admin/movies/stats',     // GET: summary stats
     SIGNATURE: '/api/media/signature',
+    MEDIA_CONFIRM: '/api/media/confirm',
 
     // CRUD USER
     USERS: '/api/admin/users',

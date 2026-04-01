@@ -1,4 +1,4 @@
-// File: src/app/services/media.service.ts
+// File: src/app/services/admin/media.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
@@ -20,8 +20,8 @@ export class MediaService {
         return response.data;
     }
 
-    // Upload to cloudinary
-    async uploadToCloudinary(file: File, resourceType: 'image' | 'video'): Promise<CloudinaryUploadResponse> {
+    // Upload to cloudinary + tự động gọi confirm để xóa tag "tmp"
+    async uploadToCloudinary(file: File, resourceType: 'image' | 'video', movieId?: number): Promise<CloudinaryUploadResponse> {
         try {
             const sigData = await this.getSignature();
 
@@ -39,10 +39,44 @@ export class MediaService {
                 this.http.post<CloudinaryUploadResponse>(uploadUrl, formData)
             );
 
+            // Gọi confirm API để xóa tag "tmp" nếu file sẽ không bị CRON xóa
+            await this.confirmMedia(response, resourceType, movieId);
+
             return response;
         } catch (error) {
             console.error('Lỗi khi upload Cloudinary:', error);
             throw error;
+        }
+    }
+
+    // Gọi backend xác nhận media đã upload → xóa tag "tmp" trên Cloudinary
+    private async confirmMedia(
+        uploadRes: CloudinaryUploadResponse,
+        resourceType: string,
+        movieId?: number
+    ): Promise<void> {
+        try {
+            const confirmPayload: any = {
+                publicId: uploadRes.public_id,
+                secureUrl: uploadRes.secure_url,
+                resourceType: resourceType,
+                format: uploadRes.format || null,
+                width: uploadRes.width || null,
+                height: uploadRes.height || null,
+                bytes: uploadRes.bytes || null,
+                duration: uploadRes.duration || null,
+            };
+
+            if (movieId) {
+                confirmPayload.movieId = movieId;
+            }
+
+            await firstValueFrom(
+                this.http.post<any>(`${this.apiUrl}${API_ENDPOINTS.ADMIN.MEDIA_CONFIRM}`, confirmPayload)
+            );
+        } catch (error) {
+            // Log lỗi nhưng không throw — file đã upload thành công,
+            console.warn('Không thể confirm media (tag tmp chưa được xóa):', error);
         }
     }
 }

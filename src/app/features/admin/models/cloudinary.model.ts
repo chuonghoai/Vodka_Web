@@ -12,4 +12,8 @@ export interface CloudinaryUploadResponse {
     public_id: string;
     duration?: number;
     format?: string;
+    width?: number;
+    height?: number;
+    bytes?: number;
+    resource_type?: string;
 }
