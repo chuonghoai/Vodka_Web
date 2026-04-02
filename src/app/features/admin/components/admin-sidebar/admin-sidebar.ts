@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, signal, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 
 interface MenuItem {
   icon: string;
@@ -28,7 +28,13 @@ export class AdminSidebarComponent {
     { icon: 'settings', label: 'Cài đặt', route: '/admin/settings', exact: false },
   ];
 
+  private router = inject(Router);
+
   toggleSidebar() {
     this.isCollapsed.update(v => !v);
+  }
+
+  addNewMovie() {
+    this.router.navigate(['/admin/movies/new']);
   }
 }

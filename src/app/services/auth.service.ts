@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from './api-endpoints/api.endpoints';
 import { isPlatformBrowser } from '@angular/common';
 import { UserState } from '../core/states/user.state';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class AuthService {
   private userState = inject(UserState);
   private platformId = inject(PLATFORM_ID);
   private socialAuthService = inject(SocialAuthService);
+  private router = inject(Router);
 
   private baseUrl = environment.apiUrl;
 
@@ -42,11 +44,13 @@ export class AuthService {
 
     if (isPlatformBrowser(this.platformId)) {
       try {
-        this.socialAuthService.signOut().catch(() => {});
+        this.socialAuthService.signOut().catch(() => { });
       } catch (error) {
         console.error('Lỗi khi đăng xuất Google:', error);
       }
     }
+
+    this.router.navigate(['/']);
   }
 
   // Request OTP reset password
