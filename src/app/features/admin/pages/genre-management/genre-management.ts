@@ -5,6 +5,8 @@ import { GenreService } from '../../../../services/genre.service';
 import { UpdateGenreRequest } from '../../../../models/genre.model';
 import { GenreRow, GenreStat } from '../../models/genre.model';
 import { buildPageItems } from '../../utils/pagination.utils';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 @Component({
   selector: 'app-genre-management',
@@ -16,6 +18,7 @@ import { buildPageItems } from '../../utils/pagination.utils';
 export class GenreManagementComponent {
 
   private genreService = inject(GenreService);
+  private notif = inject(NotificationService);
 
   isLoading = signal(false);
   errorMessage = signal('');
@@ -231,13 +234,14 @@ export class GenreManagementComponent {
     this.genreService.updateGenre(genre.id, payload).subscribe({
       next: (res) => {
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, `Cập nhật thể loại "${newName || genre.name}" thành công`);
           this.closePanel();
           this.loadGenres();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể cập nhật thể loại');
+        this.notif.show(NotificationType.ERROR, 'Không thể cập nhật thể loại');
       }
     });
 
@@ -260,13 +264,14 @@ export class GenreManagementComponent {
     this.genreService.createGenre({ name, slug }).subscribe({
       next: (res) => {
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, `Đã thêm thể loại "${name}" thành công`);
           this.closeAddModal();
           this.loadGenres();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể tạo thể loại');
+        this.notif.show(NotificationType.ERROR, 'Không thể tạo thể loại');
       }
     });
   }
@@ -276,15 +281,14 @@ export class GenreManagementComponent {
     this.genreService.deleteGenre(genre.id).subscribe({
       next: (res) => {
         if (res.success) {
-          if (this.selectedGenre()?.id === genre.id) {
-            this.closePanel();
-          }
+          this.notif.show(NotificationType.SUCCESS, `Đã xóa thể loại "${genre.name}" thành công`);
+          if (this.selectedGenre()?.id === genre.id) this.closePanel();
           this.loadGenres();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể xóa thể loại');
+        this.notif.show(NotificationType.ERROR, `Không thể xóa thể loại "${genre.name}"`);
       }
     });
   }

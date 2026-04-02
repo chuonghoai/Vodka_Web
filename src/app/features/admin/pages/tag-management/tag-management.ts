@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { UpdateTagRequest } from '../../../../models/tag.model';
 import { TagService } from '../../../../services/tag.service';
 import { buildPageItems } from '../../utils/pagination.utils';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 @Component({
   selector: 'app-tag-management',
@@ -13,7 +15,8 @@ import { buildPageItems } from '../../utils/pagination.utils';
 })
 export class TagManagementComponent {
 
-  private tagService = inject(TagService)
+  private tagService = inject(TagService);
+  private notif = inject(NotificationService);
 
   isLoading = signal(false);
   errorMessage = signal('');
@@ -196,13 +199,14 @@ export class TagManagementComponent {
     this.tagService.createTag({ name, slug }).subscribe({
       next: (res) => {
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, `Đã thêm tag "${name}" thành công`);
           this.closeAddModal();
           this.loadTags();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể tạo tag');
+        this.notif.show(NotificationType.ERROR, 'Không thể tạo tag');
       }
     });
   }
@@ -222,11 +226,12 @@ export class TagManagementComponent {
 
     this.tagService.updateTag(tag.id, payload).subscribe({
       next: () => {
+        this.notif.show(NotificationType.SUCCESS, `Cập nhật tag "${tag.name}" thành công`);
         this.loadTags();
         this.closePanel();
       },
       error: () => {
-        this.errorMessage.set('Không thể cập nhật tag');
+        this.notif.show(NotificationType.ERROR, 'Không thể cập nhật tag');
       }
     })
 
@@ -236,11 +241,12 @@ export class TagManagementComponent {
     if (confirm(`Xóa tag "${tag.name}"?`)) {
       this.tagService.deleteTag(tag.id).subscribe({
         next: () => {
+          this.notif.show(NotificationType.SUCCESS, `Đã xóa tag "${tag.name}" thành công`);
           this.loadTags();
           this.loadStats();
         },
         error: () => {
-          this.errorMessage.set('Không thể xóa tag');
+          this.notif.show(NotificationType.ERROR, `Không thể xóa tag "${tag.name}"`);
         }
       });
     }

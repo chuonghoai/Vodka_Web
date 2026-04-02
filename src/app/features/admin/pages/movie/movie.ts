@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieRow, SummaryStats } from '../../models/movie.model';
 import { AdminMovieService } from '../../../../services/admin/movie.service';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 @Component({
   selector: 'app-movie-management',
@@ -14,6 +16,7 @@ export class MovieManagementComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private adminMovieService = inject(AdminMovieService);
+  private notif = inject(NotificationService);
 
   // Filters
   selectedYear = signal<string>('');
@@ -201,10 +204,12 @@ export class MovieManagementComponent implements OnInit {
         next: (res) => {
           if (res.success) {
             this.movies.update(list => list.filter(m => m.id !== movie.id));
+            this.loadStats();
+            this.notif.show(NotificationType.SUCCESS, `Đã xóa phim "${movie.title}" thành công`);
           }
         },
-        error: (err) => {
-          console.log(err);
+        error: () => {
+          this.notif.show(NotificationType.ERROR, `Không thể xóa phim "${movie.title}"`);
         }
       });
     }

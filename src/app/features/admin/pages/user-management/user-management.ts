@@ -5,6 +5,8 @@ import { forkJoin } from 'rxjs';
 import { AdminUserDetail, UserStats } from '../../../../models/user.model';
 import { AdminUserService } from '../../../../services/admin-user.service';
 import { buildPageItems } from '../../utils/pagination.utils';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 
 @Component({
@@ -15,6 +17,7 @@ import { buildPageItems } from '../../utils/pagination.utils';
 })
 export class UserManagementComponent {
   private adminUserService = inject(AdminUserService);
+  private notif = inject(NotificationService);
 
   //  State
   isLoading = signal(true);
@@ -83,13 +86,13 @@ export class UserManagementComponent {
       this.adminUserService.toggleLock(user.id).subscribe({
         next: (res) => {
           if (res.success) {
-            this.loadData();  // Reload data sau khi toggle
-            if (this.selectedUser()?.id === user.id) {
-              this.closePanel();
-            }
+            const newStatus = user.status === 'ACTIVE' ? 'vô hiệu hóa' : 'đã kích hoạt';
+            this.notif.show(NotificationType.SUCCESS, `Tài khoản "${user.fullName}" đã ${newStatus}`);
+            this.loadData();
+            if (this.selectedUser()?.id === user.id) this.closePanel();
           }
         },
-        error: () => this.errorMessage.set('Không thể thay đổi trạng thái người dùng'),
+        error: () => this.notif.show(NotificationType.ERROR, 'Không thể thay đổi trạng thái người dùng'),
       });
     }
   }
@@ -196,10 +199,10 @@ export class UserManagementComponent {
       this.adminUserService.resetPassword(user.id).subscribe({
         next: (res) => {
           if (res.success) {
-            alert('Đã reset mật khẩu. Mật khẩu mới đã gửi về email người dùng.');
+            this.notif.show(NotificationType.SUCCESS, `Đã reset mật khẩu và gửi về email: ${user.email}`);
           }
         },
-        error: () => this.errorMessage.set('Không thể reset mật khẩu'),
+        error: () => this.notif.show(NotificationType.ERROR, 'Không thể reset mật khẩu'),
       });
     }
   }
