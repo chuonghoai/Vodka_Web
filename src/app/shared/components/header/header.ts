@@ -63,6 +63,13 @@ export class Header implements OnInit {
     this.isMobileMenuOpen.set(false);
   }
 
+  search(keyword: string) {
+    const q = keyword.trim();
+    if (!q) return;
+    this.router.navigate(['/search'], { queryParams: { keyword: q, page: 1 } });
+    this.isMobileMenuOpen.set(false);
+  }
+
   logout() {
     this.authService.logout();
     this.isMobileMenuOpen.set(false);

@@ -1,44 +1,94 @@
-<nav class="p-5 border-b border-zinc-800 flex justify-between items-center bg-black/50 backdrop-blur-md top-0 z-50 relative">
-
+<nav
+  class="p-5 border-b border-zinc-800 flex justify-between items-center bg-black/50 backdrop-blur-md top-0 z-50 relative"
+>
   <div class="flex items-center gap-4 md:gap-10">
-    <button class="md:hidden text-zinc-300 hover:text-white transition-colors" (click)="toggleMobileMenu()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    <button
+      class="md:hidden text-zinc-300 hover:text-white transition-colors"
+      (click)="toggleMobileMenu()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="w-8 h-8"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+        />
       </svg>
     </button>
 
-    <h1 routerLink="/" class="text-2xl md:text-3xl font-black text-red-600 italic tracking-wider cursor-pointer">VODKA WEB</h1>
+    <h1
+      routerLink="/"
+      class="text-2xl md:text-3xl font-black text-red-600 italic tracking-wider cursor-pointer"
+    >
+      VODKA WEB
+    </h1>
 
     <ul class="flex items-center gap-6">
       @for (tag of tags(); track tag.id) {
         <li>
-          <button (click)="applyFilter(tag.slug || tag.name)"
-                  class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider">
+          <button
+            (click)="applyFilter(tag.slug || tag.name)"
+            class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider"
+          >
             {{ tag.name }}
           </button>
         </li>
       }
 
       <li class="relative group" (mouseleave)="clearSelectedGenres()">
-        <button class="flex items-center gap-1.5 text-zinc-300 group-hover:text-white font-bold text-sm uppercase tracking-wider transition-colors py-2">
+        <button
+          class="flex items-center gap-1.5 text-zinc-300 group-hover:text-white font-bold text-sm uppercase tracking-wider transition-colors py-2"
+        >
           Thể loại
-          <svg class="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          <svg
+            class="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
         </button>
 
-        <div class="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-4 z-[100]">
-
-          <div class="w-[500px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3">
+        <div
+          class="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-4 z-[100]"
+        >
+          <div
+            class="w-[500px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3"
+          >
             @for (genre of genres(); track genre.id) {
-              <label class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item">
-                <input type="checkbox" [checked]="selectedGenreSlugs().includes(genre.slug || genre.name)" (change)="toggleGenre(genre.slug || genre.name)" class="accent-red-600 w-4 h-4">
-                <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{ genre.name }}</span>
+              <label
+                class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="selectedGenreSlugs().includes(genre.slug || genre.name)"
+                  (change)="toggleGenre(genre.slug || genre.name)"
+                  class="accent-red-600 w-4 h-4"
+                />
+                <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{
+                  genre.name
+                }}</span>
               </label>
             }
-            <button (click)="applyFilter()" class="col-span-3 mt-4 bg-red-600 hover:bg-red-700 py-3.5 rounded-xl font-bold text-white shadow-lg transition-colors">
+            <button
+              (click)="applyFilter()"
+              class="col-span-3 mt-4 bg-red-600 hover:bg-red-700 py-3.5 rounded-xl font-bold text-white shadow-lg transition-colors"
+            >
               Áp dụng bộ lọc
             </button>
           </div>
-
         </div>
       </li>
     </ul>
@@ -46,82 +96,164 @@
 
   <div class="flex gap-2 md:gap-4">
     <div class="relative">
-      <input type="text" placeholder="Tìm kiếm..." class="bg-zinc-900 border border-zinc-700 pl-4 pr-8 md:pr-10 py-1.5 rounded-full text-sm focus:outline-none focus:border-red-600 text-white w-32 md:w-64 transition-all focus:w-40 md:focus:w-72">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer hover:text-red-500">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      <input
+        #searchInput
+        type="text"
+        placeholder="Tìm kiếm..."
+        (keyup.enter)="search(searchInput.value)"
+        class="bg-zinc-900 border border-zinc-700 pl-4 pr-8 md:pr-10 py-1.5 rounded-full text-sm focus:outline-none focus:border-red-600 text-white w-32 md:w-64 transition-all focus:w-40 md:focus:w-72"
+      />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer hover:text-red-500"
+        (click)="search(searchInput.value)"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+        />
       </svg>
     </div>
     @if (currentUser(); as user) {
-
       <div (click)="goToProfile()" class="relative group cursor-pointer flex items-center gap-3">
         <span class="text-sm font-bold text-white hidden md:block max-w-30 truncate">
           {{ user.fullName || 'Người dùng' }}
         </span>
 
-        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden border-2 border-zinc-700 group-hover:border-red-500 transition-colors bg-zinc-800 flex items-center justify-center shrink-0">
+        <div
+          class="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden border-2 border-zinc-700 group-hover:border-red-500 transition-colors bg-zinc-800 flex items-center justify-center shrink-0"
+        >
           @if (user.avatarUrl) {
-            <img [src]="user.avatarUrl" alt="Avatar" class="w-full h-full object-cover">
+            <img [src]="user.avatarUrl" alt="Avatar" class="w-full h-full object-cover" />
           } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-zinc-400"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" /></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5 text-zinc-400"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                clip-rule="evenodd"
+              />
+            </svg>
           }
         </div>
 
-        <div class="absolute top-full right-0 mt-3 w-48 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2 flex flex-col">
+        <div
+          class="absolute top-full right-0 mt-3 w-48 bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 py-2 flex flex-col"
+        >
           <div class="px-4 py-3 border-b border-zinc-800 md:hidden flex flex-col">
             <span class="text-xs text-zinc-500">Đăng nhập với</span>
             <span class="text-sm text-white font-bold truncate">{{ user.email }}</span>
           </div>
-          <a (click)="goToProfile()" class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Hồ sơ cá nhân</a>
-          <a (click)="goToProfile('favorites')" class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Phim yêu thích</a>
-          <a (click)="goToProfile('history')" class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors">Lịch sử xem</a>
+          <a
+            (click)="$event.stopPropagation(); goToProfile()"
+            class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            >Hồ sơ cá nhân</a
+          >
+          <a
+            (click)="$event.stopPropagation(); goToProfile('favorites')"
+            class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            >Phim yêu thích</a
+          >
+          <a
+            (click)="$event.stopPropagation(); goToProfile('history')"
+            class="px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            >Lịch sử xem</a
+          >
           <div class="border-t border-zinc-800 my-1"></div>
-          <button (click)="logout()" class="px-4 py-2.5 text-sm text-red-500 text-left hover:bg-zinc-800 transition-colors font-bold w-full">Đăng xuất</button>
+          <button
+            (click)="logout()"
+            class="px-4 py-2.5 text-sm text-red-500 text-left hover:bg-zinc-800 transition-colors font-bold w-full"
+          >
+            Đăng xuất
+          </button>
         </div>
       </div>
-
     } @else {
-      <button routerLink="/auth" class="bg-red-600 px-3 md:px-5 py-1.5 rounded-full font-bold text-xs md:text-sm hover:bg-red-700 transition-colors text-white whitespace-nowrap">
+      <button
+        routerLink="/auth"
+        class="bg-red-600 px-3 md:px-5 py-1.5 rounded-full font-bold text-xs md:text-sm hover:bg-red-700 transition-colors text-white whitespace-nowrap"
+      >
         Đăng nhập
       </button>
     }
   </div>
 
   @if (isMobileMenuOpen()) {
-    <div class="absolute top-full left-0 w-full bg-zinc-950 border-b border-zinc-800 shadow-2xl md:hidden z-50 flex flex-col p-5">
+    <div
+      class="absolute top-full left-0 w-full bg-zinc-950 border-b border-zinc-800 shadow-2xl md:hidden z-50 flex flex-col p-5"
+    >
       <ul class="hidden lg:flex items-center gap-8 ml-10 z-50">
         @for (tag of tags(); track tag.id) {
           <li>
-            <button (click)="applyFilter(tag.slug || tag.name)"
-                    class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider">
+            <button
+              (click)="applyFilter(tag.slug || tag.name)"
+              class="text-zinc-400 hover:text-red-500 font-bold transition-colors text-sm uppercase tracking-wider"
+            >
               {{ tag.name }}
             </button>
           </li>
         }
 
         <li class="relative group" (mouseleave)="clearSelectedGenres()">
-          <button class="flex items-center gap-1.5 text-zinc-300 group-hover:text-white font-bold text-sm uppercase tracking-wider transition-colors py-2">
+          <button
+            class="flex items-center gap-1.5 text-zinc-300 group-hover:text-white font-bold text-sm uppercase tracking-wider transition-colors py-2"
+          >
             Thể loại
-            <svg class="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <svg
+              class="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
           </button>
 
-          <div class="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-4 z-[100]">
-
-            <div class="w-[600px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3">
+          <div
+            class="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-4 z-[100]"
+          >
+            <div
+              class="w-[600px] bg-zinc-950/95 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl shadow-2xl grid grid-cols-3"
+            >
               @for (genre of genres(); track genre.id) {
-                <label class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item">
-                  <input type="checkbox" [checked]="selectedGenreSlugs().includes(genre.slug || genre.name)" (change)="toggleGenre(genre.slug || genre.name)" class="accent-red-600 w-4 h-4">
-                  <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{ genre.name }}</span>
+                <label
+                  class="flex items-center gap-3 p-3 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors group/item"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="selectedGenreSlugs().includes(genre.slug || genre.name)"
+                    (change)="toggleGenre(genre.slug || genre.name)"
+                    class="accent-red-600 w-4 h-4"
+                  />
+                  <span class="text-[15px] font-medium text-zinc-400 group-hover/item:text-white">{{
+                    genre.name
+                  }}</span>
                 </label>
               }
-              <button (click)="applyFilter()" class="col-span-3 mt-4 bg-red-600 hover:bg-red-700 py-3.5 rounded-xl font-bold text-white shadow-lg transition-colors">
+              <button
+                (click)="applyFilter()"
+                class="col-span-3 mt-4 bg-red-600 hover:bg-red-700 py-3.5 rounded-xl font-bold text-white shadow-lg transition-colors"
+              >
                 Áp dụng bộ lọc
               </button>
             </div>
-
           </div>
         </li>
       </ul>
     </div>
   }
-
 </nav>

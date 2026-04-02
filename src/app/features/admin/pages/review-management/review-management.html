@@ -66,17 +66,17 @@
         class="appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-400 focus:ring-1 focus:ring-red-600/50 outline-none cursor-pointer"
         style="color: #a1a1aa"
       >
-        <option value="all">Rating: Tất cả</option>
-        <option value="10">10 sao</option>
-        <option value="9">9 sao</option>
-        <option value="8">8 sao</option>
-        <option value="7">7 sao</option>
-        <option value="6">6 sao</option>
-        <option value="5">5 sao</option>
-        <option value="4">4 sao</option>
-        <option value="3">3 sao</option>
-        <option value="2">2 sao</option>
-        <option value="1">1 sao</option>
+        <option value="all" class="bg-zinc-900 text-zinc-200">Rating: Tất cả</option>
+        <option value="10" class="bg-zinc-900 text-zinc-200">10 sao</option>
+        <option value="9" class="bg-zinc-900 text-zinc-200">9 sao</option>
+        <option value="8" class="bg-zinc-900 text-zinc-200">8 sao</option>
+        <option value="7" class="bg-zinc-900 text-zinc-200">7 sao</option>
+        <option value="6" class="bg-zinc-900 text-zinc-200">6 sao</option>
+        <option value="5" class="bg-zinc-900 text-zinc-200">5 sao</option>
+        <option value="4" class="bg-zinc-900 text-zinc-200">4 sao</option>
+        <option value="3" class="bg-zinc-900 text-zinc-200">3 sao</option>
+        <option value="2" class="bg-zinc-900 text-zinc-200">2 sao</option>
+        <option value="1" class="bg-zinc-900 text-zinc-200">1 sao</option>
       </select>
       <select
         [(ngModel)]="selectedSort"
@@ -85,7 +85,7 @@
         style="color: #a1a1aa"
       >
         @for (opt of sortOptions; track opt.value) {
-          <option [value]="opt.value">{{ opt.label }}</option>
+          <option [value]="opt.value" class="bg-zinc-900 text-zinc-200">{{ opt.label }}</option>
         }
       </select>
       <button

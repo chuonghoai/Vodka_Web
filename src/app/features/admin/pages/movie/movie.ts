@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieRow, SummaryStats } from '../../models/movie.model';
 import { AdminMovieService } from '../../../../services/admin/movie.service';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 @Component({
   selector: 'app-movie-management',
@@ -14,6 +16,7 @@ export class MovieManagementComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private adminMovieService = inject(AdminMovieService);
+  private notif = inject(NotificationService);
 
   // Filters
   selectedYear = signal<string>('');
@@ -112,7 +115,9 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
-  // Apis Call: Load stats
+  /**
+   * Tải lại các thẻ KPIs thống kê của hệ thống phim
+   */
   loadStats() {
     this.adminMovieService.getMovieStats().subscribe({
       next: (res) => {
@@ -125,7 +130,9 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
-  // Apis Call: Load movies
+  /**
+   * Tải danh sách phim (hỗ trợ phân trang, lọc, sắp xếp)
+   */
   loadMovies() {
     this.isLoading.set(true);
     const params = {
@@ -156,13 +163,17 @@ export class MovieManagementComponent implements OnInit {
     });
   }
 
-  // Actions: filter movie
+  /**
+   * Gọi khi người dùng đổi bộ lọc (Genre, Year, Rating)
+   */
   onFilterChange() {
     this.currentPage.set(1);
     this.updateUrl(); // Thay vì loadMovies() thẳng, ta update URL
   }
 
-  // Actions: go to page
+  /**
+   * Chuyển trang (Pagination)
+   */
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
       this.currentPage.set(page);
@@ -170,7 +181,9 @@ export class MovieManagementComponent implements OnInit {
     }
   }
 
-  // Actions: reset filter
+  /**
+   * Xóa nội dung của toàn bộ các bộ lọc đang chọn
+   */
   resetFilters() {
     this.selectedGenre.set('');
     this.selectedYear.set('');
@@ -184,27 +197,35 @@ export class MovieManagementComponent implements OnInit {
   // Format: number
   formatNumber(num: number): string { return num ? num.toLocaleString() : '0'; }
 
-  // Actions: add new movie
+  /**
+   * Chuyển hướng đến route Thêm phim mới
+   */
   addNewMovie() {
     this.router.navigate(['/admin/movies/new']);
   }
 
-  // Actions: edit movie
+  /**
+   * Chuyển hướng đến route Chỉnh sửa phim hiện tại
+   */
   editMovie(movie: MovieRow) {
     this.router.navigate(['/admin/movies/edit', movie.id]);
   }
 
-  // Actions: delete movie
+  /**
+   * Xóa phim khỏi hệ thống và load lại danh sách
+   */
   deleteMovie(movie: MovieRow) {
     if (confirm(`Xóa phim "${movie.title}"?`)) {
       this.adminMovieService.deleteMovie(movie.id).subscribe({
         next: (res) => {
           if (res.success) {
             this.movies.update(list => list.filter(m => m.id !== movie.id));
+            this.loadStats();
+            this.notif.show(NotificationType.SUCCESS, `Đã xóa phim "${movie.title}" thành công`);
           }
         },
-        error: (err) => {
-          console.log(err);
+        error: () => {
+          this.notif.show(NotificationType.ERROR, `Không thể xóa phim "${movie.title}"`);
         }
       });
     }
@@ -230,7 +251,9 @@ export class MovieManagementComponent implements OnInit {
     return prefix + this.formatKpi(num, isRating);
   }
 
-  // Helper: update query in URL
+  /**
+   * Đồng bộ hóa URL parameters dựa vào filter hiện hành
+   */
   updateUrl() {
     const queryParams: any = {};
     if (this.selectedGenre()) queryParams.genre = this.selectedGenre();

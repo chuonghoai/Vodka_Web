@@ -3,9 +3,11 @@ import { afterNextRender, Component, computed, inject, signal } from '@angular/c
 import { FormsModule } from '@angular/forms';
 import { UserState } from '../../../../core/states/user.state';
 import { AdminReply, AdminReview } from '../../../../models/admin-review.modal';
+import { NotificationType } from '../../../../models/notification.model';
 import { AdminReviewService } from '../../../../services/admin/review.service';
-import { AddReviewComponent } from './add-review/add-review';
+import { NotificationService } from '../../../../services/notification.service';
 import { buildPageItems } from '../../utils/pagination.utils';
+import { AddReviewComponent } from './add-review/add-review';
 
 @Component({
   selector: 'app-review-management',
@@ -15,8 +17,9 @@ import { buildPageItems } from '../../utils/pagination.utils';
 })
 export class ReviewManagementComponent {
 
-  private reviewService = inject(AdminReviewService)
+  private reviewService = inject(AdminReviewService);
   protected userState = inject(UserState);
+  private notif = inject(NotificationService);
 
   // Loading/ Error
   isLoading = signal(false);
@@ -70,14 +73,17 @@ export class ReviewManagementComponent {
     this.loadReviewStats();
   }
 
-  constructor(){
-    afterNextRender(() =>{
+  constructor() {
+    afterNextRender(() => {
       this.loadReviews();
       this.loadReviewStats();
     })
   }
 
-  loadReviews(){
+  /**
+   * Tải danh sách review từ server (có phân trang, tìm kiếm, lọc rating, sắp xếp)
+   */
+  loadReviews() {
     this.isLoading.set(true);
     this.reviewService.getReviews({
       page: this.currentPage(),
@@ -87,7 +93,7 @@ export class ReviewManagementComponent {
       sort: this.selectedSort()
     }).subscribe({
       next: (res) => {
-        if(res.success){
+        if (res.success) {
           this.reviews.set(res.data);
           if (res.pagination) {
             this.totalItems.set(res.pagination.totalItems);
@@ -103,7 +109,10 @@ export class ReviewManagementComponent {
       }
     })
   }
-  
+
+  /**
+   * Tải các thẻ thống kê tổng quan (Review Stats)
+   */
   loadReviewStats(): void {
     this.reviewService.getReviewStats().subscribe({
       next: (res) => {
@@ -146,16 +155,24 @@ export class ReviewManagementComponent {
     });
   }
 
-  // Filter
+  /**
+   * Gọi khi người dùng nhập nội dung vào ô Search
+   */
   onSearchChange(): void {
     this.currentPage.set(1);
     this.loadReviews();
   }
+  /**
+   * Gọi khi chọn lọc theo số sao (Rating)
+   */
   onRatingChange(): void {
     this.currentPage.set(1);
     this.loadReviews();
   }
-  
+
+  /**
+   * Gọi khi chọn tiêu chí sắp xếp trong Dropdown
+   */
   onSortChange(): void {
     this.currentPage.set(1);
     this.loadReviews();
@@ -163,6 +180,9 @@ export class ReviewManagementComponent {
 
   // ACTION
 
+  /**
+   * Chuyển trang (Pagination)
+   */
   goToPage(page: number | null): void {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
@@ -170,7 +190,9 @@ export class ReviewManagementComponent {
     }
   }
 
-  // Delete Review
+  /**
+   * Xóa một review gốc (bao gồm tất cả replies bên trong)
+   */
   deleteReview(review: AdminReview) {
     if (!confirm(`Xóa review của "${review.userName}" về phim "${review.movieTitle}"?`)) return;
 
@@ -180,17 +202,21 @@ export class ReviewManagementComponent {
 
     this.reviewService.deleteReview(review.id).subscribe({
       next: () => {
+        this.notif.show(NotificationType.SUCCESS, `Đã xóa review của "${review.userName}"`);
         this.loadReviewStats();
       },
       error: () => {
-        this.errorMessage.set("Không thể xóa review");
-        this.loadReviews(); // rollback
+        this.notif.show(NotificationType.ERROR, 'Không thể xóa review');
+        this.loadReviews();
       }
     })
   }
 
-  // Xóa Reply (Optimistic Update)
-  deleteReply(review: AdminReview, reply: AdminReply){
+  /**
+   * Xóa một phản hồi (reply) con của một review gốc
+   * Sử dụng cơ chế Optimistic UI: Xóa khỏi giao diện trước rồi gọi API
+   */
+  deleteReply(review: AdminReview, reply: AdminReply) {
     if (!confirm(`Xóa reply của "${reply.userName}" về review của "${review.userName}"?`)) return;
 
     // Optimistic: xóa reply khỏi UI trước
@@ -203,41 +229,48 @@ export class ReviewManagementComponent {
 
     this.reviewService.deleteReply(reply.id).subscribe({
       next: () => {
+        this.notif.show(NotificationType.SUCCESS, `Đã xóa reply của "${reply.userName}"`);
         this.loadReviewStats();
       },
       error: () => {
-        this.errorMessage.set("Không thể xóa reply");
-        this.loadReviews(); // rollback
+        this.notif.show(NotificationType.ERROR, 'Không thể xóa reply');
+        this.loadReviews();
       }
     })
   }
 
-  // ADMIN REPLY
-  openReplyForm(reviewId: number){
+  /**
+   * Mở form trả lời trực tiếp cho một review gốc
+   */
+  openReplyForm(reviewId: number) {
     this.replyingToId.set(reviewId);
     this.replyContent.set('');
   }
 
+  /**
+   * Đóng form trả lời
+   */
   cancelReply(): void {
     this.replyingToId.set(null);
     this.replyContent.set('');
   }
 
-  // Submit Reply
-  submitReply(){
+  /**
+   * Gửi nội dung trả lời (Reply) lên server
+   */
+  submitReply() {
     const reviewId = this.replyingToId();
     const content = this.replyContent().trim();
 
-    if(!reviewId || !content){
+    if (!reviewId || !content) {
       return;
     }
 
     this.isSubmittingReply.set(true);
 
-    this.reviewService.replyToReview(reviewId, {content}).subscribe({
-      next: (res) =>{
-        if(res.success){
-          // Optimistic: thêm reply vào UI ngay
+    this.reviewService.replyToReview(reviewId, { content }).subscribe({
+      next: (res) => {
+        if (res.success) {
           const newReply: AdminReply = res.data;
           this.reviews.update(list =>
             list.map(r => r.id === reviewId
@@ -245,13 +278,14 @@ export class ReviewManagementComponent {
               : r
             )
           );
+          this.notif.show(NotificationType.SUCCESS, 'Phản hồi đã được gửi thành công');
           this.cancelReply();
           this.loadReviewStats();
         }
         this.isSubmittingReply.set(false);
       },
-      error: () =>{
-        this.errorMessage.set("Không thể gửi phản hồi");
+      error: () => {
+        this.notif.show(NotificationType.ERROR, 'Không thể gửi phản hồi');
         this.isSubmittingReply.set(false);
       }
     })

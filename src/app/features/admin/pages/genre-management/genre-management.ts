@@ -5,6 +5,8 @@ import { GenreService } from '../../../../services/genre.service';
 import { UpdateGenreRequest } from '../../../../models/genre.model';
 import { GenreRow, GenreStat } from '../../models/genre.model';
 import { buildPageItems } from '../../utils/pagination.utils';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 @Component({
   selector: 'app-genre-management',
@@ -16,7 +18,9 @@ import { buildPageItems } from '../../utils/pagination.utils';
 export class GenreManagementComponent {
 
   private genreService = inject(GenreService);
+  private notif = inject(NotificationService);
 
+  // State
   isLoading = signal(false);
   errorMessage = signal('');
 
@@ -68,6 +72,9 @@ export class GenreManagementComponent {
     });
   }
 
+  /**
+   * Tải danh sách thể loại từ server (có phân trang, sắp xếp và lọc tìm kiếm)
+   */
   loadGenres() {
     this.isLoading.set(true);
     this.errorMessage.set('');
@@ -91,6 +98,9 @@ export class GenreManagementComponent {
     })
   }
 
+  /**
+   * Tải các chỉ số thống kê (KPIs) của Thể loại
+   */
   loadStats() {
     this.genreService.getGenreStats().subscribe({
       next: (res) => {
@@ -139,10 +149,16 @@ export class GenreManagementComponent {
   }
 
   // Search and sort
+  /**
+   * Gọi khi người dùng nhập nội dung tìm kiếm
+   */
   onSearchChange() {
     this.currentPage.set(1);
     this.loadGenres();
   }
+  /**
+   * Gọi khi người dùng đổi chế độ sắp xếp trong Dropdown
+   */
   onSortChange() {
     this.currentPage.set(1);
     this.loadGenres();
@@ -187,6 +203,9 @@ export class GenreManagementComponent {
   }
 
   // Actions
+  /**
+   * Chuyển trang theo pagination
+   */
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
@@ -194,6 +213,9 @@ export class GenreManagementComponent {
     }
   }
 
+  /**
+   * Xem chi tiết Thể loại bên Side Panel
+   */
   viewGenre(genre: GenreRow) {
     this.selectedGenre.set(genre);
     this.editName.set(genre.name);
@@ -202,16 +224,25 @@ export class GenreManagementComponent {
     this.showPanel.set(true);
   }
 
+  /**
+   * Đóng Side Panel hiện tại
+   */
   closePanel() {
     this.showPanel.set(false);
     this.selectedGenre.set(null);
     this.isEditing.set(false);
   }
 
+  /**
+   * Bật/Tắt chế độ chỉnh sửa trên Side Panel
+   */
   toggleEdit() {
     this.isEditing.update(v => !v);
   }
 
+  /**
+   * Cập nhật thông tin Thể loại đang xem tren Side Panel
+   */
   updateGenre() {
     const genre = this.selectedGenre();
     if (!genre) return;
@@ -231,28 +262,38 @@ export class GenreManagementComponent {
     this.genreService.updateGenre(genre.id, payload).subscribe({
       next: (res) => {
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, `Cập nhật thể loại "${newName || genre.name}" thành công`);
           this.closePanel();
           this.loadGenres();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể cập nhật thể loại');
+        this.notif.show(NotificationType.ERROR, 'Không thể cập nhật thể loại');
       }
     });
 
   }
   // Add Modal Actions
+  /**
+   * Mở Modal thêm thể loại mới
+   */
   openAddModal() {
     this.newGenreName.set('');
     this.newGenreSlug.set('');
     this.showAddModal.set(true);
   }
 
+  /**
+   * Đóng Modal thêm thể loại
+   */
   closeAddModal() {
     this.showAddModal.set(false);
   }
 
+  /**
+   * Submit thể loại mới lên Server
+   */
   addGenre() {
     const name = this.newGenreName().trim();
     const slug = this.newGenreSlug().trim();
@@ -260,31 +301,34 @@ export class GenreManagementComponent {
     this.genreService.createGenre({ name, slug }).subscribe({
       next: (res) => {
         if (res.success) {
+          this.notif.show(NotificationType.SUCCESS, `Đã thêm thể loại "${name}" thành công`);
           this.closeAddModal();
           this.loadGenres();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể tạo thể loại');
+        this.notif.show(NotificationType.ERROR, 'Không thể tạo thể loại');
       }
     });
   }
 
+  /**
+   * Xóa một thể loại khỏi hệ thống (Cảnh báo nếu đang có phim dùng thể loại này)
+   */
   deleteGenre(genre: GenreRow) {
     if (!confirm(`Xóa thể loại "${genre.name}"?`)) return;
     this.genreService.deleteGenre(genre.id).subscribe({
       next: (res) => {
         if (res.success) {
-          if (this.selectedGenre()?.id === genre.id) {
-            this.closePanel();
-          }
+          this.notif.show(NotificationType.SUCCESS, `Đã xóa thể loại "${genre.name}" thành công`);
+          if (this.selectedGenre()?.id === genre.id) this.closePanel();
           this.loadGenres();
           this.loadStats();
         }
       },
       error: () => {
-        this.errorMessage.set('Không thể xóa thể loại');
+        this.notif.show(NotificationType.ERROR, `Không thể xóa thể loại "${genre.name}"`);
       }
     });
   }

@@ -33,13 +33,27 @@ export class Auth implements OnDestroy {
   otpCountdown = signal<number>(0);
   private countdownInterval: any;
 
+  /**
+   * Chuyển đổi qua lại giữa chế độ Đăng nhập (login) và Đăng ký (register)
+   */
   toggleMode() {
     this.viewMode.update(m => m === 'login' ? 'register' : 'login');
     this.errorMessage.set('');
   }
 
+  /**
+   * Chuyển sang màn hình Quên mật khẩu
+   */
   goToForgot() { this.viewMode.set('forgot'); this.errorMessage.set(''); }
+
+  /**
+   * Quay lại màn hình Đăng nhập
+   */
   backToLogin() { this.viewMode.set('login'); this.errorMessage.set(''); }
+
+  /**
+   * Kết thúc luồng xác thực (Login/Register xong) -> Điều hướng về trang chủ
+   */
   finishAuthFlow() { this.router.navigate(['/']); }
 
   // Init
@@ -56,7 +70,10 @@ export class Auth implements OnDestroy {
     if (this.countdownInterval) clearInterval(this.countdownInterval);
   }
 
-  // Login with google
+  /**
+   * Xử lý đăng nhập bằng Google ID Token
+   * @param idToken Token trả về từ Google SDK
+   */
   handleGoogleLogin(idToken: string) {
     this.isLoading.set(true);
     this.errorMessage.set('');
@@ -78,7 +95,9 @@ export class Auth implements OnDestroy {
     });
   }
 
-  // Button Login
+  /**
+   * Xử lý sự kiện Submit Đăng nhập bằng Email & Password
+   */
   onLogin(email: string, pass: string) {
     if (!email || !pass) {
       this.errorMessage.set('Vui lòng nhập email và mật khẩu.');
@@ -106,7 +125,10 @@ export class Auth implements OnDestroy {
     });
   }
 
-  // Send otp button
+  /**
+   * Yêu cầu gửi OTP đăng ký về Email
+   * Kích hoạt bộ đếm ngược 30 giây để tránh spam
+   */
   sendOtp(email: string) {
     if (!email) {
       this.errorMessage.set('Vui lòng nhập email để nhận mã OTP.');
@@ -138,7 +160,10 @@ export class Auth implements OnDestroy {
     });
   }
 
-  // Register button
+  /**
+   * Xử lý gửi thông tin Đăng ký tài khoản
+   * Sau khi tài khoản được tạo, tự động chuyển qua form Nhập sơ yếu lý lịch (Profile)
+   */
   onRegister(email: string, otp: string, pass: string, confirmPass: string) {
     if (!email || !otp || !pass) {
       this.errorMessage.set('Vui lòng điền đầy đủ thông tin.');

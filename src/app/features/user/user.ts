@@ -40,6 +40,10 @@ export class UserComponent implements OnInit {
   // Modal change password
   isChangePasswordModalOpen = signal<boolean>(false);
   isChangingPassword = signal<boolean>(false);
+
+  /**
+   * Mở Modal Đổi mật khẩu
+   */
   openChangePasswordModal() {
     console.log(this.userProfile());
     this.isChangePasswordModalOpen.set(true);
@@ -93,19 +97,25 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Listen event start edit profile
+  /**
+   * Kích hoạt chế độ Chỉnh sửa hồ sơ cá nhân
+   */
   handleEditStart() {
     this.isEditingProfile.set(true);
     this.editFullName.set(this.userProfile()?.fullName || '');
     this.editAvatarUrl.set(this.userProfile()?.avatarUrl || '');
   }
 
-  // Listen event cancel edit profile
+  /**
+   * Hủy bỏ quá trình chỉnh sửa hồ sơ
+   */
   handleEditCancel() {
     this.isEditingProfile.set(false);
   }
 
-  // Button change avatar
+  /**
+   * Lắng nghe sự kiện Upload File Avatar (chuyển vào Image Cropper)
+   */
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
@@ -113,13 +123,17 @@ export class UserComponent implements OnInit {
     }
   }
 
-  // receive avatar from cropper
+  /**
+   * Xử lý dữ liệu ảnh Base64 sau khi cắt từ AvatarCropper
+   */
   handleAvatarCropped(base64Image: string) {
     this.editAvatarUrl.set(base64Image);
     this.imageChangedEvent.set(null);
   }
 
-  // Convert base64 to File
+  /**
+   * Tiện ích: Chuyển đổi mã Base64 sang File object gốc để upload
+   */
   private base64ToFile(dataurl: string, filename: string): File {
     const arr = dataurl.split(',');
     const mime = arr[0].match(/:(.*?);/)![1];
@@ -132,7 +146,9 @@ export class UserComponent implements OnInit {
     return new File([u8arr], filename, { type: mime });
   }
 
-  // Handle edit profile
+  /**
+   * Xử lý lưu thông tin Profile (Hỗ trợ upload ảnh đại diện lên Cloudinary)
+   */
   async handleSaveProfile(profileInfoData: any) {
     const payload = {
       displayName: this.editFullName(),
@@ -161,7 +177,9 @@ export class UserComponent implements OnInit {
     }
   }
 
-  // Call api edit profile
+  /**
+   * Gọi API cập nhật thông tin User Profile vào cơ sở dữ liệu
+   */
   private callUpdateProfileApi(payload: any) {
     this.userService.updateProfile(payload).subscribe({
       next: (res) => {
@@ -184,7 +202,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Call api change password
+  /**
+   * Gọi API thay đổi mật khẩu
+   */
   submitChangePassword(oldPass: string, newPass: string, confirmPass: string) {
     if (!oldPass || !newPass || !confirmPass) {
       this.notiService.show(NotificationType.WARNING, 'Vui lòng điền đầy đủ thông tin mật khẩu!');
@@ -213,7 +233,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Call api load user profile
+  /**
+   * Tải thông tin người dùng hiện tại (Profile gốc)
+   */
   loadUserProfile(showLoading: boolean = true) {
     if (showLoading) this.isLoadingProfile.set(true);
 
@@ -234,7 +256,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Call api load user favorites
+  /**
+   * Gọi API tải danh sách phim Yêu thích (Favorites)
+   */
   loadFavorites(page: number) {
     this.isLoadingFavorites.set(true);
     this.userService.getFavorites(page, 40).subscribe({
@@ -258,7 +282,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Call api load movie history
+  /**
+   * Gọi API tải lịch sử xem phim
+   */
   loadHistory(page: number) {
     this.isLoadingHistory.set(true);
     this.userService.getHistory(page, 40).subscribe({
@@ -281,7 +307,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Call api load reviews
+  /**
+   * Gọi API tải danh sách các đánh giá (Reviews) của người dùng
+   */
   loadReviews(page: number) {
     this.isLoadingReviews.set(true);
     this.userService.getReviews(page, 10).subscribe({
@@ -304,7 +332,9 @@ export class UserComponent implements OnInit {
     });
   }
 
-  // Button change tab
+  /**
+   * Chuyển đổi giữa các tab (Lịch sử, Yêu thích, Đánh giá) thông qua queryParams
+   */
   changeTab(tab: 'history' | 'favorites' | 'reviews') {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -313,6 +343,9 @@ export class UserComponent implements OnInit {
     });
   }
 
+  /**
+   * Chuyển trang cho tab Lịch sử Xem
+   */
   onHistoryPageChange(page: number) {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -321,6 +354,9 @@ export class UserComponent implements OnInit {
     });
   }
 
+  /**
+   * Chuyển trang cho tab Phim Yêu thích
+   */
   onFavoritePageChange(page: number) {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -329,6 +365,9 @@ export class UserComponent implements OnInit {
     });
   }
 
+  /**
+   * Chuyển trang cho phần Danh sách Đánh giá
+   */
   onReviewPageChange(page: number) {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -337,6 +376,9 @@ export class UserComponent implements OnInit {
     });
   }
 
+  /**
+   * Điều hướng nhanh vào khu vực Quản trị (Dành cho Admin)
+   */
   navigateToAdmin() {
     this.router.navigate(['/admin']);
   }

@@ -5,6 +5,8 @@ import { forkJoin } from 'rxjs';
 import { AdminUserDetail, UserStats } from '../../../../models/user.model';
 import { AdminUserService } from '../../../../services/admin-user.service';
 import { buildPageItems } from '../../utils/pagination.utils';
+import { NotificationService } from '../../../../services/notification.service';
+import { NotificationType } from '../../../../models/notification.model';
 
 
 @Component({
@@ -15,6 +17,7 @@ import { buildPageItems } from '../../utils/pagination.utils';
 })
 export class UserManagementComponent {
   private adminUserService = inject(AdminUserService);
+  private notif = inject(NotificationService);
 
   //  State
   isLoading = signal(true);
@@ -42,6 +45,9 @@ export class UserManagementComponent {
   constructor() {
     afterNextRender(() => this.loadData());
   }
+  /**
+   * Fetch toàn bộ dữ liệu (KPIs + Danh sách người dùng)
+   */
   loadData() {
     this.isLoading.set(true);
     this.errorMessage.set('');
@@ -77,19 +83,22 @@ export class UserManagementComponent {
     });
   }
 
+  /**
+   * Kích hoạt hoặc Vô hiệu hóa tài khoản User
+   */
   lockUser(user: AdminUserDetail) {
     const action = user.status === 'ACTIVE' ? 'vô hiệu hóa' : 'kích hoạt';
     if (confirm(`Bạn muốn ${action} tài khoản "${user.fullName}"?`)) {
       this.adminUserService.toggleLock(user.id).subscribe({
         next: (res) => {
           if (res.success) {
-            this.loadData();  // Reload data sau khi toggle
-            if (this.selectedUser()?.id === user.id) {
-              this.closePanel();
-            }
+            const newStatus = user.status === 'ACTIVE' ? 'vô hiệu hóa' : 'đã kích hoạt';
+            this.notif.show(NotificationType.SUCCESS, `Tài khoản "${user.fullName}" đã ${newStatus}`);
+            this.loadData();
+            if (this.selectedUser()?.id === user.id) this.closePanel();
           }
         },
-        error: () => this.errorMessage.set('Không thể thay đổi trạng thái người dùng'),
+        error: () => this.notif.show(NotificationType.ERROR, 'Không thể thay đổi trạng thái người dùng'),
       });
     }
   }
@@ -164,7 +173,9 @@ export class UserManagementComponent {
     return num.toLocaleString();
   }
 
-  // Action
+  /**
+   * Chuyển trang theo phân trang (Pagination)
+   */
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
@@ -172,39 +183,56 @@ export class UserManagementComponent {
     }
   }
 
+  /**
+   * Mở Side Panel để xem chi tiết User
+   */
   viewUser(user: AdminUserDetail) {
     this.selectedUser.set(user);
     this.showPanel.set(true);
   }
 
+  /**
+   * Đóng Side Panel
+   */
   closePanel() {
     this.showPanel.set(false);
     this.selectedUser.set(null);
   }
+  /**
+   * Submit tìm kiếm
+   */
   onSearch() {
     this.currentPage.set(1);
     this.loadData();
   }
 
+  /**
+   * Submit lọc theo Filter
+   */
   onFilterChange() {
     this.currentPage.set(1);
     this.loadData();
   }
 
+  /**
+   * Gọi API Reset Password cho User - mật khẩu sẽ được gửi tự động qua email
+   */
   resetPassword(user: AdminUserDetail) {
     if (confirm(`Reset mật khẩu cho "${user.fullName}"?\nMật khẩu mới sẽ được gửi qua email: ${user.email}`)) {
       this.adminUserService.resetPassword(user.id).subscribe({
         next: (res) => {
           if (res.success) {
-            alert('Đã reset mật khẩu. Mật khẩu mới đã gửi về email người dùng.');
+            this.notif.show(NotificationType.SUCCESS, `Đã reset mật khẩu và gửi về email: ${user.email}`);
           }
         },
-        error: () => this.errorMessage.set('Không thể reset mật khẩu'),
+        error: () => this.notif.show(NotificationType.ERROR, 'Không thể reset mật khẩu'),
       });
     }
   }
 
-  // Mapper
+  /**
+   * Render dữ liệu KPI Data thành mảng UI Stats
+   */
   private mapStats(s: UserStats) {
     this.userStats.set([
       {

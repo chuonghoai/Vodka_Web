@@ -11,6 +11,8 @@ import { MovieForm, SeasonForm, EpisodeForm, ContextMenuState } from '../../../m
 import { FilterService } from '../../../../../services/filter.service';
 import { firstValueFrom } from 'rxjs';
 import { DurationPipe } from '../../../../../shared/pipes/duration.pipe';
+import { NotificationService } from '../../../../../services/notification.service';
+import { NotificationType } from '../../../../../models/notification.model';
 
 @Component({
   selector: 'app-add-movie',
@@ -23,6 +25,7 @@ export class AddMovieComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private renderer = inject(Renderer2);
+  private notif = inject(NotificationService);
   private document = inject(DOCUMENT);
   private adminMovieService = inject(AdminMovieService);
   private mediaService = inject(MediaService);
@@ -229,15 +232,15 @@ export class AddMovieComponent implements OnInit, OnDestroy {
       // 5. Gửi API
       if (this.isEditMode() && this.movieId()) {
         await firstValueFrom(this.adminMovieService.updateMovie(this.movieId()!, finalPayload));
-        alert('Cập nhật phim thành công!');
+        this.notif.show(NotificationType.SUCCESS, 'Cập nhật phim thành công!');
       } else {
         await firstValueFrom(this.adminMovieService.createMovie(finalPayload));
-        alert('Thêm phim mới thành công!');
+        this.notif.show(NotificationType.SUCCESS, 'Thêm phim mới thành công!');
       }
 
       this.router.navigate(['/admin/movies']);
     } catch (error) {
-      alert('Đã xảy ra lỗi trong quá trình upload hoặc lưu dữ liệu!');
+      this.notif.show(NotificationType.ERROR, 'Đã xảy ra lỗi trong quá trình upload hoặc lưu dữ liệu!');
       console.error(error);
     } finally {
       this.isUploadingData.set(false);

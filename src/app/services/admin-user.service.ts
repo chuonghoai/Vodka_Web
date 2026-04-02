@@ -12,7 +12,7 @@ export class AdminUserService {
   private baseUrl = environment.apiUrl;
 
   /**
-   * Admin Get All Users
+   * Admin Get All Users: Phân trang, tìm kiếm và lọc danh sách người dùng
    * GET /api/admin/users?page=&pageSize=&search=&status=&provider=&gender=&sort=
    */
   getUsers(params: {
@@ -40,7 +40,7 @@ export class AdminUserService {
   }
 
   /**
-   * Admin Get User Stats
+   * Admin Get User Stats: Thống kê tài khoản
    * GET /api/admin/users/stats
    */
   getUserStats(): Observable<ApiResponse<UserStats>> {
@@ -50,7 +50,7 @@ export class AdminUserService {
   }
 
   /**
-   * Admin Get User By Id
+   * Admin Get User By Id: Lấy thông tin chi tiết một tài khoản
    * GET /api/admin/users/:id
    */
   getUserById(id: number): Observable<ApiResponse<AdminUserDetail>> {
@@ -60,7 +60,7 @@ export class AdminUserService {
   }
 
   /**
-   * Admin Toggle Active/ InActive User
+   * Admin Toggle Active/ InActive User: Khóa (hoặc mở khóa) tài khoản người dùng
    * PATCH /api/admin/users/:id/lock
    */
   toggleLock(id: number): Observable<ApiResponse<void>> {
@@ -71,7 +71,7 @@ export class AdminUserService {
   }
 
   /**
-   * Admin Reset Password → gửi mật khẩu ngẫu nhiên qua email
+   * Admin Reset Password: Gửi mật khẩu ngẫu nhiên qua email
    * POST /api/admin/users/:id/reset-password
    */
   resetPassword(id: number): Observable<ApiResponse<void>> {

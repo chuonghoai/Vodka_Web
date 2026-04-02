@@ -55,6 +55,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Gửi đồng loạt các API requests để fetch dữ liệu cho luồng trang chủ:
+   * Banner nổi bật, trending, lịch sử xem, phim mới cập nhật, đánh giá cao, hành động
+   */
   private fetchData() {
     this.movieService.getFeaturedMovies().subscribe(res => { if (res.success) this.featuredMovies.set(res.data); });
     this.movieService.getTrendingMovies(15).subscribe(res => { if (res.success) this.trendingMovies.set(res.data); });
@@ -64,6 +68,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.movieService.filterMovies({genres: ['hanh-dong']}).subscribe(res => { if (res.success) this.actionMovies.set(res.data); });
   }
 
+  /**
+   * Tải danh sách phim Mới Phát Hành
+   * Hỗ trợ cuộn mượt (smooth scroll) tùy theo kết quả ở Page 1 hay trang tiếp theo
+   */
   loadNewReleases(page: number) {
     this.newReleasesPage.set(page);
     const pageSize = page === 1 ? 30 : 50;
@@ -89,6 +97,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Bắt sự kiện chuyển trang cho danh sách Phim Mới
+   * Gắn params vào URL thay vì call API trực tiếp, Subscription trong ngOnInit sẽ tự trigger
+   */
   onPageChange(page: number) {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -97,10 +109,28 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Control banner
+  /**
+   * Chuyển thủ công tới banner tiếp theo
+   */
   nextBanner() { this.bannerIndex.update(i => (i + 1) % this.featuredMovies().length); this.resetAutoSlide(); }
+
+  /**
+   * Chuyển thủ công tới banner trước đó
+   */
   prevBanner() { this.bannerIndex.update(i => (i - 1 + this.featuredMovies().length) % this.featuredMovies().length); this.resetAutoSlide(); }
+
+  /**
+   * Khởi chạy vòng lặp tự động chuyển slide sau mỗi 5s
+   */
   startAutoSlide(): void { this.clearAutoSlide(); this.intervalId = setInterval(() => { this.bannerIndex.update(i => (i + 1) % this.featuredMovies().length); }, 5000); }
+
+  /**
+   * Hủy vòng lặp tự động chuyển slide hiện tại
+   */
   clearAutoSlide(): void { if (this.intervalId) clearInterval(this.intervalId); }
+
+  /**
+   * Reset bộ đếm slide tự động, thường dùng sau khi người dùng vừa có thao tác click thủ công
+   */
   resetAutoSlide(): void { this.clearAutoSlide(); this.startAutoSlide(); }
 }

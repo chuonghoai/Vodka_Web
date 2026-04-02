@@ -12,7 +12,11 @@ export class MediaService {
     private apiUrl = environment.apiUrl;
 
 
-    // Get signature API key
+    /**
+     * Admin Get Cloudinary Signature
+     * Lấy chữ ký điện tử (Signature) và API Key từ server để client có thể upload trực tiếp lên Cloudinary an toàn
+     * GET /api/admin/media/signature
+     */
     private async getSignature(): Promise<CloudinarySignature> {
         const response = await firstValueFrom(
             this.http.get<any>(`${this.apiUrl}${API_ENDPOINTS.ADMIN.SIGNATURE}`)
@@ -20,7 +24,10 @@ export class MediaService {
         return response.data;
     }
 
-    // Upload to cloudinary + tự động gọi confirm để xóa tag "tmp"
+    /**
+     * Upload Data -> Cloudinary
+     * Upload trực tiếp file lên Cloudinary, sau khi upload xong sẽ tự động gọi API Confirm để đánh dấu lưu trữ vĩnh viễn (xóa tag temp)
+     */
     async uploadToCloudinary(file: File, resourceType: 'image' | 'video', movieId?: number): Promise<CloudinaryUploadResponse> {
         try {
             const sigData = await this.getSignature();
@@ -49,7 +56,11 @@ export class MediaService {
         }
     }
 
-    // Gọi backend xác nhận media đã upload → xóa tag "tmp" trên Cloudinary
+    /**
+     * Admin Confirm Cloudinary Media
+     * Gửi webhook/báo cáo về Server là đã upload lên Cloudinary thành công -> Xóa tag "tmp", lưu trữ CSDL nếu cần
+     * POST /api/admin/media/confirm
+     */
     private async confirmMedia(
         uploadRes: CloudinaryUploadResponse,
         resourceType: string,

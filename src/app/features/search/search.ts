@@ -41,6 +41,9 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  /**
+   * Cập nhật tiêu đề trang dựa trên tham số filter (Keyword, Genre, Tag)
+   */
   updateTitle(params: any) {
     let parts = [];
     if (params['keyword']) parts.push(`Từ khóa "${params['keyword']}"`);
@@ -52,6 +55,9 @@ export class SearchComponent implements OnInit {
     this.listTitle.set(parts.length > 0 ? `Kết quả: ${parts.join(' - ')}` : 'Tất cả phim');
   }
 
+  /**
+   * Tải danh sách kết quả tìm kiếm dựa theo các bộ lọc
+   */
   loadData(params: any) {
     const page = params['page'] ? parseInt(params['page'], 10) : 1;
 
@@ -70,6 +76,9 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  /**
+   * Chuyển trang (Pagination) thông qua cập nhật queryParams trên URL
+   */
   onPageChange(newPage: number) {
     this.router.navigate([], {
       relativeTo: this.route,
