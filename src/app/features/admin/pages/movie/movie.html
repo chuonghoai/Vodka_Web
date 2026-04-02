@@ -87,9 +87,9 @@
         <span class="text-zinc-300 text-xs font-medium pr-6 min-w-[90px] pointer-events-none">{{ selectedGenreName() }}</span>
         <select [(ngModel)]="selectedGenre" (change)="onFilterChange()"
           class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-          <option value="">Tất cả</option>
+          <option value="" class="bg-zinc-900 text-zinc-200">Tất cả</option>
           @for (genre of genreOptions(); track genre.id) {
-          <option [value]="genre.slug">{{ genre.name }}</option>
+          <option [value]="genre.slug" class="bg-zinc-900 text-zinc-200">{{ genre.name }}</option>
           }
         </select>
         <span
@@ -102,9 +102,9 @@
         <span class="text-zinc-300 text-xs font-medium pr-6 min-w-[60px] pointer-events-none">{{ selectedYear() || 'Tất cả' }}</span>
         <select [(ngModel)]="selectedYear" (change)="onFilterChange()"
           class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-          <option value="">Tất cả</option>
+          <option value="" class="bg-zinc-900 text-zinc-200">Tất cả</option>
           @for (year of yearOptions; track year) {
-          <option [value]="year">{{ year }}</option>
+          <option [value]="year" class="bg-zinc-900 text-zinc-200">{{ year }}</option>
           }
         </select>
         <span
@@ -117,9 +117,9 @@
         <span class="text-zinc-300 text-xs font-medium pr-6 min-w-[70px] pointer-events-none">{{ selectedRatingName() }}</span>
         <select [(ngModel)]="selectedRating" (change)="onFilterChange()"
           class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-          <option value="">Tất cả</option>
+          <option value="" class="bg-zinc-900 text-zinc-200">Tất cả</option>
           @for (rating of ratingOptions; track rating.value) {
-          <option [value]="rating.value">{{ rating.label }}</option>
+          <option [value]="rating.value" class="bg-zinc-900 text-zinc-200">{{ rating.label }}</option>
           }
         </select>
         <span
@@ -141,7 +141,7 @@
           <select [(ngModel)]="selectedSort" (change)="onFilterChange()"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
             @for (sort of sortOptions; track sort.value) {
-            <option [value]="sort.value">{{ sort.label }}</option>
+            <option [value]="sort.value" class="bg-zinc-900 text-zinc-200">{{ sort.label }}</option>
             }
           </select>
           <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-zinc-500 text-sm pointer-events-none">sort</span>

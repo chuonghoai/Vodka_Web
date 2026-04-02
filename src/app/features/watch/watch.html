@@ -47,7 +47,8 @@
           <app-review
             [movieId]="data.movie.id"
             [initialReviews]="data.reviews || []"
-            [totalReviews]="data.stats?.totalReviews || 0">
+            [totalReviews]="data.stats?.totalReviews || 0"
+            (reviewAdded)="onReviewAdded($event)">
           </app-review>
         </div>
       </div>

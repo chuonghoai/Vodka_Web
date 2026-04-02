@@ -3,11 +3,11 @@ import { afterNextRender, Component, computed, inject, signal } from '@angular/c
 import { FormsModule } from '@angular/forms';
 import { UserState } from '../../../../core/states/user.state';
 import { AdminReply, AdminReview } from '../../../../models/admin-review.modal';
-import { AdminReviewService } from '../../../../services/admin/review.service';
-import { AddReviewComponent } from './add-review/add-review';
-import { buildPageItems } from '../../utils/pagination.utils';
-import { NotificationService } from '../../../../services/notification.service';
 import { NotificationType } from '../../../../models/notification.model';
+import { AdminReviewService } from '../../../../services/admin/review.service';
+import { NotificationService } from '../../../../services/notification.service';
+import { buildPageItems } from '../../utils/pagination.utils';
+import { AddReviewComponent } from './add-review/add-review';
 
 @Component({
   selector: 'app-review-management',
@@ -73,14 +73,17 @@ export class ReviewManagementComponent {
     this.loadReviewStats();
   }
 
-  constructor(){
-    afterNextRender(() =>{
+  constructor() {
+    afterNextRender(() => {
       this.loadReviews();
       this.loadReviewStats();
     })
   }
 
-  loadReviews(){
+  /**
+   * Tải danh sách review từ server (có phân trang, tìm kiếm, lọc rating, sắp xếp)
+   */
+  loadReviews() {
     this.isLoading.set(true);
     this.reviewService.getReviews({
       page: this.currentPage(),
@@ -90,7 +93,7 @@ export class ReviewManagementComponent {
       sort: this.selectedSort()
     }).subscribe({
       next: (res) => {
-        if(res.success){
+        if (res.success) {
           this.reviews.set(res.data);
           if (res.pagination) {
             this.totalItems.set(res.pagination.totalItems);
@@ -106,7 +109,10 @@ export class ReviewManagementComponent {
       }
     })
   }
-  
+
+  /**
+   * Tải các thẻ thống kê tổng quan (Review Stats)
+   */
   loadReviewStats(): void {
     this.reviewService.getReviewStats().subscribe({
       next: (res) => {
@@ -149,16 +155,24 @@ export class ReviewManagementComponent {
     });
   }
 
-  // Filter
+  /**
+   * Gọi khi người dùng nhập nội dung vào ô Search
+   */
   onSearchChange(): void {
     this.currentPage.set(1);
     this.loadReviews();
   }
+  /**
+   * Gọi khi chọn lọc theo số sao (Rating)
+   */
   onRatingChange(): void {
     this.currentPage.set(1);
     this.loadReviews();
   }
-  
+
+  /**
+   * Gọi khi chọn tiêu chí sắp xếp trong Dropdown
+   */
   onSortChange(): void {
     this.currentPage.set(1);
     this.loadReviews();
@@ -166,6 +180,9 @@ export class ReviewManagementComponent {
 
   // ACTION
 
+  /**
+   * Chuyển trang (Pagination)
+   */
   goToPage(page: number | null): void {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
@@ -173,7 +190,9 @@ export class ReviewManagementComponent {
     }
   }
 
-  // Delete Review
+  /**
+   * Xóa một review gốc (bao gồm tất cả replies bên trong)
+   */
   deleteReview(review: AdminReview) {
     if (!confirm(`Xóa review của "${review.userName}" về phim "${review.movieTitle}"?`)) return;
 
@@ -193,8 +212,11 @@ export class ReviewManagementComponent {
     })
   }
 
-  // Xóa Reply (Optimistic Update)
-  deleteReply(review: AdminReview, reply: AdminReply){
+  /**
+   * Xóa một phản hồi (reply) con của một review gốc
+   * Sử dụng cơ chế Optimistic UI: Xóa khỏi giao diện trước rồi gọi API
+   */
+  deleteReply(review: AdminReview, reply: AdminReply) {
     if (!confirm(`Xóa reply của "${reply.userName}" về review của "${review.userName}"?`)) return;
 
     // Optimistic: xóa reply khỏi UI trước
@@ -217,29 +239,36 @@ export class ReviewManagementComponent {
     })
   }
 
-  // ADMIN REPLY
-  openReplyForm(reviewId: number){
+  /**
+   * Mở form trả lời trực tiếp cho một review gốc
+   */
+  openReplyForm(reviewId: number) {
     this.replyingToId.set(reviewId);
     this.replyContent.set('');
   }
 
+  /**
+   * Đóng form trả lời
+   */
   cancelReply(): void {
     this.replyingToId.set(null);
     this.replyContent.set('');
   }
 
-  // Submit Reply
-  submitReply(){
+  /**
+   * Gửi nội dung trả lời (Reply) lên server
+   */
+  submitReply() {
     const reviewId = this.replyingToId();
     const content = this.replyContent().trim();
 
-    if(!reviewId || !content){
+    if (!reviewId || !content) {
       return;
     }
 
     this.isSubmittingReply.set(true);
 
-    this.reviewService.replyToReview(reviewId, {content}).subscribe({
+    this.reviewService.replyToReview(reviewId, { content }).subscribe({
       next: (res) => {
         if (res.success) {
           const newReply: AdminReply = res.data;

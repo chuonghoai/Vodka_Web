@@ -18,7 +18,11 @@ export class UserService{
   private userState = inject(UserState);
   private baseUrl = environment.apiUrl;
 
-  // update profile
+  /**
+   * Update User Profile
+   * Cập nhật thông tin cá nhân của người dùng
+   * PUT /api/user/profile
+   */
   updateProfile(data: any): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.USER.PROFILE}`, data)
       .pipe(
@@ -31,18 +35,30 @@ export class UserService{
       );
   }
 
-  // Get profile
+  /**
+   * Get User Profile
+   * Lấy thông tin cá nhân của người dùng đang đăng nhập
+   * GET /api/user/profile
+   */
   getProfile(): Observable<ApiResponse<User>> {
     return this.http.get<ApiResponse<User>>(`${this.baseUrl}${API_ENDPOINTS.USER.PROFILE}`);
   }
 
-  // Get movies favorite
+  /**
+   * Get User Favorites
+   * Lấy danh sách phim yêu thích của người dùng (có phân trang)
+   * GET /api/user/favorites
+   */
   getFavorites(page: number = 1, pageSize: number = 40): Observable<ApiResponse<Movie[]>> {
     const params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
-    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.FAVORITES}`, { params })
+    return this.http.get<ApiResponse<Movie[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.FAVORITES}`, { params });
   }
 
-  // Get movies history
+  /**
+   * Get User Movie History
+   * Lấy lịch sử xem phim của người dùng (có phân trang)
+   * GET /api/user/movie-history
+   */
   getHistory(page: number = 1, pageSize: number = 40): Observable<ApiResponse<any[]>> {
     const params = new HttpParams()
       .set('page', page.toString())
@@ -50,7 +66,11 @@ export class UserService{
     return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.MOVIE_HISTORY}`, { params });
   }
 
-  // Get user's reviews
+  /**
+   * Get User Reviews
+   * Lấy danh sách review mà người dùng đã đăng (có phân trang)
+   * GET /api/user/reviews
+   */
   getReviews(page: number = 1, pageSize: number = 40): Observable<ApiResponse<any[]>> {
     const params = new HttpParams()
       .set('page', page.toString())
@@ -58,7 +78,11 @@ export class UserService{
     return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}${API_ENDPOINTS.USER.REVIEWS}`, { params });
   }
 
-  // Change password
+  /**
+   * Change Password
+   * Đổi mật khẩu cho người dùng hiện tại
+   * PUT /api/user/change-password
+   */
   changePassword(oldPassword: string, newPassword: string, confirmNewPassword: string) {
     return this.http.put(`${this.baseUrl}${API_ENDPOINTS.USER.CHANGE_PASSWORD}`, { oldPassword, newPassword, confirmNewPassword });
   }

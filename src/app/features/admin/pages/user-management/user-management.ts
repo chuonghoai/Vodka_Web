@@ -45,6 +45,9 @@ export class UserManagementComponent {
   constructor() {
     afterNextRender(() => this.loadData());
   }
+  /**
+   * Fetch toàn bộ dữ liệu (KPIs + Danh sách người dùng)
+   */
   loadData() {
     this.isLoading.set(true);
     this.errorMessage.set('');
@@ -80,6 +83,9 @@ export class UserManagementComponent {
     });
   }
 
+  /**
+   * Kích hoạt hoặc Vô hiệu hóa tài khoản User
+   */
   lockUser(user: AdminUserDetail) {
     const action = user.status === 'ACTIVE' ? 'vô hiệu hóa' : 'kích hoạt';
     if (confirm(`Bạn muốn ${action} tài khoản "${user.fullName}"?`)) {
@@ -167,7 +173,9 @@ export class UserManagementComponent {
     return num.toLocaleString();
   }
 
-  // Action
+  /**
+   * Chuyển trang theo phân trang (Pagination)
+   */
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
@@ -175,25 +183,40 @@ export class UserManagementComponent {
     }
   }
 
+  /**
+   * Mở Side Panel để xem chi tiết User
+   */
   viewUser(user: AdminUserDetail) {
     this.selectedUser.set(user);
     this.showPanel.set(true);
   }
 
+  /**
+   * Đóng Side Panel
+   */
   closePanel() {
     this.showPanel.set(false);
     this.selectedUser.set(null);
   }
+  /**
+   * Submit tìm kiếm
+   */
   onSearch() {
     this.currentPage.set(1);
     this.loadData();
   }
 
+  /**
+   * Submit lọc theo Filter
+   */
   onFilterChange() {
     this.currentPage.set(1);
     this.loadData();
   }
 
+  /**
+   * Gọi API Reset Password cho User - mật khẩu sẽ được gửi tự động qua email
+   */
   resetPassword(user: AdminUserDetail) {
     if (confirm(`Reset mật khẩu cho "${user.fullName}"?\nMật khẩu mới sẽ được gửi qua email: ${user.email}`)) {
       this.adminUserService.resetPassword(user.id).subscribe({
@@ -207,7 +230,9 @@ export class UserManagementComponent {
     }
   }
 
-  // Mapper
+  /**
+   * Render dữ liệu KPI Data thành mảng UI Stats
+   */
   private mapStats(s: UserStats) {
     this.userStats.set([
       {

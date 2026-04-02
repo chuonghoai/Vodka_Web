@@ -32,13 +32,19 @@ export class AuthService {
     }
   }
 
-  // Login
+  /**
+   * Login
+   * POST /api/auth/login
+   */
   login(email: string, pass: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.LOGIN}`, { email, password: pass })
       .pipe(tap(res => this.handleAuthSuccess(res)));
   }
 
-  // Logout
+  /**
+   * Logout
+   * Xóa user trong state và clear storage
+   */
   logout() {
     this.userState.clearUser();
 
@@ -53,33 +59,51 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  // Request OTP reset password
+  /**
+   * Request OTP reset password
+   * POST /api/auth/forgot-password/send-otp
+   */
   requestPasswordReset(email: string): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_SEND_OTP}`, { email });
   }
 
-  // Verify otp - forgot password
+  /**
+   * Verify otp - forgot password
+   * POST /api/auth/forgot-password/verify-otp
+   */
   verifyOtp(email: string, otp: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_VERIFY_OTP}`, { email, otp });
   }
 
-  // Reset password
+  /**
+   * Reset password
+   * POST /api/auth/forgot-password/reset
+   */
   resetPassword(email: string, resetToken: string, newPass: string): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.FORGOT_RESET}`, { email, resetToken, newPassword: newPass });
   }
 
-  // Request OTP register
+  /**
+   * Request OTP register
+   * POST /api/auth/register/send-otp
+   */
   requestRegister(email: string): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER_SEND_OTP}`, { email });
   }
 
-  // Register
+  /**
+   * Register
+   * POST /api/auth/register
+   */
   register(email: string, otp: string, pass: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.REGISTER}`, { email, otp, password: pass })
       .pipe(tap(res => this.handleAuthSuccess(res)));
   }
 
-  // Login with google
+  /**
+   * Login with google
+   * POST /api/auth/google
+   */
   loginWithGoogle(idToken: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}${API_ENDPOINTS.AUTH.GOOGLE_LOGIN}`, { idToken })
       .pipe(tap(res => this.handleAuthSuccess(res)));

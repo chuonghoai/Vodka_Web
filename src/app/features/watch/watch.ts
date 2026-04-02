@@ -49,6 +49,10 @@ export class WatchComponent implements OnInit {
     });
   }
 
+  /**
+   * Tải toàn bộ thông tin trang Xem phim (Video, Season, Related Movies...)
+   * Ghi nhận Lịch sử xem (Record History) nếu đang có session User
+   */
   loadWatchData(id: number) {
     this.watchData.set(null);
 
@@ -75,17 +79,36 @@ export class WatchComponent implements OnInit {
     });
   }
 
+  /**
+   * Chuyển hướng xem tập phim khác thuộc danh sách
+   */
   goToEpisode(epId: number) {
     if (this.episodeId() !== epId) {
       this.router.navigate(['/watch', epId]);
     }
   }
 
+  /**
+   * Bật / Tắt danh sách các tập phim của một Season bên thanh bên phải
+   */
   toggleSeason(seasonId: number) {
     if (this.selectedSeasonId() === seasonId) {
       this.selectedSeasonId.set(0);
     } else {
       this.selectedSeasonId.set(seasonId);
     }
+  }
+
+  /**
+   * Sự kiện được emit từ Component Review, cập nhật Optimistic UI cho danh sách đánh giá
+   */
+  onReviewAdded(newReview: any) {
+    this.watchData.update(data => {
+      if (!data) return data;
+      return {
+        ...data,
+        reviews: [newReview, ...(data.reviews || [])]
+      };
+    });
   }
 }

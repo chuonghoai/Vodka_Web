@@ -18,6 +18,7 @@ export class TagManagementComponent {
   private tagService = inject(TagService);
   private notif = inject(NotificationService);
 
+  // State
   isLoading = signal(false);
   errorMessage = signal('');
 
@@ -59,6 +60,9 @@ export class TagManagementComponent {
     })
   }
 
+  /**
+   * Tải danh sách tag từ server (có phân trang, tìm kiếm, sắp xếp)
+   */
   loadTags(){
     this.isLoading.set(true);
     this.tagService.getTags({
@@ -83,6 +87,9 @@ export class TagManagementComponent {
 
   }
 
+  /**
+   * Tải thẻ thống kê (KPIs) của Tag từ server
+   */
   loadStats() {
     this.tagService.getTagStats().subscribe({
       next: (res) => {
@@ -147,19 +154,26 @@ export class TagManagementComponent {
     }
   }
 
-  // Search and Sort
+  /**
+   * Gọi khi người dùng nhập Text tìm kiếm
+   */
   onSearchChange(){
     this.currentPage.set(1);
     this.loadTags();
   }
 
+  /**
+   * Gọi khi người dùng thay đổi tiêu chí sắp xếp Dropdown
+   */
   onSortChange(){
     this.currentPage.set(1);
     this.loadTags();
   }
 
 
-  // Actions
+  /**
+   * Chuyển đổi trang (Pagination)
+   */
   goToPage(page: number | null) {
     if (page !== null && page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
@@ -167,6 +181,9 @@ export class TagManagementComponent {
     }
   }
 
+  /**
+   * Mở Side Panel để xem/chỉnh sửa thông tin chi tiết tag
+   */
   viewTag(tag: TagRow) {
     this.selectedTag.set(tag);
     this.editName.set(tag.name);
@@ -174,24 +191,35 @@ export class TagManagementComponent {
     this.showPanel.set(true);
   }
 
+  /**
+   * Đóng Side Panel
+   */
   closePanel() {
     this.showPanel.set(false);
     this.selectedTag.set(null);
   }
 
 
-  // Add Modal Actions
+  /**
+   * Mở Modal thêm tag mới
+   */
   openAddModal() {
     this.newTagName.set('');
     this.newTagSlug.set('');
     this.showAddModal.set(true);
   }
 
+  /**
+   * Đóng Modal thêm tag
+   */
   closeAddModal() {
     this.showAddModal.set(false);
   }
 
 
+  /**
+   * Thực hiện lưu tag mới lên server
+   */
   addTag() {
     const name = this.newTagName().trim();
     const slug = this.newTagSlug().trim();
@@ -211,6 +239,9 @@ export class TagManagementComponent {
     });
   }
 
+  /**
+   * Cập nhật thông tin tag đang mở trong Side Panel
+   */
   updateTag(){
     const tag = this.selectedTag();
     if(!tag) return;
@@ -237,6 +268,9 @@ export class TagManagementComponent {
 
   }
 
+  /**
+   * Xóa một tag khỏi hệ thống
+   */
   deleteTag(tag: TagRow) {
     if (confirm(`Xóa tag "${tag.name}"?`)) {
       this.tagService.deleteTag(tag.id).subscribe({

@@ -39,7 +39,9 @@ export class MovieComponent implements OnInit {
   isFavorited = signal<boolean>(false);
   isTogglingFavorite = signal<boolean>(false);
 
-  // Get list episodes of current season
+  /**
+   * Tự động lấy danh sách các tập phim thuộc Season đang được chọn
+   */
   currentEpisodes = computed(() => {
     const data = this.movie();
     if (!data || !data.episodes) return [];
@@ -47,7 +49,9 @@ export class MovieComponent implements OnInit {
     return season ? season.episodes : [];
   });
 
-  // Auto compute first episode
+  /**
+   * Tự động lấy ID của tập phim đầu tiên của Season 1 để làm nút "Xem Phim"
+   */
   firstEpisodeId = computed(() => {
     const data = this.movie();
     if (data?.episodes?.[0]?.episodes?.[0]) {
@@ -101,6 +105,9 @@ export class MovieComponent implements OnInit {
     });
   }
 
+  /**
+   * Theo dõi/Bỏ theo dõi (Yêu thích) bộ phim hiện tại
+   */
   toggleFavorite() {
     if (this.isTogglingFavorite() || !this.movieId()) return;
     this.isTogglingFavorite.set(true);
@@ -122,7 +129,10 @@ export class MovieComponent implements OnInit {
     });
   }
 
-  // Render new review
+  /**
+   * Hàm bắt sự kiện (EventEmitter) khi người dùng gửi một Review mới thành công
+   * Cập nhật vào đầu danh sách (Hoặc vào mảng replied nếu là Reply) mà ko cần reload trang
+   */
   onReviewAdded(newReview: any) {
     this.movie.update(currentMovie => {
       if (!currentMovie) return currentMovie;
@@ -148,7 +158,9 @@ export class MovieComponent implements OnInit {
     });
   }
 
-  // Blue screen if open rating modal
+  /**
+   * Bắt sự kiện khi mở Modal Đánh Giá (Review) -> Làm mờ nền trang
+   */
   onRatingModalToggled(isDimmed: boolean) {
     this.isMainContentDimmed.set(isDimmed);
   }
